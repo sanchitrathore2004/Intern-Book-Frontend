@@ -1,4 +1,4 @@
-import likeIcon from "../assets/images/like_icon.png";
+import { Bookmark } from "lucide-react";
 import Tags from "./Tags";
 
 interface SubmissionCardProps {
@@ -42,11 +42,11 @@ function SubmissionCard(props: SubmissionCardProps) {
 				})}
 			</div>
 			<div className="w-full h-[12%] flex justify-between items-center pl-[0.5vmax] pb-[0.3vmax]">
-				<div className="h-[80%] w-[80%] flex justify-center items-center bg-[#1971C2] rounded-md font-bold cursor-pointer text-[1.4vmax] text-white">
+				<div className="h-[80%] w-[80%] flex justify-center items-center bg-[#FFD43B] rounded-md font-bold cursor-pointer text-[1.4vmax] text-[#242424]">
 					Show Details
 				</div>
 				<div className="h-[90%] w-[20%] flex justify-center items-center cursor-pointer">
-					<img src={likeIcon} alt="like icon" />
+					<Bookmark color="#FFD43B" />
 				</div>
 			</div>
 		</div>
