@@ -6,7 +6,7 @@ interface SubmissionCardProps {
 	userName: string;
 	type: string;
 	role: string;
-	year: String;
+	year: string;
 	tags: string[];
 	companyLogoUrl: string;
 }
@@ -35,7 +35,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 			<div className="w-full h-[18%] flex flex-wrap gap-[0.5vmax] pl-[0.5vmax]">
 				{props.tags.map((tag) => {
 					return (
-						<div className="h-[40%]">
+						<div key={tag} className="h-[40%]">
 							<Tags tagName={tag} />
 						</div>
 					);

@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@font-face {
+	font-family: "GoldmanSansBd";
+	src: url("./assets/fonts/GoldmanSans_Bd.ttf") format("truetype");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "GoldmanSansLt";
+	src: url("./assets/fonts/GoldmanSans_Lt.ttf") format("truetype");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+:root {
+	--bg: #f8f9fa;
+	--fore-bg: #ffffff;
+	--accent: #01be94;
+	--accent-bg: #d9f5ef;
+	--text-heading: #000000;
+	--text-light: #868e96;
+	--border-color: #868e96;
+	--line-color: #dee2e6;
+}
+
+[data-theme="dark"] {
+	--bg: #242424;
+	--fore-bg: #2e2e2e;
+	--accent: #ffd43b;
+	--accent-bg: #443e28;
+	--text-heading: #ffffff;
+	--text-light: #7e7e7e;
+	--border-color: #585858;
+	--line-color: #424242;
+}
+
+body {
+	margin: 0;
+	background-color: var(--bg);
+	color: var(--text);
+	font-family: system-ui, sans-serif;
+	transition:
+		background 0.2s ease,
+		color 0.2s ease;
+}
