@@ -1,5 +1,5 @@
-export interface FavouriteItems{
-  id:number,
-  company:String,
-  addedBy:String
+export interface FavouriteItems {
+	id: number;
+	company: string;
+	addedBy: string;
 }

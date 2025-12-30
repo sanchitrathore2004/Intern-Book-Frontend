@@ -1,9 +1,5 @@
-const ProfileHomescreen = ()=>{
-    return (
-        <>
-
-        </>
-    );
-}
+const ProfileHomescreen = () => {
+	return;
+};
 
 export default ProfileHomescreen;

@@ -1,24 +1,22 @@
+import { useReducer } from "react";
+import react from "../assets/react.svg";
 import UserContext from "../contexts/UserContext.tsx";
-import userReducer from "../reducers/userReducer.ts";
-import {useReducer} from "react";
-import react from "../assets/react.svg"
-
 import type { User } from "../interfaces/UserInterface.ts";
+import userReducer from "../reducers/userReducer.ts";
 
 const initialUser: User = {
-    id: 1,
-    name: "Abhishek Jha",
-    department:"ICE",
-    profileUrl:react,
-}
-
+	id: 1,
+	name: "Abhishek Jha",
+	department: "ICE",
+	profileUrl: react,
+};
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-    const [user, dispatch] = useReducer(userReducer, initialUser)
+	const [user, dispatch] = useReducer(userReducer, initialUser);
 
-    return (
-        <UserContext.Provider value={{ user, dispatch }}>
-            {children}
-        </UserContext.Provider>
-    )
-}
+	return (
+		<UserContext.Provider value={{ user, dispatch }}>
+			{children}
+		</UserContext.Provider>
+	);
+};
