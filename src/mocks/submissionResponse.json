@@ -1,0 +1,32 @@
+{
+	"id": 15,
+	"company": {
+		"id": 12,
+		"name": "Intel",
+		"logoUrl": null
+	},
+	"role": {
+		"id": 2,
+		"name": "SDE-1",
+		"description": "Software Development Engineer I - Entry level developer."
+	},
+	"type": "PLACED",
+	"ctc": null,
+	"processStructure": {
+		"endDate": "2026-09-01",
+		"otRound": 1,
+		"piRound": 4,
+		"startDate": "2025-09-01"
+	},
+	"stipend": null,
+	"benefits": "Bonus",
+	"experience": "Focused on System Design, not much emphasis to DSA and CP. Grilled me based\non my resume and lot of scenario based questions.\nThe most senior developer that took my PI asked HR type of questions like why do you want to join this company, where do you see yourself in 5 years, etc.\nThen some younger interviewers crossed questioned me on my resume projects and some basic questions regarding my tech stack.\n\n",
+	"mistakes": "The biggest mistake I made was not changing the description of my Transfinitte project as it was similar to one MCA guy interviewing with me. That guy went before me for his interview and when I went the interviewer recognized that its the same project and started grilling me with scenario based questions.",
+	"resources": "The best resource to prepare for DSA is Striver and CSES for Dynamic Programming.\nTo prepare for HLD and System design you can refer to GK CS yt channel.",
+	"cgpa": 9.06,
+	"clubPositions": "Tech Lead",
+	"createdAt": "2025-12-30T16:43:02",
+	"isFraud": false,
+	"isOffensive": false,
+	"likeCount": 0
+}
