@@ -49,3 +49,17 @@ body {
 		background 0.2s ease,
 		color 0.2s ease;
 }
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
