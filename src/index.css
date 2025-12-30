@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Italiana&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Galdeano&display=swap");
 @import "tailwindcss";
 
 @font-face {
@@ -14,6 +16,14 @@
 	font-weight: 400;
 	font-style: normal;
 	font-display: swap;
+}
+
+.font-italiana {
+	font-family: "Italiana", serif;
+}
+
+.font-galdeano {
+	font-family: "Galdeano", sans-serif;
 }
 
 :root {
