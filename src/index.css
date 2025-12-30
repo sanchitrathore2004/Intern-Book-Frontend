@@ -14,7 +14,7 @@
 	font-weight: 400;
 	font-style: normal;
 	font-display: swap;
-}
+} 
 
 :root {
 	--bg: #f8f9fa;
@@ -25,6 +25,7 @@
 	--text-light: #868e96;
 	--border-color: #868e96;
 	--line-color: #dee2e6;
+	--shadow-color: 0 0 0 / 0.35;
 }
 
 [data-theme="dark"] {
@@ -36,6 +37,7 @@
 	--text-light: #7e7e7e;
 	--border-color: #585858;
 	--line-color: #424242;
+	--shadow-color: 255 255 255 / 0.25;
 }
 
 body {

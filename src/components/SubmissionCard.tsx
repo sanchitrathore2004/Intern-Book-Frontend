@@ -13,7 +13,8 @@ interface SubmissionCardProps {
 
 function SubmissionCard(props: SubmissionCardProps) {
 	return (
-		<div className="w-full h-full flex flex-col justify-center items-center rounded-[0.6vmax] bg-[#242424]">
+		<div className="w-full h-full flex flex-col justify-center items-center rounded-[0.6vmax] bg-(--bg) transition-all duration-200
+                    hover:shadow-[0_0_20px_rgb(var(--shadow-color))]">
 			<div className="w-full h-[40%] flex justify-center items-center">
 				<img
 					className="h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-fill"
@@ -24,7 +25,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 			<div className=" w-full h-[30%] flex flex-col justify-center items-center">
 				<div
 					style={{ fontFamily: "GoldmanSansBd" }}
-					className="w-full h-[60%] flex items-center text-[2.6vmax] font-bold text-[#DDDDDD] pl-[0.5vmax]"
+					className="w-full h-[60%] flex items-center text-[2.6vmax] font-bold text-(--text-heading) pl-[0.5vmax]"
 				>
 					{props.companyName}
 				</div>
@@ -42,11 +43,11 @@ function SubmissionCard(props: SubmissionCardProps) {
 				})}
 			</div>
 			<div className="w-full h-[12%] flex justify-between items-center pl-[0.5vmax] pb-[0.3vmax]">
-				<div className="h-[80%] w-[80%] flex justify-center items-center bg-[#FFD43B] rounded-md font-bold cursor-pointer text-[1.4vmax] text-[#242424]">
+				<div className="h-[80%] w-[80%] flex justify-center items-center bg-(--accent) rounded-md font-bold cursor-pointer text-[1.4vmax] text-(--bg)">
 					Show Details
 				</div>
 				<div className="h-[90%] w-[20%] flex justify-center items-center cursor-pointer">
-					<Bookmark color="#FFD43B" />
+					<Bookmark className="text-(--accent) w-4 lg:w-8" />
 				</div>
 			</div>
 		</div>

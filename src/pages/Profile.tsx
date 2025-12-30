@@ -4,7 +4,7 @@ import submissionJson from "../mocks/submissionCard.json";
 function Profile() {
 	return (
 		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax] overflow-auto">
-			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[20vmax] h-[60vmax] bg-[#2E2E2E] flex sm:flex-row flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
+			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[20vmax] h-[60vmax] bg-(--fore-bg) flex sm:flex-row flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
 				<div className="sm:h-[10vmax] sm:w-[20%] w-full h-[40%] rounded-[1.5vmax] flex justify-start items-start">
 					<img
 						className="h-full w-[30%] sm:w-full object-center object-cover rounded-[1.5vmax]"
@@ -12,10 +12,10 @@ function Profile() {
 						alt=""
 					/>
 				</div>
-				<div className="sm:w-[80%] w-full h-[10vmax] flex flex-col justify-center items-center text-[#7E7E7E] sm:gap-0 gap-[0.5vmax]">
+				<div className="sm:w-[80%] w-full h-[10vmax] flex flex-col justify-center items-center text-(--text-light) sm:gap-0 gap-[0.5vmax]">
 					<div
 						style={{ fontFamily: "GoldmanSansBd" }}
-						className="w-full h-fit flex items-end sm:text-[2vmax] text-[2.8vmax] sm:pt-0 pt-[8vmax] pl-[2vmax] text-white"
+						className="w-full h-fit flex items-end sm:text-[2vmax] text-[2.8vmax] sm:pt-0 pt-[8vmax] pl-[2vmax] text-(--text-heading)"
 					>
 						Sanchit Rathore
 					</div>
@@ -43,7 +43,7 @@ function Profile() {
 					/>
 				</div>
 			</div>
-			<div className="w-[80%] h-fit rounded-[1vmax] bg-[#2E2E2E] flex flex-wrap p-[2vmax] gap-[4vmax] items-center justify-center">
+			<div className="w-[80%] h-fit rounded-[1vmax] bg-(--fore-bg) flex flex-wrap p-[2vmax] gap-[4vmax] items-center justify-center mb-[2vmax]">
 				<div className="w-[22vmax] h-[26vmax]">
 					<SubmissionCard
 						companyLogoUrl={submissionJson.companyLogoUrl}
