@@ -10,7 +10,8 @@
 		"preview": "vite preview",
 		"format": "biome format . --write",
 		"check": "biome check . --write",
-		"prepare": "husky"
+		"prepare": "husky",
+		"generate": "pnpm --dir web-client generate"
 	},
 	"dependencies": {
 		"@mantine/core": "^8.3.10",
