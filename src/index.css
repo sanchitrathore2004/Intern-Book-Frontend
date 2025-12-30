@@ -41,9 +41,28 @@
 body {
 	margin: 0;
 	background-color: var(--bg);
-	color: var(--text);
+	color: var(--text-heading);
 	font-family: system-ui, sans-serif;
 	transition:
 		background 0.2s ease,
 		color 0.2s ease;
+}
+
+::-webkit-scrollbar {
+	width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: var(--line-color);
+	border-radius: 6px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+/* Firefox */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--line-color) transparent;
 }

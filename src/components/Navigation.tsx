@@ -1,6 +1,6 @@
 import { Bookmark, Moon, Sun } from "lucide-react";
-import darkAppIcon from "../assets/images/app_icon_dark.png";
-import lightAppIcon from "../assets/images/app_icon_light.png";
+import lightAppIcon from "../assets/images/app_icon_dark.png";
+import darkAppIcon from "../assets/images/app_icon_light.png";
 import { useTheme } from "../contexts/ThemeContext.tsx";
 
 interface NavigationBarProps {
@@ -10,7 +10,7 @@ interface NavigationBarProps {
 function Navigation(props: NavigationBarProps) {
 	const { theme, toggleTheme } = useTheme();
 	return (
-		<div className="w-full h-full flex justify-between items-center border-b border-(--border-color)">
+		<div className="w-full h-full flex justify-between items-center border-b border-(--line-color)">
 			<div className="w-[50%] h-full flex items-center gap-[1.7vmax]">
 				<div className="h-full w-fit flex items-center pl-[1.5vmax]">
 					<img
@@ -49,7 +49,7 @@ function Navigation(props: NavigationBarProps) {
             transition-all duration-200
             hover:shadow-[0_0_10px_rgba(255,255,255,0.15)]"
 				>
-					<Bookmark className="text-(--accent)" />
+					<Bookmark className="text-(--accent)" fill="var(--accent)" />
 				</div>
 				<div className="h-[2.9vmax] w-[3vmax] bg-(--bg) rounded-[0.6vmax]">
 					<img
@@ -65,7 +65,8 @@ function Navigation(props: NavigationBarProps) {
 						alt=""
 					/>
 				</div>
-				<div
+				<button
+					type="button"
 					onClick={toggleTheme}
 					className="h-[2.9vmax] w-[3vmax]
                     bg-(--bg)
@@ -76,13 +77,12 @@ function Navigation(props: NavigationBarProps) {
                     transition-all duration-200
                     hover:shadow-[0_0_10px_rgba(255,255,255,0.15)]"
 				>
-					{theme === "dark" ?
-                        (
-                            <Sun color="#BAB9B9" />
-                        ) : (
-                            <Moon color="#BAB9B9" />
-                        )}
-				</div>
+					{theme === "dark" ? (
+						<Sun color="var(--accent)" />
+					) : (
+						<Moon color="var(--accent)" />
+					)}
+				</button>
 			</div>
 		</div>
 	);

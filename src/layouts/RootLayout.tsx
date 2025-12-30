@@ -7,7 +7,7 @@ function RootLayout() {
 			<div className="w-full h-[12%]">
 				<Navigation profilePictureUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQn2-hFzsufsjhrUXE985YyMdX8YSYQ44kmQ&s" />
 			</div>
-			<main className="w-full h-[88%]">
+			<main className="w-full h-[88%] overflow-x-hidden">
 				<Outlet />
 			</main>
 		</div>
