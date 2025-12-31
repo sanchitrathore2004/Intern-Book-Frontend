@@ -1,7 +1,7 @@
 import { Bookmark, Moon, Search, Sun } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import lightAppIcon from "../assets/images/app_icon_dark.png";
-import darkAppIcon from "../assets/images/app_icon_light.png";
+import darkAppIcon from "../assets/images/app_icon_dark.png";
+import lightAppIcon from "../assets/images/app_icon_light.png";
 import { useTheme } from "../contexts/ThemeContext.tsx";
 
 interface SuggestionResponse{
