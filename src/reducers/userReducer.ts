@@ -1,11 +1,11 @@
-import type { User } from "../interfaces/UserInterface.ts";
+import type { UserDto } from "../../web-client/src/generated/index.ts";
 
 export type UserAction = {
 	type: "UPDATE_PROFILE";
-	payload: Partial<User>;
+	payload: Partial<UserDto>;
 };
 
-const userReducer = (state: User, action: UserAction) => {
+const userReducer = (state: UserDto, action: UserAction) => {
 	switch (action.type) {
 		case "UPDATE_PROFILE":
 			return {

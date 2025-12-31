@@ -1,10 +1,10 @@
 import type { Dispatch } from "react";
 import type { UserAction } from "../reducers/userReducer.ts";
 import * as React from "react";
-import type { User } from "../interfaces/UserInterface.ts";
+import type { UserDto } from "../../web-client/src/generated/index.ts";
 
 interface UserContextType {
-	user: User;
+	user: UserDto;
 	dispatch: Dispatch<UserAction>;
 }
 
