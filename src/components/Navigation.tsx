@@ -1,4 +1,4 @@
-import { Bookmark, Moon, Sun, Search } from "lucide-react";
+import { Bookmark, Moon, Search, Sun } from "lucide-react";
 import darkAppIcon from "../assets/images/app_icon_dark.png";
 import lightAppIcon from "../assets/images/app_icon_light.png";
 import { useTheme } from "../contexts/ThemeContext.tsx";
@@ -88,12 +88,11 @@ function Navigation(props: NavigationBarProps) {
                     transition-all duration-200
                     hover:shadow-[0_0_10px_rgba(var(--shadow-color))]"
 				>
-					{theme === "dark" ?
-                        (
-                            <Sun className="w-3 sm:w-6 text-[#BAB9B9]" />
-                        ) : (
-                            <Moon className="w-3 sm:w-6 text-[#BAB9B9]" />
-                        )}
+					{theme === "dark" ? (
+						<Sun className="w-3 sm:w-6 text-[#BAB9B9]" />
+					) : (
+						<Moon className="w-3 sm:w-6 text-[#BAB9B9]" />
+					)}
 				</div>
 			</div>
 		</div>

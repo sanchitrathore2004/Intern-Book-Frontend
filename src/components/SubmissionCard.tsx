@@ -13,8 +13,10 @@ interface SubmissionCardProps {
 
 function SubmissionCard(props: SubmissionCardProps) {
 	return (
-		<div className="w-full h-full flex flex-col justify-center items-center rounded-[0.6vmax] bg-(--bg) transition-all duration-200
-                    hover:shadow-[0_0_20px_rgb(var(--shadow-color))]">
+		<div
+			className="w-full h-full flex flex-col justify-center items-center rounded-[0.6vmax] bg-(--bg) transition-all duration-200
+                    hover:shadow-[0_0_20px_rgb(var(--shadow-color))]"
+		>
 			<div className="w-full h-[40%] flex justify-center items-center">
 				<img
 					className="h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-fill"
