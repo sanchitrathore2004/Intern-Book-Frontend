@@ -1,12 +1,12 @@
 import { useReducer } from "react";
 import UserContext from "../contexts/UserContext.tsx";
-import type { User } from "../interfaces/UserInterface.ts";
 import userReducer from "../reducers/userReducer.ts";
+import type { UserDto } from "../../web-client/src/generated/index.ts";
 
 const res = await fetch('/mocks/userResponse.json');
 const data = await res.json();
 
-const initialUser: User = {
+const initialUser: UserDto = {
 	id: data.id,
 	name: data.name,
 	department: data.department,
