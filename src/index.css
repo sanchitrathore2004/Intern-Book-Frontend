@@ -1,68 +1,96 @@
-:root {
-	font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-	line-height: 1.5;
+@import url("https://fonts.googleapis.com/css2?family=Italiana&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Galdeano&display=swap");
+@import "tailwindcss";
+
+@font-face {
+	font-family: "GoldmanSansBd";
+	src: url("./assets/fonts/GoldmanSans_Bd.ttf") format("truetype");
 	font-weight: 400;
-
-	color-scheme: light dark;
-	color: rgba(255, 255, 255, 0.87);
-	background-color: #242424;
-
-	font-synthesis: none;
-	text-rendering: optimizeLegibility;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+	font-style: normal;
+	font-display: swap;
 }
 
-a {
-	font-weight: 500;
-	color: #646cff;
-	text-decoration: inherit;
+@font-face {
+	font-family: "GoldmanSansLt";
+	src: url("./assets/fonts/GoldmanSans_Lt.ttf") format("truetype");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
 }
-a:hover {
-	color: #535bf2;
+
+.font-italiana {
+	font-family: "Italiana", serif;
+}
+
+.font-galdeano {
+	font-family: "Galdeano", sans-serif;
+}
+
+:root {
+	--bg: #f8f9fa;
+	--fore-bg: #ffffff;
+	--accent: #01be94;
+	--accent-bg: #d9f5ef;
+	--text-heading: #000000;
+	--text-light: #868e96;
+	--border-color: #868e96;
+	--line-color: #dee2e6;
+	--shadow-color: rgba(134, 142, 150, 0.5);
+}
+
+[data-theme="dark"] {
+	--bg: #242424;
+	--fore-bg: #2e2e2e;
+	--accent: #ffd43b;
+	--accent-bg: #443e28;
+	--text-heading: #ffffff;
+	--text-light: #7e7e7e;
+	--border-color: #585858;
+	--line-color: #424242;
+	--shadow-color: rgba(23, 23, 23, 0.75);
 }
 
 body {
 	margin: 0;
-	display: flex;
-	place-items: center;
-	min-width: 320px;
-	min-height: 100vh;
+	background-color: var(--bg);
+	color: var(--text-heading);
+	font-family: system-ui, sans-serif;
+	transition:
+		background 0.2s ease,
+		color 0.2s ease;
 }
 
-h1 {
-	font-size: 3.2em;
-	line-height: 1.1;
+html,
+body,
+#root {
+	height: 100%;
+	overflow: hidden;
 }
 
-button {
-	border-radius: 8px;
-	border: 1px solid transparent;
-	padding: 0.6em 1.2em;
-	font-size: 1em;
-	font-weight: 500;
-	font-family: inherit;
-	background-color: #1a1a1a;
-	cursor: pointer;
-	transition: border-color 0.25s;
-}
-button:hover {
-	border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-	outline: 4px auto -webkit-focus-ring-color;
+.no-scrollbar::-webkit-scrollbar {
+	display: none;
 }
 
-@media (prefers-color-scheme: light) {
-	:root {
-		color: #213547;
-		background-color: #ffffff;
-	}
-	a:hover {
-		color: #747bff;
-	}
-	button {
-		background-color: #f9f9f9;
-	}
+.no-scrollbar {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+	width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: var(--line-color);
+	border-radius: 6px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+/* Firefox */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--line-color) transparent;
 }
