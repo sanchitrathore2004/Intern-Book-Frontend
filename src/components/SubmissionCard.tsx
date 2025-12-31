@@ -14,8 +14,7 @@ interface SubmissionCardProps {
 function SubmissionCard(props: SubmissionCardProps) {
 	return (
 		<div
-			className="w-full h-full flex flex-col justify-center items-center rounded-[0.6vmax] bg-(--bg) transition-all duration-200
-                    hover:shadow-[0_0_20px_rgb(var(--shadow-color))]"
+			className="w-full h-full flex flex-col justify-center items-center rounded-[0.6vmax] bg-(--bg) transition-all duration-200 hover:shadow-[0_0_8px_var(--shadow-color)]"
 		>
 			<div className="w-full h-[40%] flex justify-center items-center">
 				<img
@@ -31,7 +30,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 				>
 					{props.companyName}
 				</div>
-				<div className="w-full h-[40%] flex items-start text-[#6A6A6A] font-light text-[1.2vmax] pl-[0.5vmax]">
+				<div className="w-full h-[40%] flex items-start text-(--text-light) font-light text-[1.2vmax] pl-[0.5vmax]">
 					{props.userName} . {props.type} . {props.role} . {props.year}
 				</div>
 			</div>

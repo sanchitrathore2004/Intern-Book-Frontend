@@ -35,7 +35,7 @@
 	--text-light: #868e96;
 	--border-color: #868e96;
 	--line-color: #dee2e6;
-	--shadow-color: 0 0 0 / 0.35;
+	--shadow-color: rgba(134, 142, 150, 0.5);
 }
 
 [data-theme="dark"] {
@@ -47,7 +47,7 @@
 	--text-light: #7e7e7e;
 	--border-color: #585858;
 	--line-color: #424242;
-	--shadow-color: 255 255 255 / 0.25;
+	--shadow-color: rgba(23, 23, 23, 0.75);
 }
 
 body {

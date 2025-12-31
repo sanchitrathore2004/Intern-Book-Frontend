@@ -10,7 +10,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<Login/>}/>
       <Route element={<RootLayout />}>
-        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
 				<Route path="/submission" element={<Submission />} />
       </Route>
