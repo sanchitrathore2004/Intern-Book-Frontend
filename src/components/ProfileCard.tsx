@@ -12,7 +12,7 @@ const ProfileCard = () => {
 					<ProfilePicture />
 				</div>
 
-				<button className="w-8 h-8 bg-(--accent) text-black rounded-full flex items-center justify-center text-lg hover:scale-105 transition">
+				<button className="w-8 h-8 bg-(--accent) text-(--fore-bg) rounded-full flex items-center justify-center text-lg hover:scale-105 transition">
 					+
 				</button>
 			</div>
@@ -22,14 +22,14 @@ const ProfileCard = () => {
 					{user.name}
 				</h3>
 
-				<div className="text-sm text-zinc-400 space-y-2">
+				<div className="text-sm space-y-2">
 					<div className="flex justify-between">
-						<span className="text-zinc-500">Favourites</span>
+						<span className="text-(--text-light)">Favourites</span>
 						<span className="text-(--accent) font-medium">3</span>
 					</div>
 
 					<div className="flex justify-between">
-						<span className="text-zinc-500">Submissions</span>
+						<span className="text-(--text-light)">Submissions</span>
 						<span className="text-(--accent) font-medium">2</span>
 					</div>
 				</div>

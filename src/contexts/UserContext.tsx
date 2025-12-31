@@ -1,13 +1,14 @@
-import * as React from "react";
 import type { Dispatch } from "react";
-import type { User } from "../interfaces/UserInterface.ts";
 import type { UserAction } from "../reducers/userReducer.ts";
+import * as React from "react";
+import type { User } from "../interfaces/UserInterface.ts";
 
 interface UserContextType {
 	user: User;
 	dispatch: Dispatch<UserAction>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const UserContext = React.createContext<UserContextType>(
 	{} as UserContextType,
 );

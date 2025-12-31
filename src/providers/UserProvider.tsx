@@ -1,14 +1,19 @@
 import { useReducer } from "react";
-import react from "../assets/react.svg";
 import UserContext from "../contexts/UserContext.tsx";
 import type { User } from "../interfaces/UserInterface.ts";
 import userReducer from "../reducers/userReducer.ts";
 
+const res = await fetch('/mocks/userResponse.json');
+const data = await res.json();
+
 const initialUser: User = {
-	id: 1,
-	name: "Abhishek Jha",
-	department: "ICE",
-	profileUrl: react,
+	id: data.id,
+	name: data.name,
+	department: data.department,
+	profileUrl: data.profileUrl,
+	email: data.email,
+	year: data.year,
+	degree: data.degree
 };
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
