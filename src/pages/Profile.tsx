@@ -45,22 +45,8 @@ function Profile() {
 					/>
 				</div>
 			</div>
-			<div className="w-[80%] h-fit rounded-[1vmax] bg-(--fore-bg) flex flex-wrap p-[2vmax] gap-[4vmax] items-center justify-center mb-[2vmax]">
-				{submissionJson.map((submission, i) => (
-					<div key={submission.id ?? i} className="w-[22vmax] h-[26vmax]">
-						<SubmissionCard
-							id={submission.id}
-							companyLogoUrl={submission.companyLogoUrl}
-							companyName={submission.companyName}
-							role={submission.role}
-							tags={submission.tags}
-							type={submission.type}
-							userName={submission.userName}
-							year={submission.year}
-							isFavourite={submission.isFavourite}
-						/>
-					</div>
-				))}
+			<div className="w-[80%] h-fit rounded-[1vmax] bg-(--fore-bg) flex flex-wrap p-[2vmax] gap-[4vmax] items-center sm:justify-start justify-center mb-[2vmax]">
+				
 			</div>
 		</div>
 	);

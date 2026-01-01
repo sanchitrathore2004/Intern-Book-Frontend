@@ -15,7 +15,7 @@ interface SubmissionCardProps {
 	userName: string;
 	type: string;
 	role: string;
-	year: string;
+	year: number;
 	tags: string[];
 	companyLogoUrl: string;
 	isFavourite: boolean;
@@ -48,7 +48,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 		<div className="w-full h-full flex flex-col justify-between items-center p-1 rounded-[0.6vmax] bg-(--bg) transition-all duration-200 hover:shadow-[0_0_8px_var(--shadow-color)]">
 			<div className="w-full max-h-[40%] flex justify-center items-center">
 				<img
-					className="h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-fill"
+					className="h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-contain"
 					src={props.companyLogoUrl}
 					alt=""
 				/>
@@ -65,8 +65,9 @@ function SubmissionCard(props: SubmissionCardProps) {
 					{props.year}
 				</div>
 			</div>
-			<div className="w-full h-fit flex flex-wrap gap-[0.3vmax] pl-[0.5vmax]">
-				{props.tags.map((tag) => {
+			<div className="w-full h-[18%] flex flex-wrap gap-[0.5vmax] pl-[0.5vmax]">
+				{props.tags.map((tag, index) => {
+					if(index>4) return ;
 					return (
 						<div key={tag} className="h-fit">
 							<Tags tagName={tag} />
