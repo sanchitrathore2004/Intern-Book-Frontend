@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect } from "react"
-import { UserControllerApi, type UserProfileResponseDto } from "../../web-client/src/generated"
+import { UserControllerApi, type GetUserResponseDto, type UserProfileResponseDto } from "../../web-client/src/generated"
 import { apiConfig } from "../utils/apiConfig"
 import UserContext from "../contexts/UserContext"
 
@@ -9,8 +9,8 @@ const useRestoreUser = () => {
     const userRestore = useCallback(() => {
         const userControllerApi = new UserControllerApi(apiConfig);
 
-        userControllerApi.getUserProfile()
-            .then((response: UserProfileResponseDto) => {
+        userControllerApi.getCurrentUserProfile()
+            .then((response: GetUserResponseDto) => {
              dispatch({type: "UPDATE_PROFILE", payload: response})
             }).catch((error) => {
                 console.log(error);

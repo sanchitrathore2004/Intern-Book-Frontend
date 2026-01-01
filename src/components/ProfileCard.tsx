@@ -28,12 +28,12 @@ const ProfileCard = () => {
 				<div className="text-sm space-y-2">
 					<div className="flex justify-between">
 						<span className="text-(--text-light)">Favourites</span>
-						<span className="text-(--accent) font-medium">3</span>
+						<span className="text-(--accent) font-medium">{user.favouritesCount}</span>
 					</div>
 
 					<div className="flex justify-between">
 						<span className="text-(--text-light)">Submissions</span>
-						<span className="text-(--accent) font-medium">2</span>
+						<span className="text-(--accent) font-medium">{user.submissionsCount}</span>
 					</div>
 				</div>
 			</div>
