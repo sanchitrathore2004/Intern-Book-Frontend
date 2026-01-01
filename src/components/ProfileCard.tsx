@@ -12,7 +12,10 @@ const ProfileCard = () => {
 					<ProfilePicture />
 				</div>
 
-				<button className="w-8 h-8 bg-(--accent) text-(--fore-bg) rounded-full flex items-center justify-center text-lg hover:scale-105 transition">
+				<button
+					type="button"
+					className="w-8 h-8 bg-(--accent) text-(--fore-bg) rounded-full flex items-center justify-center text-lg hover:scale-105 transition"
+				>
 					+
 				</button>
 			</div>

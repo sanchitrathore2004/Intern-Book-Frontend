@@ -1,9 +1,9 @@
 import { useReducer } from "react";
+import type { UserDto } from "../../web-client/src/generated/index.ts";
 import UserContext from "../contexts/UserContext.tsx";
 import userReducer from "../reducers/userReducer.ts";
-import type { UserDto } from "../../web-client/src/generated/index.ts";
 
-const res = await fetch('/mocks/userResponse.json');
+const res = await fetch("/mocks/userResponse.json");
 const data = await res.json();
 
 const initialUser: UserDto = {
@@ -13,7 +13,7 @@ const initialUser: UserDto = {
 	profileUrl: data.profileUrl,
 	email: data.email,
 	year: data.year,
-	degree: data.degree
+	degree: data.degree,
 };
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {

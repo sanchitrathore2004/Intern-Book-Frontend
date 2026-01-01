@@ -5,7 +5,11 @@ const ProfilePicture = () => {
 	const { user } = useContext(UserContext);
 	return (
 		<div className="w-full h-full rounded-xl overflow-hidden bg-(--fore-bg)">
-			<img src={user.profileUrl} alt={user.profileUrl} className="w-full h-full object-cover" />
+			<img
+				src={user.profileUrl}
+				alt={user.profileUrl}
+				className="w-full h-full object-cover"
+			/>
 		</div>
 	);
 };
