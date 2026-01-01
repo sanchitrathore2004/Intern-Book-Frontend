@@ -7,6 +7,7 @@ import {
 	UserControllerApi,
 } from "../../web-client/src/generated";
 import { apiConfig } from "../utils/apiConfig";
+import { YearConfig } from "../utils/yearConfig";
 import Tags from "./Tags";
 
 interface SubmissionCardProps {
@@ -20,6 +21,12 @@ interface SubmissionCardProps {
 	companyLogoUrl: string;
 	isFavourite: boolean;
 }
+
+const getYear = (yr: string | undefined): string | undefined => {
+	if (yr === undefined) return "NA";
+	const yearConfig = new YearConfig();
+	return yearConfig.getYear(yr);
+};
 
 function SubmissionCard(props: SubmissionCardProps) {
 	const [isFavourite, setIsFavourite] = useState(props.isFavourite);
@@ -62,7 +69,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 				</div>
 				<div className="w-full max-h-[40%] flex items-start text-(--text-light) font-light text-[1.2vmax] pl-[0.5vmax]">
 					{props.userName.split(" ")[0]} . {props.type} . {props.role} .{" "}
-					{props.year}
+					{getYear(String(props.year))}
 				</div>
 			</div>
 			<div className="w-full h-[18%] flex flex-wrap gap-[0.5vmax] pl-[0.5vmax]">

@@ -18,12 +18,12 @@ function AppRoutes() {
 				<Route element={<ProtectedRoute />}>
 					<Route path="/home" element={<Home />} />
 					<Route path="/profile" element={<Profile />} />
-					<Route path="/submission" element={<Submission />} />
+					<Route path="/submission/:submission_id" element={<Submission />} />
 					{/*·companyId·will·be·removed·from·here·after·final·integration·*/}
-					<Route path="/company" element={<Company companyId={11} />} />
+					<Route path="/company/:company_id" element={<Company />} />
 				</Route>
 			</Route>
-			<Route path="*" />
+			<Route path="*" element={<ErrorPage />} />
 		</Routes>
 	);
 }

@@ -1,20 +1,24 @@
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
 	type SubmissionCardResponseDto,
 	UserControllerApi,
 	type UserProfileResponseDto,
-	UserProfileResponseDtoDegreeEnum,
+	type UserProfileResponseDtoDegreeEnum,
 } from "../../web-client/src/generated";
 import ProfilePicture from "../components/ProfilePicture";
 import SubmissionCard from "../components/SubmissionCard";
 import { apiConfig } from "../utils/apiConfig";
+import { DepartmentConfig } from "../utils/departmentConfig";
+import { YearConfig } from "../utils/yearConfig";
 
 function Profile() {
+	const navigate = useNavigate();
 	const [id, setId] = useState<number | undefined>(undefined);
 	const [name, setName] = useState<string | undefined>(undefined);
 	const [email, setEmail] = useState<string | undefined>(undefined);
 	const [department, setDepartment] = useState<string | undefined>(undefined);
-	const [year, setYear] = useState<number | undefined>(undefined);
+	const [year, setYear] = useState<string | undefined>(undefined);
 	const [degree, setDegree] = useState<
 		UserProfileResponseDtoDegreeEnum | undefined
 	>(undefined);
@@ -22,19 +26,42 @@ function Profile() {
 	const [mySubmissions, setMySubmissions] = useState<
 		SubmissionCardResponseDto[]
 	>([]);
+	const [favouriteCompanyLogoUrl, setFavouriteCompanyLogoUrl] = useState<
+		string | undefined
+	>(undefined);
+	const [favouriteCompanyId, setFavouriteCompanyId] = useState<
+		number | undefined
+	>(undefined);
+
+	const getDepartment = useCallback(
+		(dept: string | undefined): string | undefined => {
+			if (dept === undefined) return "NA";
+			const departmentConfig = new DepartmentConfig();
+			return departmentConfig.getDepartment(dept);
+		},
+		[],
+	);
+
+	const getYear = useCallback((yr: string | undefined): string | undefined => {
+		if (yr === undefined) return "NA";
+		const yearConfig = new YearConfig();
+		return yearConfig.getYear(yr);
+	}, []);
 
 	const mapResponseDtoToStates = useCallback(
 		(response: UserProfileResponseDto) => {
 			setId(response.id);
 			setName(response.name);
 			setEmail(response.email);
-			setDepartment(response.department);
-			setYear(response.year);
+			setDepartment(getDepartment(response.department));
+			setYear(getYear(String(response.year)));
 			setDegree(response.degree);
 			setProfileUrl(response.profileUrl);
 			setMySubmissions(response.mySubmissions ?? []);
+			setFavouriteCompanyLogoUrl(response.favouriteCompany?.logoUrl);
+			setFavouriteCompanyId(response.favouriteCompany?.id);
 		},
-		[],
+		[getYear, getDepartment],
 	);
 
 	const fetchProfileDetails = useCallback(() => {
@@ -43,12 +70,17 @@ function Profile() {
 		userControllerApi
 			.getUserProfile()
 			.then((response: UserProfileResponseDto) => {
+				console.log(response);
 				mapResponseDtoToStates(response);
 			})
 			.catch((error) => {
 				console.log(error);
 			});
 	}, [mapResponseDtoToStates]);
+
+	const handleDreamCompanyClick = () => {
+		navigate(`/company/${favouriteCompanyId}`);
+	};
 
 	useEffect(() => {
 		fetchProfileDetails();
@@ -82,14 +114,20 @@ function Profile() {
 					</div>
 				</div>
 				<div className="sm:w-[20%] w-full h-full flex flex-col items-end justify-end gap-[0.7vmax]">
-					<div className="font-light text-[#828282] text-[1vmax]">
+					<div className="font-light text-[#828282] pr-[0.4vmax] text-[1vmax]">
 						Dream Company
 					</div>
-					<img
-						className="w-[5vmax] h-[3vmax] pr-[1.7vmax]"
-						src="https://i.pinimg.com/originals/01/ca/da/01cada77a0a7d326d85b7969fe26a728.jpg"
-						alt=""
-					/>
+					<button
+						type="button"
+						onClick={handleDreamCompanyClick}
+						className="cursor-pointer bg-transparent border-none p-0"
+					>
+						<img
+							className="w-[7vmax] h-[3vmax] pr-[1vmax] object-contain"
+							src={favouriteCompanyLogoUrl}
+							alt="Dream Company"
+						/>
+					</button>
 				</div>
 			</div>
 			<div className="w-[80%] h-fit rounded-[1vmax] bg-(--fore-bg) flex flex-wrap p-[2vmax] gap-[4vmax] items-center sm:justify-start justify-center mb-[2vmax]">

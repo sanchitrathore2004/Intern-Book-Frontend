@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import type {
 	CompanyPageResponseDto,
 	SubmissionCardResponseDto,
 } from "../../web-client/src/generated";
 import { CompanyControllerApi } from "../../web-client/src/generated/apis";
 import SubmissionCard from "../components/SubmissionCard";
-import type { CompanyPageProps } from "../interfaces/CompanyPage";
 import { apiConfig } from "../utils/apiConfig";
 
-function Company(props: CompanyPageProps) {
+function Company() {
+	const { company_id } = useParams<{ company_id: string }>();
 	const [id, setId] = useState<number | undefined>(undefined);
 	const [name, setName] = useState<string>("");
 	const [logoUrl, setLogoUrl] = useState<string>("");
@@ -35,10 +36,11 @@ function Company(props: CompanyPageProps) {
 	);
 
 	const fetchCompanyDetails = useCallback(() => {
+		if (company_id === undefined) return;
 		const companyControllerApi = new CompanyControllerApi(apiConfig);
 		companyControllerApi
 			.getCompany({
-				companyId: props.companyId,
+				companyId: parseInt(company_id),
 			})
 			.then((response: CompanyPageResponseDto) => {
 				mapResponseDtoToStates(response);
@@ -47,7 +49,7 @@ function Company(props: CompanyPageProps) {
 				// add a toast over here that the company cannot be fetched at this point
 				console.log(error);
 			});
-	}, [mapResponseDtoToStates, props.companyId]);
+	}, [mapResponseDtoToStates, company_id]);
 
 	useEffect(() => {
 		fetchCompanyDetails();
@@ -56,7 +58,11 @@ function Company(props: CompanyPageProps) {
 		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax] overflow-auto">
 			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[50vmax] h-[60vmax] bg-(--fore-bg) flex flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
 				<div className="w-full h-[50%] flex justify-start items-center p-[0.8vmax]">
-					<img className="w-[25vmax] h-[12vmax]" src={logoUrl} alt="" />
+					<img
+						className="w-[25vmax] h-[12vmax] object-contain"
+						src={logoUrl}
+						alt=""
+					/>
 				</div>
 				<div
 					style={{ fontFamily: "GoldmanSansBd" }}
