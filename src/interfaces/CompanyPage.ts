@@ -1,3 +1,3 @@
 export interface CompanyPageProps {
-    companyId: number;
+	companyId: number;
 }

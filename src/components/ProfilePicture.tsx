@@ -1,13 +1,11 @@
-import { useContext } from "react";
-import UserContext from "../contexts/UserContext";
+import type { ProfilePictureProps } from "../interfaces/ProfilePicture";
 
-const ProfilePicture = () => {
-	const { user } = useContext(UserContext);
+const ProfilePicture = (props: ProfilePictureProps) => {
 	return (
 		<div className="w-full h-full rounded-xl overflow-hidden bg-(--fore-bg)">
 			<img
-				src={user.profileUrl}
-				alt={user.profileUrl}
+				src={props.profileUrl}
+				alt={props.profileUrl}
 				className="w-full h-full object-cover"
 			/>
 		</div>
