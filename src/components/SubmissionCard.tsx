@@ -7,6 +7,7 @@ import {
 	UserControllerApi,
 } from "../../web-client/src/generated";
 import { apiConfig } from "../utils/apiConfig";
+import { YearConfig } from "../utils/yearConfig";
 import Tags from "./Tags";
 
 interface SubmissionCardProps {
@@ -15,11 +16,17 @@ interface SubmissionCardProps {
 	userName: string;
 	type: string;
 	role: string;
-	year: string;
+	year: number;
 	tags: string[];
 	companyLogoUrl: string;
 	isFavourite: boolean;
 }
+
+const getYear = (yr: string | undefined): string | undefined => {
+	if (yr === undefined) return "NA";
+	const yearConfig = new YearConfig();
+	return yearConfig.getYear(yr);
+};
 
 function SubmissionCard(props: SubmissionCardProps) {
 	const [isFavourite, setIsFavourite] = useState(props.isFavourite);
@@ -48,7 +55,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 		<div className="w-full h-full flex flex-col justify-between items-center p-1 rounded-[0.6vmax] bg-(--bg) transition-all duration-200 hover:shadow-[0_0_8px_var(--shadow-color)]">
 			<div className="w-full max-h-[40%] flex justify-center items-center">
 				<img
-					className="h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-fill"
+					className="h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-contain"
 					src={props.companyLogoUrl}
 					alt=""
 				/>
@@ -62,10 +69,10 @@ function SubmissionCard(props: SubmissionCardProps) {
 				</div>
 				<div className="w-full max-h-[40%] flex items-start text-(--text-light) font-light text-[1.2vmax] pl-[0.5vmax]">
 					{props.userName.split(" ")[0]} . {props.type} . {props.role} .{" "}
-					{props.year}
+					{getYear(String(props.year))}
 				</div>
 			</div>
-			<div className="w-full h-fit flex flex-wrap gap-[0.3vmax] pl-[0.5vmax]">
+			<div className="w-full h-[18%] flex flex-wrap gap-[0.5vmax] pl-[0.5vmax]">
 				{props.tags.map((tag) => {
 					return (
 						<div key={tag} className="h-fit">
