@@ -17,7 +17,7 @@ function AppRoutes() {
 			<Route element={<RootLayout />}>
 				<Route element={<ProtectedRoute />}>
 					<Route path="/home" element={<Home />} />
-					<Route path="/profile/:user_id" element={<Profile/>}/>
+					<Route path="/profile/:user_id" element={<Profile />} />
 					<Route path="/submission/:submission_id" element={<Submission />} />
 					{/*·companyId·will·be·removed·from·here·after·final·integration·*/}
 					{/* Dont remove company_id I will use it to direct user from submission to company page */}

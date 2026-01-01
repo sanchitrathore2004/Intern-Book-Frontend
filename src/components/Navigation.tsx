@@ -24,7 +24,7 @@ function Navigation(props: NavigationBarProps) {
 	const [showDropdown, setShowDropdown] = useState(false);
 	const desktopInputRef = useRef<HTMLInputElement | null>(null);
 	const modalInputRef = useRef<HTMLInputElement | null>(null);
-	const {user} = useContext(UserContext);
+	const { user } = useContext(UserContext);
 	const navigate = useNavigate();
 
 	// debounce + fetch suggestions
