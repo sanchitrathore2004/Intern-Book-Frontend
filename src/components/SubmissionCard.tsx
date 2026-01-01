@@ -66,8 +66,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 				</div>
 			</div>
 			<div className="w-full h-[18%] flex flex-wrap gap-[0.5vmax] pl-[0.5vmax]">
-				{props.tags.map((tag, index) => {
-					if (index > 4) return null;
+				{props.tags.map((tag) => {
 					return (
 						<div key={tag} className="h-fit">
 							<Tags tagName={tag} />
