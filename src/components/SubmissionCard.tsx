@@ -1,5 +1,6 @@
 import { Bookmark } from "lucide-react";
 import { useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
 	type AddToFavouritesRequest,
 	type ToggleResponseDto,
@@ -22,6 +23,7 @@ interface SubmissionCardProps {
 
 function SubmissionCard(props: SubmissionCardProps) {
 	const [isFavourite, setIsFavourite] = useState(props.isFavourite);
+	const navigate = useNavigate();
 
 	const handleToggle = useCallback(async () => {
 		try {
@@ -37,6 +39,10 @@ function SubmissionCard(props: SubmissionCardProps) {
 			console.error(er);
 		}
 	}, [props]);
+
+	const handleShowDetials = () => {
+		navigate(`/submission/${props.id}`);
+	};
 
 	return (
 		<div className="w-full h-full flex flex-col justify-between items-center p-1 rounded-[0.6vmax] bg-(--bg) transition-all duration-200 hover:shadow-[0_0_8px_var(--shadow-color)]">
@@ -71,6 +77,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 			<div className="w-full h-[12%] justify-center flex items-end pl-[0.5vmax] pb-[0.3vmax]">
 				<button
 					type="button"
+					onClick={handleShowDetials}
 					className="h-[80%] w-[80%] flex justify-center items-center bg-(--accent) rounded-md font-bold cursor-pointer text-[1.4vmax] text-(--bg)"
 				>
 					Show Details

@@ -1,10 +1,11 @@
 import { Route, Routes } from "react-router-dom";
 import RootLayout from "../layouts/RootLayout";
 import DAuthCallback from "../pages/DauthCallback.tsx";
+import ErrorPage from "../pages/ErrorPage.tsx";
 import Home from "../pages/Home.tsx";
 import Login from "../pages/Login";
 import Profile from "../pages/Profile";
-import { Submission } from "../pages/Submission.tsx";
+import Submission from "../pages/Submission.tsx";
 import ProtectedRoute from "./ProtectedRoute.tsx";
 
 function AppRoutes() {
@@ -16,10 +17,10 @@ function AppRoutes() {
 				<Route element={<ProtectedRoute />}>
 					<Route path="/home" element={<Home />} />
 					<Route path="/profile" element={<Profile />} />
-					<Route path="/submission" element={<Submission />} />
+					<Route path="/submission/:submission_id" element={<Submission />} />
 				</Route>
 			</Route>
-			<Route path="*" />
+			<Route path="*" element={<ErrorPage />} />
 		</Routes>
 	);
 }
