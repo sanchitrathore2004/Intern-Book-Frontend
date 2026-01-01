@@ -15,7 +15,7 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 			<div className="hidden md:flex bg-(--fore-bg) p-4 rounded-[1.5em]  items-center gap-8">
 				<div>
 					<div className="border border-(--border-color) rounded-[1.5em] max-w-64 min-w-32 overflow-hidden">
-						<ProfilePicture/>
+						<ProfilePicture />
 					</div>
 				</div>
 				<div className="text-(--text-light) flex flex-col gap-0 justify-center">
