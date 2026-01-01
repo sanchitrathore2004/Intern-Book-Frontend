@@ -1,8 +1,16 @@
+import { useEffect, useState } from "react";
 import ProfileSidebar from "../components/ProfileSideBar";
 import SubmissionCard from "../components/SubmissionCard";
 import submissionJson from "../mocks/submissionCard.json";
 
 const Home = () => {
+	const [favourites, setFavourites] = useState();
+	useEffect(()=>{
+		const getFavourites =()=>{
+
+		}
+	})
+
 	return (
 		<div className="w-full h-full bg-(--bg) text-(--text-heading) flex justify-center">
 			<div className="max-w-368 w-full h-full px-[3vmax] flex gap-[3vmax]">
