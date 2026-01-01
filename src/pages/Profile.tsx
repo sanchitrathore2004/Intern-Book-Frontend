@@ -1,8 +1,8 @@
 import { useContext } from "react";
+import ProfilePicture from "../components/ProfilePicture";
 import SubmissionCard from "../components/SubmissionCard";
 import UserContext from "../contexts/UserContext";
 import submissionJson from "../mocks/submissionCard.json";
-import ProfilePicture from "../components/ProfilePicture";
 
 function Profile() {
 	const { user } = useContext(UserContext);
@@ -11,7 +11,7 @@ function Profile() {
 			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[20vmax] h-[60vmax] bg-(--fore-bg) flex sm:flex-row flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
 				<div className="sm:h-[10vmax] sm:w-[20%] w-full h-[40%] rounded-[1.5vmax] flex justify-start items-start">
 					<div className="h-full w-[30%] sm:w-full object-center object-cover rounded-[1.5vmax]">
-						<ProfilePicture/>
+						<ProfilePicture />
 					</div>
 				</div>
 				<div className="sm:w-[80%] w-full h-[10vmax] flex flex-col justify-center items-center text-(--text-light) sm:gap-0 gap-[0.5vmax]">
@@ -46,39 +46,21 @@ function Profile() {
 				</div>
 			</div>
 			<div className="w-[80%] h-fit rounded-[1vmax] bg-(--fore-bg) flex flex-wrap p-[2vmax] gap-[4vmax] items-center justify-center mb-[2vmax]">
-				<div className="w-[22vmax] h-[26vmax]">
-					<SubmissionCard
-						companyLogoUrl={submissionJson.companyLogoUrl}
-						companyName={submissionJson.companyName}
-						role={submissionJson.role}
-						tags={submissionJson.tags}
-						type={submissionJson.type}
-						userName={submissionJson.userName}
-						year={submissionJson.year}
-					/>
-				</div>
-				<div className="w-[22vmax] h-[26vmax]">
-					<SubmissionCard
-						companyLogoUrl={submissionJson.companyLogoUrl}
-						companyName={submissionJson.companyName}
-						role={submissionJson.role}
-						tags={submissionJson.tags}
-						type={submissionJson.type}
-						userName={submissionJson.userName}
-						year={submissionJson.year}
-					/>
-				</div>
-				<div className="w-[22vmax] h-[26vmax]">
-					<SubmissionCard
-						companyLogoUrl={submissionJson.companyLogoUrl}
-						companyName={submissionJson.companyName}
-						role={submissionJson.role}
-						tags={submissionJson.tags}
-						type={submissionJson.type}
-						userName={submissionJson.userName}
-						year={submissionJson.year}
-					/>
-				</div>
+				{submissionJson.map((submission, i) => (
+					<div key={submission.id ?? i} className="w-[22vmax] h-[26vmax]">
+						<SubmissionCard
+							id={submission.id}
+							companyLogoUrl={submission.companyLogoUrl}
+							companyName={submission.companyName}
+							role={submission.role}
+							tags={submission.tags}
+							type={submission.type}
+							userName={submission.userName}
+							year={submission.year}
+							isFavourite={submission.isFavourite}
+						/>
+					</div>
+				))}
 			</div>
 		</div>
 	);

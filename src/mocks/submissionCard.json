@@ -1,9 +1,105 @@
-{
-	"companyName": "SAP Labs",
-	"userName": "Sanchit Rathore",
-	"type": "INTERN",
-	"role": "SDE",
-	"year": "2027",
-	"tags": ["STIPEND", "CTC", "PI EXPERIENCE", "MISTAKES", "SCHEDULE"],
-	"companyLogoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn7rzmmlVp_LvPyfQDVTWqGZVNhogkyEBUNA&s"
-}
+[
+	{
+		"id": 1,
+		"companyName": "Arcesium",
+		"userName": "Champak",
+		"type": "INTERN",
+		"role": "SDE",
+		"year": "2027",
+		"tags": ["STIPEND", "CTC", "PI EXPERIENCE", "MISTAKES"],
+		"companyLogoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn7rzmmlVp_LvPyfQDVTWqGZVNhogkyEBUNA&s",
+		"isFavourite": false
+	},
+	{
+		"id": 2,
+		"companyName": "Google",
+		"userName": "Tulsyan Ji",
+		"type": "PLACED",
+		"role": "SDE-1",
+		"year": "2027",
+		"tags": ["STIPEND", "CTC", "PI EXPERIENCE", "SCHEDULE", "BENEFITS"],
+		"companyLogoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn7rzmmlVp_LvPyfQDVTWqGZVNhogkyEBUNA&s",
+		"isFavourite": false
+	},
+	{
+		"id": 3,
+		"companyName": "Microsoft",
+		"userName": "Subashree",
+		"type": "INTERN",
+		"role": "MTS",
+		"year": "2027",
+		"tags": ["STIPEND", "PI EXPERIENCE", "RESOURCES", "SCHEDULE"],
+		"companyLogoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn7rzmmlVp_LvPyfQDVTWqGZVNhogkyEBUNA&s",
+		"isFavourite": false
+	},
+	{
+		"id": 4,
+		"companyName": "Goldman Sachs",
+		"userName": "Shreyash Verma",
+		"type": "PLACED",
+		"role": "SDE-2",
+		"year": "2027",
+		"tags": [
+			"CTC",
+			"BASE PAY",
+			"PI EXPERIENCE",
+			"MISTAKES",
+			"RESOURCES",
+			"BENEFITS",
+			"SCHEDULE"
+		],
+		"companyLogoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn7rzmmlVp_LvPyfQDVTWqGZVNhogkyEBUNA&s",
+		"isFavourite": false
+	},
+	{
+		"id": 5,
+		"companyName": "Amazon",
+		"userName": "Joginder",
+		"type": "INTERN",
+		"role": "Backend Engineer",
+		"year": "2027",
+		"tags": ["STIPEND", "PI EXPERIENCE", "MISTAKES"],
+		"companyLogoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn7rzmmlVp_LvPyfQDVTWqGZVNhogkyEBUNA&s",
+		"isFavourite": false
+	},
+	{
+		"id": 6,
+		"companyName": "Nigga",
+		"userName": "Sanchit Rathore",
+		"type": "PLACED",
+		"role": "Frontend Engineer",
+		"year": "2027",
+		"tags": ["CTC", "BASE PAY", "PI EXPERIENCE", "MISTAKES", "RESOURCES"],
+		"companyLogoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn7rzmmlVp_LvPyfQDVTWqGZVNhogkyEBUNA&s",
+		"isFavourite": false
+	},
+	{
+		"id": 7,
+		"companyName": "JPMorgan Chase",
+		"userName": "Sanchit Rathore",
+		"type": "INTERN",
+		"role": "MTS",
+		"year": "2027",
+		"tags": ["STIPEND", "PI EXPERIENCE", "RESOURCES"],
+		"companyLogoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn7rzmmlVp_LvPyfQDVTWqGZVNhogkyEBUNA&s",
+		"isFavourite": false
+	},
+	{
+		"id": 8,
+		"companyName": "Morgan Stanley",
+		"userName": "Sanchit Rathore",
+		"type": "PLACED",
+		"role": "SDE-1",
+		"year": "2027",
+		"tags": [
+			"CTC",
+			"BASE PAY",
+			"PI EXPERIENCE",
+			"MISTAKES",
+			"RESOURCES",
+			"BENEFITS"
+		],
+		"companyLogoUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn7rzmmlVp_LvPyfQDVTWqGZVNhogkyEBUNA&s",
+		"isFavourite": false
+	}
+]
