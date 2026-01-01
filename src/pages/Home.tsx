@@ -32,7 +32,7 @@ const Home = () => {
 										tags={submission.tags}
 										type={submission.type}
 										userName={submission.userName}
-										year={submission.year}
+										year={Number.parseInt(submission.year, 10)}
 										isFavourite={submission.isFavourite}
 									/>
 								</div>

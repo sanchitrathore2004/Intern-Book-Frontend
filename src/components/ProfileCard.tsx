@@ -9,7 +9,7 @@ const ProfileCard = () => {
 		<div className="w-full bg-(--fore-bg) rounded-2xl px-6 py-5 shadow-md">
 			<div className="flex items-center justify-between">
 				<div className="w-20 h-20">
-					<ProfilePicture />
+					<ProfilePicture profileUrl={user.profileUrl ?? "profile"} />
 				</div>
 
 				<button

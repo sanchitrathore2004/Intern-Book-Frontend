@@ -1,9 +1,10 @@
 import { Bookmark, Moon, Search, Sun } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import darkAppIcon from "../assets/images/app_icon_dark.png";
 import lightAppIcon from "../assets/images/app_icon_light.png";
 import { useTheme } from "../contexts/ThemeContext.tsx";
+import UserContext from "../contexts/UserContext.tsx";
 
 interface SuggestionResponse {
 	suggestion: string;
@@ -23,6 +24,7 @@ function Navigation(props: NavigationBarProps) {
 	const [showDropdown, setShowDropdown] = useState(false);
 	const desktopInputRef = useRef<HTMLInputElement | null>(null);
 	const modalInputRef = useRef<HTMLInputElement | null>(null);
+	const { user } = useContext(UserContext);
 	const navigate = useNavigate();
 
 	// debounce + fetch suggestions
@@ -200,7 +202,7 @@ function Navigation(props: NavigationBarProps) {
 				</div>
 				<button
 					type="button"
-					onClick={() => navigate("/profile")}
+					onClick={() => navigate(`/profile/${user.id}`)}
 					className="h-[50%] w-fit aspect-square bg-(--bg) rounded-[0.6vmax]"
 				>
 					<img
