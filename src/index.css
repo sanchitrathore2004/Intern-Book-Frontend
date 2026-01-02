@@ -3,96 +3,94 @@
 @import "tailwindcss";
 
 @font-face {
-	font-family: "GoldmanSansBd";
-	src: url("./assets/fonts/GoldmanSans_Bd.ttf") format("truetype");
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
+  font-family: "GoldmanSansBd";
+  src: url("./assets/fonts/GoldmanSans_Bd.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "GoldmanSansLt";
-	src: url("./assets/fonts/GoldmanSans_Lt.ttf") format("truetype");
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
+  font-family: "GoldmanSansLt";
+  src: url("./assets/fonts/GoldmanSans_Lt.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 .font-italiana {
-	font-family: "Italiana", serif;
+  font-family: "Italiana", serif;
 }
 
 .font-galdeano {
-	font-family: "Galdeano", sans-serif;
+  font-family: "Galdeano", sans-serif;
 }
 
 :root {
-	--bg: #f8f9fa;
-	--fore-bg: #ffffff;
-	--accent: #01be94;
-	--accent-bg: #d9f5ef;
-	--text-heading: #000000;
-	--text-light: #868e96;
-	--border-color: #868e96;
-	--line-color: #dee2e6;
-	--shadow-color: rgba(134, 142, 150, 0.5);
+  --bg: #f8f9fa;
+  --fore-bg: #ffffff;
+  --accent: #01be94;
+  --accent-bg: #d9f5ef;
+  --text-heading: #000000;
+  --text-light: #868e96;
+  --border-color: #868e96;
+  --line-color: #dee2e6;
+  --shadow-color: rgba(134, 142, 150, 0.5);
 }
 
 [data-theme="dark"] {
-	--bg: #242424;
-	--fore-bg: #2e2e2e;
-	--accent: #ffd43b;
-	--accent-bg: #443e28;
-	--text-heading: #ffffff;
-	--text-light: #7e7e7e;
-	--border-color: #585858;
-	--line-color: #424242;
-	--shadow-color: rgba(23, 23, 23, 0.75);
+  --bg: #242424;
+  --fore-bg: #2e2e2e;
+  --accent: #ffd43b;
+  --accent-bg: #443e28;
+  --text-heading: #ffffff;
+  --text-light: #7e7e7e;
+  --border-color: #585858;
+  --line-color: #424242;
+  --shadow-color: rgba(23, 23, 23, 0.75);
 }
 
 body {
-	margin: 0;
-	background-color: var(--bg);
-	color: var(--text-heading);
-	font-family: system-ui, sans-serif;
-	transition:
-		background 0.2s ease,
-		color 0.2s ease;
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text-heading);
+  font-family: system-ui, sans-serif;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 html,
 body,
 #root {
-	height: 100%;
-	overflow: hidden;
+  height: 100%;
+  overflow: hidden;
 }
 
 .no-scrollbar::-webkit-scrollbar {
-	display: none;
+  display: none;
 }
 
 .no-scrollbar {
-	-ms-overflow-style: none;
-	scrollbar-width: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 ::-webkit-scrollbar {
-	width: 6px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-	background-color: var(--line-color);
-	border-radius: 6px;
+  background-color: var(--line-color);
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-track {
-	background: transparent;
+  background: transparent;
 }
 
 /* Firefox */
 * {
-	scrollbar-width: thin;
-	scrollbar-color: var(--line-color) transparent;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-color) transparent;
 }
 
 .input {
@@ -125,21 +123,41 @@ body,
 
 ::placeholder {
   color: var(--text-light);
-  opacity: 1; 
+  opacity: 1;
 }
 
-/* Inputs & textarea text color */
 .input,
 .textarea {
   color: var(--text-heading);
 }
 
-/* Select default option color */
 select.input {
   color: var(--text-light);
 }
 
-/* When user selects a value */
 select.input:has(option:checked:not([value=""])) {
   color: var(--text-heading);
+}
+
+/* Base toast container */
+.Toastify__toast {
+  background: var(--bg);
+  color: var(--text-heading);
+  border-radius: 10px;
+  box-shadow: 0 0 10px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  font-family: inherit;
+}
+
+/* .Toastify__toast:hover {
+	background: var(--fore-bg);
+} */
+
+.Toastify__close-button {
+  color: var(--text-heading);
+}
+
+.Toastify__toast-container--top-right {
+  top: 10vh !important;
+  right: 1rem; 
 }

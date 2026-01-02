@@ -1,4 +1,4 @@
-import { Bookmark, Moon, Search, Sun } from "lucide-react";
+import { Bookmark, House, LogOut, Moon, Search, Sun, User } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import darkAppIcon from "../assets/images/app_icon_dark.png";
@@ -22,6 +22,8 @@ function Navigation(props: NavigationBarProps) {
 	const [suggestions, setSuggestions] = useState<string[]>([]);
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [showDropdown, setShowDropdown] = useState(false);
+	const [showProfileDropDown, setProfileDropDown] = useState(false);
+	const profileRef = useRef<HTMLDivElement | null>(null);
 	const desktopInputRef = useRef<HTMLInputElement | null>(null);
 	const modalInputRef = useRef<HTMLInputElement | null>(null);
 	const { user } = useContext(UserContext);
@@ -60,17 +62,16 @@ function Navigation(props: NavigationBarProps) {
 		};
 	}, [query]);
 
-	// close dropdown when clicking outside
 	useEffect(() => {
 		function onDoc(e: MouseEvent) {
 			const target = e.target as Node | null;
-			if (
-				desktopInputRef.current &&
-				!desktopInputRef.current.contains(target) &&
-				modalInputRef.current &&
-				!modalInputRef.current.contains(target)
-			) {
+			const clickedInsideDesktop = desktopInputRef.current?.contains(target);
+			const clickedInsideModal = modalInputRef.current?.contains(target);
+			if (!clickedInsideDesktop && !clickedInsideModal) {
 				setShowDropdown(false);
+			}
+			if (profileRef.current && !profileRef.current.contains(target)) {
+				setProfileDropDown(false);
 			}
 		}
 		document.addEventListener("click", onDoc);
@@ -149,7 +150,7 @@ function Navigation(props: NavigationBarProps) {
 					/>
 
 					{showDropdown && suggestions.length > 0 && (
-						<ul className="absolute top-11 left-0 mt-[0.4vmax] w-[18vmax] max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-20">
+						<ul className="absolute flex flex-col p-[0.5vmax] top-13 left-0 mt-[0.4vmax] w-full max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-20">
 							{suggestions.map((s, idx) => (
 								<li
 									key={s}
@@ -159,7 +160,7 @@ function Navigation(props: NavigationBarProps) {
 										setShowDropdown(false);
 									}}
 									onMouseEnter={() => setActiveIndex(idx)}
-									className={`px-[0.8vmax] py-[0.6vmax] cursor-pointer ${
+									className={`px-[0.8vmax] py-[0.6vmax] cursor-pointer rounded-md ${
 										idx === activeIndex ? "bg-(--fore-bg)" : ""
 									}`}
 								>
@@ -200,24 +201,7 @@ function Navigation(props: NavigationBarProps) {
 				>
 					<Bookmark className="text-(--accent) w-full" fill="var(--accent)" />
 				</div>
-				<button
-					type="button"
-					onClick={() => navigate(`/profile/${user.id}`)}
-					className="h-[50%] w-fit aspect-square bg-(--bg) rounded-[0.6vmax]"
-				>
-					<img
-						className="h-full w-full object-cover object-center 
-                    bg-(--bg)
-                    border-[0.5px] border-(--border-color)
-                    rounded-[0.6vmax]
-                    flex justify-center items-center
-                    cursor-pointer
-                    transition-all duration-200
-                    hover:bg-(--fore-bg)"
-						src={props.profilePictureUrl}
-						alt=""
-					/>
-				</button>
+
 				<button
 					type="button"
 					onClick={toggleTheme}
@@ -237,6 +221,75 @@ function Navigation(props: NavigationBarProps) {
 						<Moon className="w-full" color="var(--accent)" />
 					)}
 				</button>
+				<div ref={profileRef} className="relative h-[50%] w-fit aspect-square">
+					<button
+						type="button"
+						onClick={() => setProfileDropDown(!showProfileDropDown)}
+						onKeyDown={(e) => {
+							if (e.key === "Escape") setProfileDropDown(false);
+						}}
+						aria-haspopup="menu"
+						aria-expanded={showProfileDropDown}
+						className="h-full w-full aspect-square bg-(--bg) rounded-[0.6vmax]"
+					>
+						<img
+							className="h-full w-full object-cover object-center 
+                    bg-(--bg)
+                    border-[0.5px] border-(--border-color)
+                    rounded-[0.6vmax]
+                    flex justify-center items-center
+                    cursor-pointer
+                    transition-all duration-200
+                    hover:bg-(--fore-bg)"
+							src={props.profilePictureUrl}
+							alt=""
+						/>
+					</button>
+					{showProfileDropDown && (
+						<ul className="absolute flex flex-col p-[0.5vmax] text-sm top-10 min-w-[8em] right-0 max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-20">
+							<li
+								onMouseDown={(e) => {
+									e.preventDefault();
+									setProfileDropDown(false);
+									navigate("/home");
+								}}
+								className="hover:cursor-pointer p-1 hover:bg-(--fore-bg) rounded-md"
+							>
+								<div className="flex items-center">
+									<House className="text-(--accent) w-5" />
+									<div className="ml-1">Home</div>
+								</div>
+							</li>
+							<li
+								onMouseDown={(e) => {
+									e.preventDefault();
+									setProfileDropDown(false);
+									navigate(`/profile/${user.id}`);
+								}}
+								className="hover:cursor-pointer p-1 hover:bg-(--fore-bg) rounded-md"
+							>
+								<div className="flex items-center">
+									<User className="text-(--accent) w-5" />
+									<div className="ml-1">Profile</div>
+								</div>
+							</li>
+							<li
+								onMouseDown={(e) => {
+									e.preventDefault();
+									setProfileDropDown(false);
+									localStorage.removeItem("token");
+									navigate("/");
+								}}
+								className="p-1 hover:cursor-pointer hover:bg-(--fore-bg) rounded-md"
+							>
+								<div className="flex items-center">
+									<LogOut className="text-(--accent) w-5" />
+									<div className="ml-1">Log out</div>
+								</div>
+							</li>
+						</ul>
+					)}
+				</div>
 			</div>
 
 			{searchOpen && (
@@ -298,7 +351,7 @@ function Navigation(props: NavigationBarProps) {
 							/>
 
 							{showDropdown && suggestions.length > 0 && (
-								<ul className="absolute left-0 top-full mt-2 w-full max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-30">
+								<ul className="absolute flex flex-col p-[0.5vmax] left-0 top-full mt-2 w-full max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-30">
 									{suggestions.map((s, idx) => (
 										<li
 											key={s}
@@ -309,7 +362,7 @@ function Navigation(props: NavigationBarProps) {
 												setSearchOpen(false);
 											}}
 											onMouseEnter={() => setActiveIndex(idx)}
-											className={`px-[0.8vmax] py-[0.6vmax] cursor-pointer ${
+											className={`px-[0.8vmax] py-[0.6vmax] cursor-pointer rounded-md ${
 												idx === activeIndex ? "bg-[rgba(255,255,255,0.04)]" : ""
 											}`}
 										>
