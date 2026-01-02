@@ -61,8 +61,9 @@ function Submission() {
 		<div className="grid grid-cols-10 p-4 gap-6">
 			<div className="col-span-10 md:col-span-6 w-full">
 				<ProfileBox
+					authorId={data.authorId ?? 106123122}
 					cgpa={data.cgpa != null ? String(data.cgpa) : ""}
-					profileUrl={data.profileUrl ?? ""}
+					profileUrl={data.profileUrl ?? "https://robohash.org/Phunsi%20Kumar"}
 					name={data.name ?? ""}
 					department={data.department?.name ?? ""}
 					email={data.email ?? ""}
@@ -74,7 +75,11 @@ function Submission() {
 			<div className="col-span-10 md:col-span-4 bg-(--fore-bg) p-5 rounded-[0.75em] md:rounded-[1.5em] w-fit">
 				{/*Company Info*/}
 				<div className="flex flex-col gap-4">
-					<InfoRow label="Company" value={data.company?.name ?? ""} />
+					<InfoRow
+						label="Company"
+						value={data.company?.name ?? ""}
+						companyId={data.company?.id}
+					/>
 					<InfoRow label="Company Role" value={data.role?.name ?? ""} />
 					<InfoRow label="Selection Type" value={data.type ?? ""} />
 					<InfoRow
