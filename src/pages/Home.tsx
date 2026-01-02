@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import type { SubmissionCardResponseDto } from "../../web-client/src/generated";
+import { type ReactNode, useState } from "react";
 import ProfileSidebar from "../components/ProfileSideBar";
 import useGetFavourites from "../hooks/useGetFavourites";
 import useGetTopSubmissions from "../hooks/useGetTopSubmissions";
@@ -7,12 +6,6 @@ import FetchedSubmission from "../pages/FetchedSubmission";
 
 const Home = () => {
 	const [view, setView] = useState<"top" | "favourites">("top");
-
-	const [submissions, setSubmissions] = useState<SubmissionCardResponseDto[]>(
-		[],
-	);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<Error | null>(null);
 
 	const {
 		submissions: topSubmissions,
@@ -27,32 +20,17 @@ const Home = () => {
 		fetchFavourites,
 	} = useGetFavourites();
 
-	useEffect(() => {
-		if (view === "top") {
-			setSubmissions(topSubmissions ?? []);
-			setLoading(topLoading);
-			setError(topError);
-		} else if (view === "favourites") {
-			setSubmissions(favouriteSubmissions ?? []);
-			setLoading(favLoading);
-			setError(favError);
-		}
-	}, [
-		view,
-		topSubmissions,
-		topLoading,
-		topError,
-		favouriteSubmissions,
-		favLoading,
-		favError,
-	]);
+	const submissions =
+		view === "top" ? (topSubmissions ?? []) : (favouriteSubmissions ?? []);
+	const loading = view === "top" ? topLoading : favLoading;
+	const error = view === "top" ? topError : favError;
 
 	const handleSeeMoreFavourites = () => {
 		setView("favourites");
 		fetchFavourites();
 	};
 
-	let content: any;
+	let content: ReactNode;
 	if (loading) content = <div className="p-4">Loading...</div>;
 	else if (error) content = <div className="p-4">Error: {error.message}</div>;
 	else content = <FetchedSubmission submissions={submissions} />;
