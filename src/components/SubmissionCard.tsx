@@ -14,12 +14,12 @@ interface SubmissionCardProps {
 	id: number;
 	companyName: string;
 	userName: string;
-	type: string;
-	role: string;
+	type?: string;
+	role?: string;
 	year: number;
 	tags: string[];
-	companyLogoUrl: string;
-	isFavourite: boolean;
+	companyLogoUrl?: string;
+	isFavourite?: boolean;
 }
 
 const getYear = (yr: string | undefined): string | undefined => {

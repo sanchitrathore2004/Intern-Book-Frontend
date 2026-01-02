@@ -1,31 +1,56 @@
 import type React from "react";
+import { useNavigate } from "react-router-dom";
 import type { FavouriteItems } from "../interfaces/FavouriteItem";
 
 interface FavouritesCardProps {
-	items: FavouriteItems[];
+	items: FavouriteItems[] | null;
+	onSeeMore: () => void;
 }
 
-const FavouritesCard: React.FC<FavouritesCardProps> = ({ items }) => {
+const FavouritesCard: React.FC<FavouritesCardProps> = ({
+	items,
+	onSeeMore,
+}) => {
+	const navigate = useNavigate();
+
+	const handleShowDetials = (id: number) => {
+		navigate(`/submission/${id}`);
+	};
+
 	return (
 		<div className="bg-(--fore-bg) rounded-2xl p-4 shadow-md">
 			<h4 className="text-(--text-heading) font-semibold mb-3 flex items-center gap-2">
 				My Favourites!
 			</h4>
 
-			<ul className="space-y-2">
-				{items.map((item) => (
-					<li
-						key={item.id}
-						className="flex justify-between text-sm text-(--text-heading)"
-					>
-						<span>{item.company}</span>
-						<span className="text-(--text-light)">{item.addedBy}</span>
-					</li>
-				))}
-			</ul>
+			{!items || items.length === 0 ? (
+				<p className="text-sm text-(--text-light)">Nothing is favourited yet</p>
+			) : (
+				<ul className="divide-y divide-(--border-color)">
+					{items.map((item) => (
+						<li key={item.id}>
+							<button
+								type="button"
+								className="
+          w-full flex justify-between items-center
+          py-2 text-sm text-(--text-heading)
+          hover:bg-(--hover-bg)
+          transition rounded-md px-2"
+								onClick={() => handleShowDetials(item.id)}
+							>
+								<div className="hover:underline">
+									<span>{item.company}</span>
+								</div>
+								<span className="text-(--text-light)">{item.addedBy}</span>
+							</button>
+						</li>
+					))}
+				</ul>
+			)}
 
 			<button
 				type="button"
+				onClick={onSeeMore}
 				className="text-(--accent) text-xs mt-3 hover:underline"
 			>
 				See More
