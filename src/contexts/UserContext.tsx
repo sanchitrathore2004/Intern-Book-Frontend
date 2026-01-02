@@ -2,7 +2,6 @@ import type { Dispatch } from "react";
 import * as React from "react";
 import type {
 	GetUserResponseDto,
-	UserDto,
 } from "../../web-client/src/generated/index.ts";
 import type { UserAction } from "../reducers/userReducer.ts";
 

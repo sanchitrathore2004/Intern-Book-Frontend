@@ -13,6 +13,7 @@ import DAuthLogo from "../assets/images/deltaLogo.svg";
 import { DAUTH_CLIENT_ID, DAUTH_REDIRECT_URI } from "../config/config";
 import UserContext from "../contexts/UserContext";
 import { authConfig } from "../utils/apiConfig";
+import useRestoreUser from "../hooks/useRestoreUser";
 
 interface DauthQueryParameters {
 	[key: string]: string;
@@ -22,6 +23,7 @@ const Login = () => {
 	const isMobile = false;
 	const navigate = useNavigate();
 	const { dispatch } = useContext(UserContext);
+	const userRestore = useRestoreUser();
 
 	//  generate the api to call it to get the authorization code
 	const generateDauthAuthorizeUrl = useCallback(() => {
@@ -68,6 +70,7 @@ const Login = () => {
 
 				localStorage.setItem("token", res.accessToken);
 				dispatch({ type: "UPDATE_PROFILE", payload: user });
+				userRestore();
 
 				navigate("/home");
 				console.log("Logged in successfully");
@@ -75,7 +78,7 @@ const Login = () => {
 				console.error("Login failed:", err);
 			}
 		},
-		[navigate, dispatch],
+		[dispatch, userRestore, navigate],
 	);
 
 	//  get the current window url
@@ -90,7 +93,6 @@ const Login = () => {
 				return;
 			}
 			const { data } = event;
-			console.log("source", data, data.source);
 			if (data.source === "dauth-login-callback") {
 				if (data.code) {
 					sendAuthCodeToServer(data.code);

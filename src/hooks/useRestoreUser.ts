@@ -25,6 +25,8 @@ const useRestoreUser = () => {
 	useEffect(() => {
 		userRestore();
 	}, [userRestore]);
+
+	return userRestore;
 };
 
 export default useRestoreUser;

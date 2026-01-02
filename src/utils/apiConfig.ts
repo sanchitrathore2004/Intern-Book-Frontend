@@ -50,7 +50,6 @@ export const authConfig = new Configuration({
 		{
 			post: async (context) => {
 				const status = context.response.status;
-				console.log(context);
 				if (status >= 400) {
 					const body = await context.response.json();
 					throw new ApiError(
