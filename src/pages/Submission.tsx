@@ -1,42 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-	type GetSubmissionByIdRequest,
-	SubmissionControllerApi,
-	type SubmissionResponseDto,
-} from "../../web-client/src/generated/index.ts";
 import { InfoRow } from "../components/InfoRow.tsx";
 import { ProfileBox } from "../components/ProfileBox.tsx";
 import TextBox from "../components/TextBox.tsx";
-import { apiConfig } from "../utils/apiConfig.ts";
+import useGetSubmissions from "../hooks/useGetSubmissions.ts";
 import ErrorPage from "./ErrorPage.tsx";
 
 function Submission() {
 	const { submission_id } = useParams<{ submission_id: string }>();
-	const [data, setData] = useState<SubmissionResponseDto | null>(null);
 	const navigate = useNavigate();
 
-	const getSubmission = useCallback(
-		async (submissionId: number, controller: AbortController) => {
-			try {
-				const request: GetSubmissionByIdRequest = { submissionId };
-				const submissionApi = new SubmissionControllerApi(apiConfig);
-
-				const res: SubmissionResponseDto =
-					await submissionApi.getSubmissionById(request, {
-						signal: controller.signal,
-					});
-				if (!res) throw new Error("Some error occured");
-
-				setData(res);
-			} catch (er: unknown) {
-				const msg = er instanceof Error ? er.message : String(er);
-				console.error("Submission fetch failed:", msg);
-				navigate("/error");
-			}
-		},
-		[navigate],
-	);
+	const { submissions, error, fetchSubmission } = useGetSubmissions();
 
 	useEffect(() => {
 		if (!submission_id) {
@@ -51,24 +25,28 @@ function Submission() {
 		}
 
 		const controller = new AbortController();
-		getSubmission(submissionIdNum, controller);
+		fetchSubmission(submissionIdNum, controller);
 		return () => controller.abort();
-	}, [submission_id, getSubmission, navigate]);
+	}, [submission_id, navigate, fetchSubmission]);
 
-	if (!data) return <ErrorPage />;
+	if (!submissions || error) return <ErrorPage />;
 
 	return (
 		<div className="grid grid-cols-10 p-4 gap-6">
 			<div className="col-span-10 md:col-span-6 w-full">
 				<ProfileBox
-					authorId={data.authorId ?? 106123122}
-					cgpa={data.cgpa != null ? String(data.cgpa) : ""}
-					profileUrl={data.profileUrl ?? "https://robohash.org/Phunsi%20Kumar"}
-					name={data.name ?? ""}
-					department={data.department?.name ?? ""}
-					email={data.email ?? ""}
-					degree={data.degree ?? ""}
-					year={data.year?.toString() ?? ""}
+					submissionId={submissions.id ?? 1}
+					isFavourite={submissions.favourite ?? false}
+					authorId={submissions.authorId ?? 106123122}
+					cgpa={submissions.cgpa != null ? String(submissions.cgpa) : ""}
+					profileUrl={
+						submissions.profileUrl ?? "https://robohash.org/Phunsi%20Kumar"
+					}
+					name={submissions.name ?? ""}
+					department={submissions.department?.name ?? ""}
+					email={submissions.email ?? ""}
+					degree={submissions.degree ?? ""}
+					year={submissions.year?.toString() ?? ""}
 				/>
 			</div>
 
@@ -77,47 +55,53 @@ function Submission() {
 				<div className="flex flex-col gap-4">
 					<InfoRow
 						label="Company"
-						value={data.company?.name ?? ""}
-						companyId={data.company?.id}
+						value={submissions.company?.name ?? ""}
+						companyId={submissions.company?.id}
 					/>
-					<InfoRow label="Company Role" value={data.role?.name ?? ""} />
-					<InfoRow label="Selection Type" value={data.type ?? ""} />
+					<InfoRow label="Company Role" value={submissions.role?.name ?? ""} />
+					<InfoRow label="Selection Type" value={submissions.type ?? ""} />
 					<InfoRow
 						label="Selected At"
-						value={`${data.createdAt?.getDay()} ${data.createdAt?.getMonth()}`}
+						value={`${submissions.createdAt?.getDay()} ${submissions.createdAt?.getMonth()}`}
 					/>
-					{data.type === "INTERN" ? (
-						<InfoRow label="Stipend" value={data.stipend?.toString() ?? ""} />
+					{submissions.type === "INTERN" ? (
+						<InfoRow
+							label="Stipend"
+							value={submissions.stipend?.toString() ?? ""}
+						/>
 					) : (
-						<InfoRow label="Ctc" value={data.ctc?.toString() ?? ""} />
+						<InfoRow label="Ctc" value={submissions.ctc?.toString() ?? ""} />
 					)}
 					<InfoRow
 						label="Ot rounds"
-						value={data.processStructure?.otRound?.toString() ?? ""}
+						value={submissions.processStructure?.otRound?.toString() ?? ""}
 					/>
 					<InfoRow
 						label="Pi rounds"
-						value={data.processStructure?.piRound?.toString() ?? ""}
+						value={submissions.processStructure?.piRound?.toString() ?? ""}
 					/>
 					<InfoRow
 						label="Duration"
-						value={`${data.processStructure?.startDate?.getDay()} ${data.processStructure?.startDate?.getMonth()} ${data.processStructure?.startDate?.getFullYear()} - ${data.processStructure?.endDate?.getDate()} ${data.processStructure?.endDate?.getMonth()} ${data.processStructure?.endDate?.getFullYear()}`}
+						value={`${submissions.processStructure?.startDate?.getDay()} ${submissions.processStructure?.startDate?.getMonth()} ${submissions.processStructure?.startDate?.getFullYear()} - ${submissions.processStructure?.endDate?.getDate()} ${submissions.processStructure?.endDate?.getMonth()} ${submissions.processStructure?.endDate?.getFullYear()}`}
 					/>
 				</div>
 			</div>
 
-			<TextBox label="Experience" value={data.experience ?? ""} />
-			{data.mistakes && (
-				<TextBox label="Mistakes" value={data.mistakes ?? ""} />
+			<TextBox label="Experience" value={submissions.experience ?? ""} />
+			{submissions.mistakes && (
+				<TextBox label="Mistakes" value={submissions.mistakes ?? ""} />
 			)}
-			{data.resources && (
-				<TextBox label="Resources" value={data.resources ?? ""} />
+			{submissions.resources && (
+				<TextBox label="Resources" value={submissions.resources ?? ""} />
 			)}
-			{data.benefits && (
-				<TextBox label="Benefits" value={data.benefits ?? ""} />
+			{submissions.benefits && (
+				<TextBox label="Benefits" value={submissions.benefits ?? ""} />
 			)}
-			{data.clubPositions && (
-				<TextBox label="Club Positions" value={data.clubPositions ?? ""} />
+			{submissions.clubPositions && (
+				<TextBox
+					label="Club Positions"
+					value={submissions.clubPositions ?? ""}
+				/>
 			)}
 		</div>
 	);

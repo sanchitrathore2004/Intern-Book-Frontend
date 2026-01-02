@@ -1,8 +1,10 @@
 import { Bookmark } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import useToggleFavourite from "../hooks/useToggleFavourite";
 import ProfilePicture from "./ProfilePicture";
 
 interface ProfileBoxProps {
+	submissionId: number;
 	authorId: number;
 	cgpa: string;
 	profileUrl: string;
@@ -11,10 +13,12 @@ interface ProfileBoxProps {
 	email: string;
 	degree: string;
 	year: string;
+	isFavourite: boolean;
 }
 
 export const ProfileBox = (props: ProfileBoxProps) => {
 	const navigate = useNavigate();
+	const { isFavourite, handleToggle } = useToggleFavourite(props);
 
 	return (
 		<>
@@ -45,9 +49,17 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 				</div>
 				<button
 					type="button"
+					onClick={handleToggle}
 					className="hover:cursor-pointer self-start ml-auto"
 				>
-					<Bookmark className="text-(--accent)" />
+					{isFavourite ? (
+						<Bookmark
+							className="text-(--accent) w-4 lg:w-8"
+							fill="var(--accent)"
+						/>
+					) : (
+						<Bookmark className="text-(--accent) w-4 lg:w-8" />
+					)}
 				</button>
 			</div>
 			{/* Mobile only */}
@@ -58,9 +70,17 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 					</div>
 					<button
 						type="button"
+						onClick={handleToggle}
 						className="hover:cursor-pointer self-start ml-auto"
 					>
-						<Bookmark className="text-(--accent)" />
+						{isFavourite ? (
+							<Bookmark
+								className="text-(--accent) w-4 lg:w-8"
+								fill="var(--accent)"
+							/>
+						) : (
+							<Bookmark className="text-(--accent) w-4 lg:w-8" />
+						)}
 					</button>
 				</div>
 				<div className="text-(--text-light) ml-4 mt-2 flex flex-col gap-0 justify-center">
