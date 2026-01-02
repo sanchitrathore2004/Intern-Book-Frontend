@@ -35,6 +35,8 @@ function Submission() {
 		<div className="grid grid-cols-10 p-4 gap-6">
 			<div className="col-span-10 md:col-span-6 w-full">
 				<ProfileBox
+					submissionId={submissions.id ?? 1}
+					isFavourite={submissions.favourite ?? false}
 					authorId={submissions.authorId ?? 106123122}
 					cgpa={submissions.cgpa != null ? String(submissions.cgpa) : ""}
 					profileUrl={

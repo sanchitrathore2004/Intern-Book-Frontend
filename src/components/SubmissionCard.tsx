@@ -1,12 +1,6 @@
 import { Bookmark } from "lucide-react";
-import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-	type AddToFavouritesRequest,
-	type ToggleResponseDto,
-	UserControllerApi,
-} from "../../web-client/src/generated";
-import { apiConfig } from "../utils/apiConfig";
+import useToggleFavourite from "../hooks/useToggleFavourite";
 import { YearConfig } from "../utils/yearConfig";
 import Tags from "./Tags";
 
@@ -29,23 +23,11 @@ const getYear = (yr: string | undefined): string | undefined => {
 };
 
 function SubmissionCard(props: SubmissionCardProps) {
-	const [isFavourite, setIsFavourite] = useState(props.isFavourite);
 	const navigate = useNavigate();
-
-	const handleToggle = useCallback(async () => {
-		try {
-			const request: AddToFavouritesRequest = { submissionId: props.id };
-			const userApi = new UserControllerApi(apiConfig);
-
-			const res: ToggleResponseDto = await userApi.toggleFavourites(request);
-			if (res === null || res.favourite === undefined)
-				throw new Error("Some error occured while toggling submission");
-
-			setIsFavourite(res.favourite);
-		} catch (er) {
-			console.error(er);
-		}
-	}, [props]);
+	const { isFavourite, handleToggle } = useToggleFavourite({
+		submissionId: props.id,
+		isFavourite: props.isFavourite ?? false,
+	});
 
 	const handleShowDetials = () => {
 		navigate(`/submission/${props.id}`);
