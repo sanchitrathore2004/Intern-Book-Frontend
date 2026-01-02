@@ -12,8 +12,8 @@ import BackgroundImage from "../assets/images/bgimage.png";
 import DAuthLogo from "../assets/images/deltaLogo.svg";
 import { DAUTH_CLIENT_ID, DAUTH_REDIRECT_URI } from "../config/config";
 import UserContext from "../contexts/UserContext";
-import { authConfig } from "../utils/apiConfig";
 import useRestoreUser from "../hooks/useRestoreUser";
+import { authConfig } from "../utils/apiConfig";
 
 interface DauthQueryParameters {
 	[key: string]: string;
