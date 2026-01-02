@@ -1,8 +1,12 @@
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import Loader from "../components/Loader";
 import ProfileSidebar from "../components/ProfileSideBar";
 import useGetFavourites from "../hooks/useGetFavourites";
 import useGetTopSubmissions from "../hooks/useGetTopSubmissions";
 import FetchedSubmission from "../pages/FetchedSubmission";
+import { showError, showSuccess } from "../utils/toast";
 
 const Home = () => {
 	const [view, setView] = useState<"top" | "favourites">("top");
@@ -29,14 +33,35 @@ const Home = () => {
 		setView("favourites");
 		fetchFavourites();
 	};
+	const location = useLocation();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (location.state?.loggedIn) {
+			showSuccess("Logged in successfully!");
+			navigate(location.pathname, { replace: true, state: {} });
+		}
+	}, [location, navigate]);
 
 	let content: ReactNode;
-	if (loading) content = <div className="p-4">Loading...</div>;
-	else if (error) content = <div className="p-4">Error: {error.message}</div>;
-	else content = <FetchedSubmission submissions={submissions} />;
+	if (loading)
+		content = (
+			<div className="p-4">
+				<Loader fullscreen />
+			</div>
+		);
+	else if (error) {
+		showError(error.message);
+		content = (
+			<div className="p-4 h-full">
+				<Loader />
+			</div>
+		);
+	} else content = <FetchedSubmission submissions={submissions} />;
 
 	return (
 		<div className="w-full h-full bg-(--bg) text-(--text-heading) flex justify-center">
+			<ToastContainer />
 			<div className="max-w-368 w-full h-full px-[3vmax] flex gap-[3vmax]">
 				<div className="hidden md:block pt-[2vmax]">
 					<ProfileSidebar onSeeMoreFavourites={handleSeeMoreFavourites} />
