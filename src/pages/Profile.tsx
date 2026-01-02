@@ -1,10 +1,13 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Loader from "../components/Loader";
 import ProfilePicture from "../components/ProfilePicture";
 import SubmissionCard from "../components/SubmissionCard";
+import UserContext from "../contexts/UserContext";
+import useGetCloudinaryCredentials from "../hooks/useGetCloudinaryCredentials";
 import useGetProfile from "../hooks/useGetProfile";
+import useUpdateProfilePicture from "../hooks/useUpdateProfilePicture";
 import { DepartmentConfig } from "../utils/departmentConfig";
 import { showError, showSuccess } from "../utils/toast";
 import { YearConfig } from "../utils/yearConfig";
@@ -12,6 +15,12 @@ import { YearConfig } from "../utils/yearConfig";
 function Profile() {
 	const { user_id } = useParams<{ user_id: string }>();
 	const { profile, loading, error, fetchProfileDetails } = useGetProfile();
+	const { cloudinaryCredentials, fetchCloudinaryCredentials } =
+		useGetCloudinaryCredentials();
+	const { updateUserProfilePicture } = useUpdateProfilePicture();
+	const { dispatch, user } = useContext(UserContext);
+	const uploadControllerRef = useRef<AbortController | null>(null);
+	const [pendingUploadFile, setPendingUploadFile] = useState<File | null>(null);
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -41,6 +50,75 @@ function Profile() {
 		navigate(`/company/${profile?.favouriteCompany?.id}`);
 	};
 
+	const sendUploadSecureUrlToBackend = useCallback(
+		async (secureUrl: string) => {
+			const controller = new AbortController();
+			try {
+				const success = await updateUserProfilePicture(secureUrl, controller);
+				if (success) {
+					dispatch({
+						type: "UPDATE_PROFILE",
+						payload: { profileUrl: secureUrl },
+					});
+					// add toast
+				} else {
+					// add toast
+				}
+			} catch (error) {
+				// add toast
+			}
+		},
+		[updateUserProfilePicture, dispatch],
+	);
+
+	const uploadProfilePhoto = useCallback(async () => {
+		if (
+			!cloudinaryCredentials ||
+			!cloudinaryCredentials.apiKey ||
+			!cloudinaryCredentials.timeStamp ||
+			!cloudinaryCredentials.signature ||
+			!cloudinaryCredentials.folder ||
+			!cloudinaryCredentials.cloudName
+		) {
+			// add toast
+			return;
+		}
+		if (!pendingUploadFile) return;
+		const formData = new FormData();
+		formData.append("file", pendingUploadFile);
+		formData.append("api_key", cloudinaryCredentials.apiKey);
+		formData.append("timestamp", cloudinaryCredentials.timeStamp.toString());
+		formData.append("signature", cloudinaryCredentials.signature);
+		formData.append("folder", cloudinaryCredentials.folder);
+		const cloudinaryUploadResponse = await fetch(
+			`https://api.cloudinary.com/v1_1/${cloudinaryCredentials.cloudName}/image/upload`,
+			{
+				method: "POST",
+				body: formData,
+			},
+		);
+		if (!cloudinaryUploadResponse.ok) {
+			const error = await cloudinaryUploadResponse.json();
+			throw new Error(error?.error?.message || "Upload failed");
+		}
+		const formattedCloudinaryUploadResposne =
+			await cloudinaryUploadResponse.json();
+		sendUploadSecureUrlToBackend(formattedCloudinaryUploadResposne.secure_url);
+	}, [cloudinaryCredentials, sendUploadSecureUrlToBackend, pendingUploadFile]);
+
+	const handleProfileUpload = (file: File) => {
+		uploadControllerRef.current?.abort();
+		const controller = new AbortController();
+		uploadControllerRef.current = controller;
+		setPendingUploadFile(file);
+		fetchCloudinaryCredentials(controller);
+	};
+
+	useEffect(() => {
+		if (!cloudinaryCredentials || !pendingUploadFile) return;
+		uploadProfilePhoto();
+	}, [cloudinaryCredentials, pendingUploadFile, uploadProfilePhoto]);
+
 	useEffect(() => {
 		if (!user_id) {
 			navigate("/error");
@@ -67,8 +145,19 @@ function Profile() {
 			{loading && <Loader fullscreen />}
 			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[20vmax] h-[35vmax] bg-(--fore-bg) flex sm:flex-row flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
 				<div className="sm:h-[10vmax] sm:w-[20%] w-full h-[40%] rounded-[1.5vmax] flex justify-start items-start">
-					<div className="h-full w-[30%] sm:w-full object-center object-cover rounded-[1.5vmax]">
-						<ProfilePicture profileUrl={profile.profileUrl ?? ""} />
+					<div className="relative h-full w-[30%] sm:w-full object-center object-cover rounded-[1.5vmax]">
+						<input
+							type="file"
+							accept="image/*"
+							onChange={(e) => {
+								const file = e.target.files?.[0];
+								if (!file) return;
+								handleProfileUpload(file);
+							}}
+							placeholder="upload"
+							className="absolute top-0 left-0"
+						/>
+						<ProfilePicture profileUrl={user.profileUrl ?? ""} />
 					</div>
 				</div>
 				<div className="sm:w-[80%] w-full h-[10vmax] flex flex-col justify-center items-center text-(--text-light) sm:gap-0 gap-[0.5vmax]">
