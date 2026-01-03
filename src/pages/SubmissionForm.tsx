@@ -3,6 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import Loader from "../components/Loader";
 import UserContext from "../contexts/UserContext";
 import useCreateSubmission from "../hooks/useCreateSubmission";
 import useGetAllCompany from "../hooks/useGetAllCompany";
@@ -35,11 +37,8 @@ const SubmissionForm = () => {
 		fetchAllRoles,
 	} = useGetAllRoles();
 
-	const {
-		createSubmission,
-		loading: submissionLoading,
-		error: submisisonError,
-	} = useCreateSubmission();
+	const { createSubmission, loading: submissionLoading } =
+		useCreateSubmission();
 
 	useEffect(() => {
 		fetchAllCompany();
@@ -47,14 +46,16 @@ const SubmissionForm = () => {
 	}, [fetchAllCompany, fetchAllRoles]);
 
 	const onSubmit = async (data: SubmissionFormData) => {
-		await createSubmission(data);
-		if (!submisisonError) {
-			navigate(`/profile/${user.id}`);
-		} else console.log(submisisonError);
+		const res = await createSubmission(data);
+		if (res) {
+			navigate(`/profile/${user.id}`, { state: { submissionSaved: true } });
+		}
 	};
 
 	return (
 		<div className="h-full overflow-y-auto no-scrollbar">
+			{submissionLoading && <Loader size={100} />}
+			<ToastContainer newestOnTop />
 			<div className="min-h-full px-4 py-6 flex justify-center">
 				<form
 					onSubmit={handleSubmit(onSubmit)}
@@ -68,7 +69,7 @@ const SubmissionForm = () => {
 						<h1 className="text-2xl sm:text-3xl font-semibold">
 							Create Submission
 						</h1>
-						<p className="text-sm text-[var(--text-light)]">
+						<p className="text-sm text-(--text-light)">
 							Share your internship / placement experience
 						</p>
 					</div>
@@ -139,7 +140,7 @@ const SubmissionForm = () => {
 					<Section title="Experience">
 						<Field error={errors.experience?.message}>
 							<textarea
-								className="textarea min-h-[160px]"
+								className="textarea min-h-40"
 								{...register("experience")}
 								placeholder="Write your detailed experience"
 							/>

@@ -75,7 +75,6 @@ const Login = () => {
 				userRestore();
 
 				navigate("/home", { state: { loggedIn: true } });
-				console.log("Logged in successfully");
 			} catch (err) {
 				console.error("Login failed:", err);
 				showError("Login failed!");

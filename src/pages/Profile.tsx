@@ -1,18 +1,26 @@
 import { useCallback, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Loader from "../components/Loader";
 import ProfilePicture from "../components/ProfilePicture";
 import SubmissionCard from "../components/SubmissionCard";
 import useGetProfile from "../hooks/useGetProfile";
 import { DepartmentConfig } from "../utils/departmentConfig";
-import { showError } from "../utils/toast";
+import { showError, showSuccess } from "../utils/toast";
 import { YearConfig } from "../utils/yearConfig";
 
 function Profile() {
 	const { user_id } = useParams<{ user_id: string }>();
 	const { profile, loading, error, fetchProfileDetails } = useGetProfile();
 	const navigate = useNavigate();
+	const location = useLocation();
+
+	useEffect(() => {
+		if (location.state?.submissionSaved) {
+			showSuccess("Submission saved successfully!");
+			navigate(location.pathname, { replace: true, state: {} });
+		}
+	}, [location, navigate]);
 
 	const getDepartment = useCallback(
 		(dept: string | undefined): string | undefined => {
