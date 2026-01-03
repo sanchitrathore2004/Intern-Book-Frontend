@@ -6,6 +6,7 @@ import {
 } from "../../web-client/src/generated";
 import UserContext from "../contexts/UserContext";
 import { apiConfig } from "../utils/apiConfig";
+import { showSuccess } from "../utils/toast";
 
 interface useToggleFavouriteProps {
 	isFavourite: boolean;
@@ -29,6 +30,8 @@ const useToggleFavourite = (props: useToggleFavouriteProps) => {
 
 			dispatch({ type: "UPDATE_PROFILE", payload: res });
 			setIsFavourite(res.favourite);
+			if (res.favourite) showSuccess("Added to favourites", 1000);
+			else showSuccess("Removed from favourites", 1000);
 		} catch (er) {
 			console.error(er);
 		}

@@ -149,7 +149,7 @@ const Login = () => {
 
 	return (
 		<div className="min-h-screen w-full flex items-center justify-center bg-(--bg) relative overflow-hidden p-4">
-			<ToastContainer />
+			<ToastContainer newestOnTop />
 			<div
 				className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
 				style={{ backgroundImage: `url(${BackgroundImage})` }}
