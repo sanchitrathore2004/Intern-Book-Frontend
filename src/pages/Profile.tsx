@@ -1,15 +1,17 @@
 import { useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import Loader from "../components/Loader";
 import ProfilePicture from "../components/ProfilePicture";
 import SubmissionCard from "../components/SubmissionCard";
 import useGetProfile from "../hooks/useGetProfile";
 import { DepartmentConfig } from "../utils/departmentConfig";
+import { showError } from "../utils/toast";
 import { YearConfig } from "../utils/yearConfig";
-import ErrorPage from "./ErrorPage";
 
 function Profile() {
 	const { user_id } = useParams<{ user_id: string }>();
-	const { profile, error, fetchProfileDetails } = useGetProfile();
+	const { profile, loading, error, fetchProfileDetails } = useGetProfile();
 	const navigate = useNavigate();
 
 	const getDepartment = useCallback(
@@ -48,10 +50,13 @@ function Profile() {
 		return () => controller.abort();
 	}, [user_id, fetchProfileDetails, navigate]);
 
-	if (!profile || error) return <ErrorPage />;
+	if (error) showError(error.message);
+	if (!profile) return <Loader fullscreen />;
 
 	return (
 		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax] overflow-auto">
+			<ToastContainer />
+			{loading && <Loader fullscreen />}
 			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[20vmax] h-[35vmax] bg-(--fore-bg) flex sm:flex-row flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
 				<div className="sm:h-[10vmax] sm:w-[20%] w-full h-[40%] rounded-[1.5vmax] flex justify-start items-start">
 					<div className="h-full w-[30%] sm:w-full object-center object-cover rounded-[1.5vmax]">

@@ -1,13 +1,15 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import Loader from "../components/Loader";
 import SubmissionCard from "../components/SubmissionCard";
 import useGetCompany from "../hooks/useGetCompany";
-import ErrorPage from "./ErrorPage";
+import { showError } from "../utils/toast";
 
 function Company() {
 	const { company_id } = useParams<{ company_id: string }>();
 	const navigate = useNavigate();
-	const { company, error, fetchCompanyDetails } = useGetCompany();
+	const { company, loading, error, fetchCompanyDetails } = useGetCompany();
 
 	useEffect(() => {
 		if (!company_id) {
@@ -26,10 +28,13 @@ function Company() {
 		return () => controller.abort();
 	}, [company_id, fetchCompanyDetails, navigate]);
 
-	if (!company || error) return <ErrorPage />;
+	if (error) showError(error.message);
+	if (!company) return <Loader fullscreen />;
 
 	return (
 		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax] overflow-auto">
+			{loading && <Loader fullscreen />}
+			<ToastContainer />
 			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[50vmax] h-[60vmax] bg-(--fore-bg) flex flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
 				<div className="w-full h-[50%] flex justify-start items-center p-[0.8vmax]">
 					<img

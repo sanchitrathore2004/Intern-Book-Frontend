@@ -1,10 +1,12 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import { InfoRow } from "../components/InfoRow.tsx";
+import Loader from "../components/Loader.tsx";
 import { ProfileBox } from "../components/ProfileBox.tsx";
 import TextBox from "../components/TextBox.tsx";
 import useGetSubmissions from "../hooks/useGetSubmissions.ts";
-import ErrorPage from "./ErrorPage.tsx";
+import { showError } from "../utils/toast.ts";
 
 function Submission() {
 	const { submission_id } = useParams<{ submission_id: string }>();
@@ -29,10 +31,12 @@ function Submission() {
 		return () => controller.abort();
 	}, [submission_id, navigate, fetchSubmission]);
 
-	if (!submissions || error) return <ErrorPage />;
+	if (error) showError(error.message);
+	if (!submissions) return <Loader fullscreen />;
 
 	return (
 		<div className="grid grid-cols-10 p-4 gap-6">
+			<ToastContainer />
 			<div className="col-span-10 md:col-span-6 w-full">
 				<ProfileBox
 					submissionId={submissions.id ?? 1}

@@ -1,5 +1,6 @@
 import { useCallback, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import {
 	AuthControllerApi,
 	type DauthLoginRequest,
@@ -14,6 +15,7 @@ import { DAUTH_CLIENT_ID, DAUTH_REDIRECT_URI } from "../config/config";
 import UserContext from "../contexts/UserContext";
 import useRestoreUser from "../hooks/useRestoreUser";
 import { authConfig } from "../utils/apiConfig";
+import { showError } from "../utils/toast";
 
 interface DauthQueryParameters {
 	[key: string]: string;
@@ -72,10 +74,11 @@ const Login = () => {
 				dispatch({ type: "UPDATE_PROFILE", payload: user });
 				userRestore();
 
-				navigate("/home");
+				navigate("/home", { state: { loggedIn: true } });
 				console.log("Logged in successfully");
 			} catch (err) {
 				console.error("Login failed:", err);
+				showError("Login failed!");
 			}
 		},
 		[dispatch, userRestore, navigate],
@@ -146,6 +149,7 @@ const Login = () => {
 
 	return (
 		<div className="min-h-screen w-full flex items-center justify-center bg-(--bg) relative overflow-hidden p-4">
+			<ToastContainer />
 			<div
 				className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
 				style={{ backgroundImage: `url(${BackgroundImage})` }}

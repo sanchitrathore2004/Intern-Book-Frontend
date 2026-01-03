@@ -28,6 +28,7 @@ const useGetProfile = () => {
 				if (!res) throw new Error("Some error occured");
 
 				setProfile(res);
+				setLoading(false);
 			} catch (er) {
 				if (er instanceof Error) setError(er);
 				else setError(new Error("failed to get Submission"));
