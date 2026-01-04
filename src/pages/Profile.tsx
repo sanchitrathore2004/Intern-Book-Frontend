@@ -1,6 +1,7 @@
+import { Upload } from "lucide-react";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import Loader from "../components/Loader";
 import ProfilePicture from "../components/ProfilePicture";
 import SubmissionCard from "../components/SubmissionCard";
@@ -8,6 +9,7 @@ import UserContext from "../contexts/UserContext";
 import useGetCloudinaryCredentials from "../hooks/useGetCloudinaryCredentials";
 import useGetProfile from "../hooks/useGetProfile";
 import useUpdateProfilePicture from "../hooks/useUpdateProfilePicture";
+import UploadModal from "../modals/UploadModal";
 import { DepartmentConfig } from "../utils/departmentConfig";
 import { showError, showSuccess } from "../utils/toast";
 import { YearConfig } from "../utils/yearConfig";
@@ -21,6 +23,8 @@ function Profile() {
 	const { dispatch, user } = useContext(UserContext);
 	const uploadControllerRef = useRef<AbortController | null>(null);
 	const [pendingUploadFile, setPendingUploadFile] = useState<File | null>(null);
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const toastIdRef = useRef<string | number | null>(null);
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -60,12 +64,28 @@ function Profile() {
 						type: "UPDATE_PROFILE",
 						payload: { profileUrl: secureUrl },
 					});
-					// add toast
+					toast.update(toastIdRef.current!, {
+						render: "Profile updated!",
+						type: "success",
+						isLoading: false,
+						autoClose: 3000,
+					});
 				} else {
-					// add toast
+					toast.update(toastIdRef.current!, {
+						render:
+							"Profile updated successfully, it will take a while to reflect on the complete site",
+						type: "error",
+						isLoading: false,
+						autoClose: 3000,
+					});
 				}
 			} catch (error) {
-				// add toast
+				toast.update(toastIdRef.current!, {
+					render: "Upload failed",
+					type: "error",
+					isLoading: false,
+					autoClose: 1000,
+				});
 			}
 		},
 		[updateUserProfilePicture, dispatch],
@@ -111,6 +131,9 @@ function Profile() {
 		const controller = new AbortController();
 		uploadControllerRef.current = controller;
 		setPendingUploadFile(file);
+		toastIdRef.current = toast.loading(
+			"Updating profile picture, this may take a while..",
+		);
 		fetchCloudinaryCredentials(controller);
 	};
 
@@ -141,21 +164,21 @@ function Profile() {
 
 	return (
 		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax] overflow-auto">
+			{isModalOpen && (
+				<UploadModal
+					setIsModalOpen={setIsModalOpen}
+					callFunc={handleProfileUpload}
+				/>
+			)}
 			<ToastContainer newestOnTop />
 			{loading && <Loader fullscreen />}
 			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[20vmax] h-[35vmax] bg-(--fore-bg) flex sm:flex-row flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
 				<div className="sm:h-[10vmax] sm:w-[20%] w-full h-[40%] rounded-[1.5vmax] flex justify-start items-start">
-					<div className="relative h-full w-[30%] sm:w-full object-center object-cover rounded-[1.5vmax]">
-						<input
-							type="file"
-							accept="image/*"
-							onChange={(e) => {
-								const file = e.target.files?.[0];
-								if (!file) return;
-								handleProfileUpload(file);
-							}}
-							placeholder="upload"
-							className="absolute top-0 left-0"
+					<div className="group relative h-full w-[30%] sm:w-full object-center object-cover rounded-[1.5vmax]">
+						<Upload
+							onClick={() => setIsModalOpen(true)}
+							className="opacity-0 group-hover:opacity-100 transition-opacity
+			duration-200 text-(--text-heading) mix-blend-difference absolute top-2 left-2 cursor-pointer"
 						/>
 						<ProfilePicture profileUrl={user.profileUrl ?? ""} />
 					</div>
