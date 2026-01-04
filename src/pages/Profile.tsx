@@ -164,7 +164,7 @@ function Profile() {
 
 	return (
 		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax] overflow-auto">
-			{isModalOpen && (
+			{isModalOpen && String(user.id) === String(user_id) && (
 				<UploadModal
 					setIsModalOpen={setIsModalOpen}
 					callFunc={handleProfileUpload}
@@ -175,12 +175,20 @@ function Profile() {
 			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[20vmax] h-[35vmax] bg-(--fore-bg) flex sm:flex-row flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
 				<div className="sm:h-[10vmax] sm:w-[20%] w-full h-[40%] rounded-[1.5vmax] flex justify-start items-start">
 					<div className="group relative h-full w-[30%] sm:w-full object-center object-cover rounded-[1.5vmax]">
-						<Upload
-							onClick={() => setIsModalOpen(true)}
-							className="opacity-0 group-hover:opacity-100 transition-opacity
+						{String(user.id) === String(user_id) && (
+							<Upload
+								onClick={() => setIsModalOpen(true)}
+								className="opacity-0 group-hover:opacity-100 transition-opacity
 			duration-200 text-(--text-heading) mix-blend-difference absolute top-2 left-2 cursor-pointer"
+							/>
+						)}
+						<ProfilePicture
+							profileUrl={
+								user.id === user_id
+									? (user.profileUrl ?? "")
+									: (profile.profileUrl ?? "")
+							}
 						/>
-						<ProfilePicture profileUrl={user.profileUrl ?? ""} />
 					</div>
 				</div>
 				<div className="sm:w-[80%] w-full h-[10vmax] flex flex-col justify-center items-center text-(--text-light) sm:gap-0 gap-[0.5vmax]">
@@ -203,22 +211,28 @@ function Profile() {
 						{getYear(profile.year?.toString())}
 					</div>
 				</div>
-				<div className="sm:w-[20%] w-full h-full flex flex-col items-end justify-end gap-[0.7vmax]">
-					<div className="font-light text-[#828282] pr-[0.4vmax] text-[1vmax]">
-						Dream Company
+				{profile.favouriteCompany?.id ? (
+					<div className="sm:w-[20%] w-full h-full flex flex-col items-end justify-end gap-[0.7vmax]">
+						<div className="font-light text-(--text-light) pr-[0.4vmax] text-[1vmax]">
+							Dream Company
+						</div>
+						<button
+							type="button"
+							onClick={handleDreamCompanyClick}
+							className="cursor-pointer bg-transparent border-none p-0"
+						>
+							<img
+								className="w-[7vmax] h-[3vmax] pr-[1vmax] object-contain"
+								src={profile.favouriteCompany?.logoUrl}
+								alt="Dream Company"
+							/>
+						</button>
 					</div>
-					<button
-						type="button"
-						onClick={handleDreamCompanyClick}
-						className="cursor-pointer bg-transparent border-none p-0"
-					>
-						<img
-							className="w-[7vmax] h-[3vmax] pr-[1vmax] object-contain"
-							src={profile.favouriteCompany?.logoUrl}
-							alt="Dream Company"
-						/>
-					</button>
-				</div>
+				) : (
+					<div className="sm:w-[30%] w-full h-full flex flex-col items-end justify-end gap-[0.7vmax] text-(--text-light)">
+						Dream Company: TBD
+					</div>
+				)}
 			</div>
 			<div className="w-[80%] h-fit rounded-[1vmax] bg-(--fore-bg) flex flex-wrap p-[2vmax] gap-[4vmax] items-center sm:justify-start justify-center mb-[2vmax]">
 				{profile.mySubmissions?.map((sub) => {
