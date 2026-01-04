@@ -184,7 +184,7 @@ function Profile() {
 						)}
 						<ProfilePicture
 							profileUrl={
-								user.id === user_id
+								String(user.id) === String(user_id)
 									? (user.profileUrl ?? "")
 									: (profile.profileUrl ?? "")
 							}
