@@ -1,5 +1,8 @@
 import { Bookmark } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import lightPlaceholder from "../assets/images/app_icon_dark.png";
+import darkPlaceholder from "../assets/images/app_icon_light.png";
+import { useTheme } from "../contexts/ThemeContext";
 import useToggleFavourite from "../hooks/useToggleFavourite";
 import { YearConfig } from "../utils/yearConfig";
 import Tags from "./Tags";
@@ -24,6 +27,7 @@ const getYear = (yr: string | undefined): string | undefined => {
 
 function SubmissionCard(props: SubmissionCardProps) {
 	const navigate = useNavigate();
+	const { theme } = useTheme();
 	const { isFavourite, handleToggle } = useToggleFavourite({
 		submissionId: props.id,
 		isFavourite: props.isFavourite ?? false,
@@ -37,9 +41,17 @@ function SubmissionCard(props: SubmissionCardProps) {
 		<div className="w-full h-full flex flex-col justify-between items-center p-1 rounded-[0.6vmax] bg-(--bg) transition-all duration-200 hover:shadow-[0_0_8px_var(--shadow-color)]">
 			<div className="w-full max-h-[40%] flex justify-center items-center">
 				<img
+					key={theme}
 					className="h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-contain"
-					src={props.companyLogoUrl}
-					alt=""
+					src={
+						props.companyLogoUrl ||
+						(theme === "light" ? lightPlaceholder : darkPlaceholder)
+					}
+					alt={`${props.companyName} logo`}
+					onError={(e) => {
+						e.currentTarget.src =
+							theme === "light" ? lightPlaceholder : darkPlaceholder;
+					}}
 				/>
 			</div>
 			<div className=" w-full max-h-[30%] flex flex-col justify-center items-center">

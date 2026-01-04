@@ -1,6 +1,9 @@
 import { Bookmark } from "lucide-react";
+import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import useToggleFavourite from "../hooks/useToggleFavourite";
+import { DepartmentConfig } from "../utils/departmentConfig";
+import { YearConfig } from "../utils/yearConfig";
 import ProfilePicture from "./ProfilePicture";
 
 interface ProfileBoxProps {
@@ -20,6 +23,21 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 	const navigate = useNavigate();
 	const { isFavourite, handleToggle } = useToggleFavourite(props);
 
+	const getDepartment = useCallback(
+		(dept: string | undefined): string | undefined => {
+			if (dept === undefined) return "NA";
+			const departmentConfig = new DepartmentConfig();
+			return departmentConfig.getDepartment(dept);
+		},
+		[],
+	);
+
+	const getYear = useCallback((yr: string | undefined): string | undefined => {
+		if (yr === undefined) return "NA";
+		const yearConfig = new YearConfig();
+		return yearConfig.getYear(yr);
+	}, []);
+
 	return (
 		<>
 			{/* Desktop only */}
@@ -38,10 +56,10 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 					>
 						{props.name}
 					</button>
-					<div>{props.department}</div>
+					<div>{getDepartment(props.department)}</div>
 					<div>{props.email}</div>
 					<div>{props.degree}</div>
-					<div>{props.year} year</div>
+					<div>{getYear(props.year)}</div>
 					<div className="flex gap-2">
 						<div>CGPA</div>
 						<div className="text-(--text-heading)">{props.cgpa}</div>
