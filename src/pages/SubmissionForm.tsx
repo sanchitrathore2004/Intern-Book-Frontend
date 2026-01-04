@@ -229,17 +229,27 @@ const SubmissionForm = () => {
 
 					<Section title="Duration">
 						<TwoCol>
-							<input type="date" className="input" {...register("startDate")} />
-							<input type="date" className="input" {...register("endDate")} />
+							<Field error={errors.startDate?.message}>
+								<input
+									type="date"
+									className="input"
+									{...register("startDate")}
+								/>
+							</Field>
+							<Field error={errors.endDate?.message}>
+								<input type="date" className="input" {...register("endDate")} />
+							</Field>
 						</TwoCol>
 					</Section>
 
 					<button
 						type="submit"
-						className="w-full py-3 rounded-xl font-medium transition"
+						disabled={submissionLoading}
+						className={`w-full py-3 rounded-xl font-medium transition
+                       ${submissionLoading ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
 						style={{ background: "var(--accent)", color: "#000" }}
 					>
-						Submit
+						{submissionLoading ? "Submitting..." : "Submit"}
 					</button>
 				</form>
 			</div>
