@@ -1,5 +1,5 @@
 // src/components/ConfirmChangeToast.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { CompanyControllerApi } from "../../web-client/src/generated";
 import { apiConfig } from "../utils/apiConfig";
