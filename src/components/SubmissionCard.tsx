@@ -56,7 +56,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 							theme === "light" ? lightPlaceholder : darkPlaceholder;
 					}}
 				/>
-				<div className="absolute top-2 right-2 flex items-center gap-1  backdrop-blur-sm px-2 py-0.5 rounded-full text-white text-[1.2vmax] font-medium">
+				<div className="absolute top-2 right-2 flex items-center gap-1  backdrop-blur-sm px-2 py-0.5 rounded-full text--(text-light) text-[1.2vmax] font-medium">
 					❤️ {likeCount}
 				</div>
 			</div>

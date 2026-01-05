@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+const nullableNumber = z.preprocess((val) => {
+	if (val === "" || val === undefined || val === null) return null;
+	return val;
+}, z.number().nullable());
+
 export const submissionSchema = z
 	.object({
 		company: z.coerce.number().min(1, "Company is required"),
@@ -15,16 +20,31 @@ export const submissionSchema = z
 		mistakes: z.string().optional(),
 		resources: z.string().optional(),
 
-		cgpa: z.coerce.number().min(0).max(10).optional(),
+		cgpa: nullableNumber.refine((v) => v === null || (v >= 0 && v <= 10), {
+			message: "CGPA must be between 0 and 10",
+		}),
 
 		clubPositions: z.string().max(1000).optional(),
 
-		ctc: z.coerce.number().min(0).optional(),
-		basePay: z.coerce.number().min(0).optional(),
-		stipend: z.coerce.number().min(0).optional(),
+		ctc: nullableNumber.refine((v) => v === null || v >= 0, {
+			message: "CTC must be positive",
+		}),
 
-		otRounds: z.coerce.number().min(0).optional(),
-		piRounds: z.coerce.number().min(0).optional(),
+		basePay: nullableNumber.refine((v) => v === null || v >= 0, {
+			message: "Base pay must be positive",
+		}),
+
+		stipend: nullableNumber.refine((v) => v === null || v >= 0, {
+			message: "Stipend must be positive",
+		}),
+
+		otRounds: nullableNumber.refine((v) => v === null || v >= 0, {
+			message: "OT rounds must be positive",
+		}),
+
+		piRounds: nullableNumber.refine((v) => v === null || v >= 0, {
+			message: "PI rounds must be positive",
+		}),
 
 		startDate: z.string().optional(),
 		endDate: z.string().optional(),
