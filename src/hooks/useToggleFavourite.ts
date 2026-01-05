@@ -11,13 +11,19 @@ import { showSuccess } from "../utils/toast";
 interface useToggleFavouriteProps {
 	isFavourite: boolean;
 	submissionId: number;
+	likeCount: number;
 }
 
 const useToggleFavourite = (props: useToggleFavouriteProps) => {
 	const [isFavourite, setIsFavourite] = useState(props.isFavourite);
+	const [likeCount, setLikeCount] = useState(props.likeCount);
 	const { dispatch } = useContext(UserContext);
 
 	const handleToggle = useCallback(async () => {
+		setIsFavourite((prev) => {
+			setLikeCount((count) => (prev ? count - 1 : count + 1));
+			return !prev;
+		});
 		try {
 			const request: AddToFavouritesRequest = {
 				submissionId: props.submissionId,
@@ -34,11 +40,14 @@ const useToggleFavourite = (props: useToggleFavouriteProps) => {
 			else showSuccess("Removed from favourites", 1000);
 		} catch (er) {
 			console.error(er);
+			setIsFavourite(props.isFavourite);
+			setLikeCount(props.likeCount);
 		}
-	}, [dispatch, props.submissionId]);
+	}, [dispatch, props.submissionId, props.isFavourite, props.likeCount]);
 
 	return {
 		isFavourite,
+		likeCount,
 		handleToggle,
 	};
 };

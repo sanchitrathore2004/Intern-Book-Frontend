@@ -52,6 +52,7 @@ function Submission() {
 						email={submissions.email ?? ""}
 						degree={submissions.degree ?? ""}
 						year={submissions.year?.toString() ?? ""}
+						likeCount={submissions.likeCount ?? 0}
 					/>
 				</div>
 
