@@ -1,4 +1,4 @@
-import { Upload } from "lucide-react";
+import { Trash2, Upload } from "lucide-react";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -6,6 +6,7 @@ import Loader from "../components/Loader";
 import ProfilePicture from "../components/ProfilePicture";
 import SubmissionCard from "../components/SubmissionCard";
 import UserContext from "../contexts/UserContext";
+import useDeleteSubmission from "../hooks/useDeleteSubmission";
 import useGetCloudinaryCredentials from "../hooks/useGetCloudinaryCredentials";
 import useGetProfile from "../hooks/useGetProfile";
 import useUpdateProfilePicture from "../hooks/useUpdateProfilePicture";
@@ -27,6 +28,23 @@ function Profile() {
 	const toastIdRef = useRef<string | number | null>(null);
 	const navigate = useNavigate();
 	const location = useLocation();
+
+	// delete a submission
+	const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+	const { deleteSubmission, loading: deleteLoading } = useDeleteSubmission();
+
+	const handleDeleteSubmission = async (submissionId: number) => {
+		const controller = new AbortController();
+		const success = await deleteSubmission(submissionId, controller);
+
+		if (success) {
+			showSuccess("Submission deleted");
+			fetchProfileDetails(Number(user_id), new AbortController());
+		} else {
+			showError("Failed to delete submission");
+		}
+		setDeleteConfirmId(null);
+	};
 
 	useEffect(() => {
 		if (location.state?.submissionSaved) {
@@ -236,8 +254,46 @@ function Profile() {
 			</div>
 			<div className="w-[80%] h-fit rounded-[1vmax] bg-(--fore-bg) flex flex-wrap p-[2vmax] gap-[4vmax] items-center sm:justify-start justify-center mb-[2vmax]">
 				{profile.mySubmissions?.map((sub) => {
+					const isOwnProfile = String(user.id) === String(user_id);
 					return (
-						<div key={sub.id} className="w-[22vmax] h-[26vmax]">
+						<div key={sub.id} className="w-[22vmax] h-[26vmax] relative">
+							{isOwnProfile && (
+								<div className="absolute top-2 left-2 z-20 flex flex-col items-start gap-2">
+									<button
+										type="button"
+										onClick={() => setDeleteConfirmId(sub.id!)}
+										className="p-1.5 bg-black/30 hover:bg-red-600 text-white/90 rounded-full transition-all duration-200 backdrop-blur-md shadow-md group"
+										title="Delete Submission"
+									>
+										<Trash2 size={14} className="group-hover:scale-110" />
+									</button>
+
+									{deleteConfirmId === sub.id && (
+										<div className="absolute top-0 left-0 mt-8 w-36 bg-(--fore-bg) border border-red-500/40 rounded-xl p-3 shadow-2xl animate-in fade-in slide-in-from-left-2 duration-200 z-30">
+											<p className="text-[12px] text-left mb-3 font-medium text-(--text-heading)">
+												Delete this submission?
+											</p>
+											<div className="flex gap-2">
+												<button
+													type="button"
+													disabled={deleteLoading}
+													onClick={() => handleDeleteSubmission(sub.id!)}
+													className="flex-1 bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold py-1.5 rounded-lg transition-colors shadow-sm"
+												>
+													{deleteLoading ? "..." : "Delete"}
+												</button>
+												<button
+													type="button"
+													onClick={() => setDeleteConfirmId(null)}
+													className="flex-1 bg-white/10 hover:bg-white/20 text-(--text-light) text-[11px] py-1.5 rounded-lg transition-colors"
+												>
+													Cancel
+												</button>
+											</div>
+										</div>
+									)}
+								</div>
+							)}
 							<SubmissionCard
 								id={sub.id ?? 0}
 								companyLogoUrl={sub.companyLogoUrl ?? "logo"}
