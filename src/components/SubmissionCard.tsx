@@ -17,6 +17,7 @@ interface SubmissionCardProps {
 	tags: string[];
 	companyLogoUrl?: string;
 	isFavourite?: boolean;
+	likeCount?: number;
 }
 
 const getYear = (yr: string | undefined): string | undefined => {
@@ -27,10 +28,12 @@ const getYear = (yr: string | undefined): string | undefined => {
 
 function SubmissionCard(props: SubmissionCardProps) {
 	const navigate = useNavigate();
+	console.log(props.likeCount);
 	const { theme } = useTheme();
-	const { isFavourite, handleToggle } = useToggleFavourite({
+	const { isFavourite, likeCount, handleToggle } = useToggleFavourite({
 		submissionId: props.id,
 		isFavourite: props.isFavourite ?? false,
+		likeCount: props.likeCount ?? 0,
 	});
 
 	const handleShowDetials = () => {
@@ -39,7 +42,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 
 	return (
 		<div className="w-full h-full flex flex-col justify-between items-center p-1 rounded-[0.6vmax] bg-(--bg) transition-all duration-200 hover:shadow-[0_0_8px_var(--shadow-color)]">
-			<div className="w-full max-h-[40%] flex justify-center items-center">
+			<div className="relative w-full max-h-[40%] flex justify-center items-center">
 				<img
 					key={theme}
 					className="h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-contain"
@@ -53,7 +56,11 @@ function SubmissionCard(props: SubmissionCardProps) {
 							theme === "light" ? lightPlaceholder : darkPlaceholder;
 					}}
 				/>
+				<div className="absolute top-2 right-2 flex items-center gap-1  backdrop-blur-sm px-2 py-0.5 rounded-full text-white text-[1.2vmax] font-medium">
+					❤️ {likeCount}
+				</div>
 			</div>
+
 			<div className=" w-full max-h-[30%] flex flex-col justify-center items-center">
 				<div
 					style={{ fontFamily: "GoldmanSansBd" }}
@@ -101,5 +108,4 @@ function SubmissionCard(props: SubmissionCardProps) {
 		</div>
 	);
 }
-
 export default SubmissionCard;
