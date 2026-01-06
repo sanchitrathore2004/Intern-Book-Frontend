@@ -1,15 +1,55 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import {
+	type ChangeDreamCompanyRequest,
+	type ChangeDreamCompanyResponseDto,
+	CompanyControllerApi,
+} from "../../web-client/src/generated";
+import ConfirmChangeToast from "../components/ConfirmChangeToast";
 import Loader from "../components/Loader";
 import SubmissionCard from "../components/SubmissionCard";
 import useGetCompany from "../hooks/useGetCompany";
-import { showError } from "../utils/toast";
+import { apiConfig } from "../utils/apiConfig";
+import { showError, showInfo, showSuccess } from "../utils/toast";
 
 function Company() {
 	const { company_id } = useParams<{ company_id: string }>();
 	const navigate = useNavigate();
 	const { company, loading, error, fetchCompanyDetails } = useGetCompany();
+
+	const handleDreamCompanyClick = useCallback(
+		async (companyId: number) => {
+			try {
+				const companyController = new CompanyControllerApi(apiConfig);
+				const request: ChangeDreamCompanyRequest = { companyId };
+
+				const res: ChangeDreamCompanyResponseDto =
+					await companyController.changeDreamCompany(request);
+				if (!res) throw new Error("Some error occured");
+
+				if (res.removed) {
+					showInfo(`${company?.name} is removed from dream company`, 2500);
+				} else if (res.conflict) {
+					toast.info(
+						<ConfirmChangeToast
+							companyId={companyId}
+							currentCompanyName={res.currentCompanyName ?? ""}
+							newCompanyName={company?.name}
+							onDone={() => {}}
+						/>,
+						{ autoClose: false },
+					);
+				} else {
+					showSuccess(`Dream company set to ${res.currentCompanyName}`, 2500);
+				}
+			} catch (error) {
+				console.log(error);
+				if (error instanceof Error) showError(error.message);
+			}
+		},
+		[company?.name],
+	);
 
 	useEffect(() => {
 		if (!company_id) {
@@ -34,7 +74,7 @@ function Company() {
 	return (
 		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax] overflow-auto">
 			{loading && <Loader fullscreen />}
-			<ToastContainer />
+			<ToastContainer newestOnTop />
 			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[50vmax] h-[60vmax] bg-(--fore-bg) flex flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
 				<div className="w-full h-[50%] flex justify-start items-center p-[0.8vmax]">
 					<img
@@ -55,6 +95,7 @@ function Company() {
 				<div className="w-full h-[10%] flex justify-start items-center p-[0.8vmax]">
 					<button
 						type="button"
+						onClick={() => handleDreamCompanyClick(company.id ?? 1)}
 						className="w-[8vmax] h-[3vmax] rounded-[2vmax] bg-(--accent-bg) text-(--accent) text-[1.5vmax]"
 					>
 						Dream

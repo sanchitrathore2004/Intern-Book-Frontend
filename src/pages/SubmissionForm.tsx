@@ -1,24 +1,61 @@
 import "../index.css";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type Resolver, useForm } from "react-hook-form";
+import { useContext, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import Loader from "../components/Loader";
+import UserContext from "../contexts/UserContext";
+import useCreateSubmission from "../hooks/useCreateSubmission";
+import useGetAllCompany from "../hooks/useGetAllCompany";
+import useGetAllRoles from "../hooks/useGetAllRoles";
 import type { SubmissionFormData } from "../interfaces/submissionSchema";
 import { submissionSchema } from "../interfaces/submissionSchema";
 
 const SubmissionForm = () => {
+	const navigate = useNavigate();
+	const { user } = useContext(UserContext);
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
-	} = useForm<SubmissionFormData>({
-		resolver: zodResolver(submissionSchema) as Resolver<SubmissionFormData>,
+	} = useForm({
+		resolver: zodResolver(submissionSchema),
 	});
 
-	const onSubmit = (data: SubmissionFormData) => {
-		console.log(data);
+	const {
+		companies,
+		loading: companyLoading,
+		error: companyError,
+		fetchAllCompany,
+	} = useGetAllCompany();
+
+	const {
+		roles,
+		loading: roleLoading,
+		error: roleError,
+		fetchAllRoles,
+	} = useGetAllRoles();
+
+	const { createSubmission, loading: submissionLoading } =
+		useCreateSubmission();
+
+	useEffect(() => {
+		fetchAllCompany();
+		fetchAllRoles();
+	}, [fetchAllCompany, fetchAllRoles]);
+
+	const onSubmit = async (data: SubmissionFormData) => {
+		const res = await createSubmission(data);
+		if (res) {
+			navigate(`/profile/${user.id}`, { state: { submissionSaved: true } });
+		}
 	};
 
 	return (
 		<div className="h-full overflow-y-auto no-scrollbar">
+			{submissionLoading && <Loader size={100} />}
+			<ToastContainer newestOnTop />
 			<div className="min-h-full px-4 py-6 flex justify-center">
 				<form
 					onSubmit={handleSubmit(onSubmit)}
@@ -32,41 +69,63 @@ const SubmissionForm = () => {
 						<h1 className="text-2xl sm:text-3xl font-semibold">
 							Create Submission
 						</h1>
-						<p className="text-sm text-[var(--text-light)]">
+						<p className="text-sm text-(--text-light)">
 							Share your internship / placement experience
 						</p>
 					</div>
-
 					<Section title="Company & Role">
 						<TwoCol>
 							<Field error={errors.company?.message}>
 								<label htmlFor="company" className="field-label">
 									Company
 								</label>
-								<select id="company" className="input" {...register("company")}>
-									<option value="">Select company</option>
-									<option value="Google">Google</option>
-									<option value="Microsoft">Microsoft</option>
-									<option value="Amazon">Amazon</option>
+								<select
+									id="company"
+									className="input"
+									{...register("company")}
+									disabled={companyLoading}
+								>
+									<option value="">
+										{companyLoading ? "Loading companies..." : "Select company"}
+									</option>
+									{companies.map((company) => (
+										<option key={company.id} value={company.id}>
+											{company.name}
+										</option>
+									))}
 								</select>
+								{companyError && (
+									<p className="text-sm text-red-400">
+										Failed to load companies
+									</p>
+								)}
 							</Field>
 
 							<Field error={errors.role?.message}>
 								<label htmlFor="role" className="field-label">
 									Role
 								</label>
-								<select id="role" className="input" {...register("role")}>
-									<option value="">Select role</option>
-									<option value="Software Engineer Intern">
-										Software Engineer Intern
+								<select
+									id="role"
+									className="input"
+									{...register("role")}
+									disabled={roleLoading}
+								>
+									<option value="">
+										{roleLoading ? "Loading roles..." : "Select role"}
 									</option>
-									<option value="Backend Developer">Backend Developer</option>
-									<option value="Frontend Developer">Frontend Developer</option>
+									{roles.map((role) => (
+										<option key={role.id} value={role.id}>
+											{role.name}
+										</option>
+									))}
 								</select>
+								{roleError && (
+									<p className="text-sm text-red-400">Failed to load roles</p>
+								)}
 							</Field>
 						</TwoCol>
 					</Section>
-
 					<Section title="Submission Type">
 						<Field error={errors.type?.message}>
 							<select className="input" {...register("type")}>
@@ -81,7 +140,7 @@ const SubmissionForm = () => {
 					<Section title="Experience">
 						<Field error={errors.experience?.message}>
 							<textarea
-								className="textarea min-h-[160px]"
+								className="textarea min-h-40"
 								{...register("experience")}
 								placeholder="Write your detailed experience"
 							/>
@@ -170,17 +229,27 @@ const SubmissionForm = () => {
 
 					<Section title="Duration">
 						<TwoCol>
-							<input type="date" className="input" {...register("startDate")} />
-							<input type="date" className="input" {...register("endDate")} />
+							<Field error={errors.startDate?.message}>
+								<input
+									type="date"
+									className="input"
+									{...register("startDate")}
+								/>
+							</Field>
+							<Field error={errors.endDate?.message}>
+								<input type="date" className="input" {...register("endDate")} />
+							</Field>
 						</TwoCol>
 					</Section>
 
 					<button
 						type="submit"
-						className="w-full py-3 rounded-xl font-medium transition"
+						disabled={submissionLoading}
+						className={`w-full py-3 rounded-xl font-medium transition
+                       ${submissionLoading ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
 						style={{ background: "var(--accent)", color: "#000" }}
 					>
-						Submit
+						{submissionLoading ? "Submitting..." : "Submit"}
 					</button>
 				</form>
 			</div>
@@ -188,7 +257,7 @@ const SubmissionForm = () => {
 	);
 };
 
-/* ---------- UI helpers ---------- */
+/* ================= UI HELPERS ================= */
 
 function Field({
 	children,

@@ -16,7 +16,7 @@ const FetchedSubmission = ({ submissions }: Props) => {
 					!submission.year ||
 					!submission.tags
 				) {
-					return null; // card failed to load, error can be shown
+					return null;
 				}
 				return (
 					<div key={submission.id} className="w-[22vmax] h-[28vmax]">
@@ -30,6 +30,7 @@ const FetchedSubmission = ({ submissions }: Props) => {
 							userName={submission.userName}
 							year={submission.year}
 							isFavourite={submission.favourite}
+							likeCount={submission.likeCount}
 						/>
 					</div>
 				);

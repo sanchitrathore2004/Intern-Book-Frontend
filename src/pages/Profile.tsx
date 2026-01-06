@@ -1,18 +1,57 @@
-import { useCallback, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { Trash2, Upload } from "lucide-react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 import Loader from "../components/Loader";
 import ProfilePicture from "../components/ProfilePicture";
 import SubmissionCard from "../components/SubmissionCard";
+import UserContext from "../contexts/UserContext";
+import useDeleteSubmission from "../hooks/useDeleteSubmission";
+import useGetCloudinaryCredentials from "../hooks/useGetCloudinaryCredentials";
 import useGetProfile from "../hooks/useGetProfile";
+import useUpdateProfilePicture from "../hooks/useUpdateProfilePicture";
+import UploadModal from "../modals/UploadModal";
 import { DepartmentConfig } from "../utils/departmentConfig";
-import { showError } from "../utils/toast";
+import { showError, showSuccess } from "../utils/toast";
 import { YearConfig } from "../utils/yearConfig";
 
 function Profile() {
 	const { user_id } = useParams<{ user_id: string }>();
 	const { profile, loading, error, fetchProfileDetails } = useGetProfile();
+	const { cloudinaryCredentials, fetchCloudinaryCredentials } =
+		useGetCloudinaryCredentials();
+	const { updateUserProfilePicture } = useUpdateProfilePicture();
+	const { dispatch, user } = useContext(UserContext);
+	const uploadControllerRef = useRef<AbortController | null>(null);
+	const [pendingUploadFile, setPendingUploadFile] = useState<File | null>(null);
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const toastIdRef = useRef<string | number | null>(null);
 	const navigate = useNavigate();
+	const location = useLocation();
+
+	// delete a submission
+	const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+	const { deleteSubmission, loading: deleteLoading } = useDeleteSubmission();
+
+	const handleDeleteSubmission = async (submissionId: number) => {
+		const controller = new AbortController();
+		const success = await deleteSubmission(submissionId, controller);
+
+		if (success) {
+			showSuccess("Submission deleted");
+			fetchProfileDetails(Number(user_id), new AbortController());
+		} else {
+			showError("Failed to delete submission");
+		}
+		setDeleteConfirmId(null);
+	};
+
+	useEffect(() => {
+		if (location.state?.submissionSaved) {
+			showSuccess("Submission saved successfully!");
+			navigate(location.pathname, { replace: true, state: {} });
+		}
+	}, [location, navigate]);
 
 	const getDepartment = useCallback(
 		(dept: string | undefined): string | undefined => {
@@ -32,6 +71,94 @@ function Profile() {
 	const handleDreamCompanyClick = () => {
 		navigate(`/company/${profile?.favouriteCompany?.id}`);
 	};
+
+	const sendUploadSecureUrlToBackend = useCallback(
+		async (secureUrl: string) => {
+			const controller = new AbortController();
+			try {
+				const success = await updateUserProfilePicture(secureUrl, controller);
+				if (success) {
+					dispatch({
+						type: "UPDATE_PROFILE",
+						payload: { profileUrl: secureUrl },
+					});
+					toast.update(toastIdRef.current!, {
+						render: "Profile updated!",
+						type: "success",
+						isLoading: false,
+						autoClose: 3000,
+					});
+				} else {
+					toast.update(toastIdRef.current!, {
+						render:
+							"Profile updated successfully, it will take a while to reflect on the complete site",
+						type: "error",
+						isLoading: false,
+						autoClose: 3000,
+					});
+				}
+			} catch (error) {
+				toast.update(toastIdRef.current!, {
+					render: "Upload failed",
+					type: "error",
+					isLoading: false,
+					autoClose: 1000,
+				});
+			}
+		},
+		[updateUserProfilePicture, dispatch],
+	);
+
+	const uploadProfilePhoto = useCallback(async () => {
+		if (
+			!cloudinaryCredentials ||
+			!cloudinaryCredentials.apiKey ||
+			!cloudinaryCredentials.timeStamp ||
+			!cloudinaryCredentials.signature ||
+			!cloudinaryCredentials.folder ||
+			!cloudinaryCredentials.cloudName
+		) {
+			// add toast
+			return;
+		}
+		if (!pendingUploadFile) return;
+		const formData = new FormData();
+		formData.append("file", pendingUploadFile);
+		formData.append("api_key", cloudinaryCredentials.apiKey);
+		formData.append("timestamp", cloudinaryCredentials.timeStamp.toString());
+		formData.append("signature", cloudinaryCredentials.signature);
+		formData.append("folder", cloudinaryCredentials.folder);
+		const cloudinaryUploadResponse = await fetch(
+			`https://api.cloudinary.com/v1_1/${cloudinaryCredentials.cloudName}/image/upload`,
+			{
+				method: "POST",
+				body: formData,
+			},
+		);
+		if (!cloudinaryUploadResponse.ok) {
+			const error = await cloudinaryUploadResponse.json();
+			throw new Error(error?.error?.message || "Upload failed");
+		}
+		const formattedCloudinaryUploadResposne =
+			await cloudinaryUploadResponse.json();
+		sendUploadSecureUrlToBackend(formattedCloudinaryUploadResposne.secure_url);
+	}, [cloudinaryCredentials, sendUploadSecureUrlToBackend, pendingUploadFile]);
+
+	const handleProfileUpload = (file: File) => {
+		uploadControllerRef.current?.abort();
+		const controller = new AbortController();
+		uploadControllerRef.current = controller;
+		setPendingUploadFile(file);
+		toastIdRef.current = toast.loading(
+			"Updating profile picture, this may take a while..",
+		);
+		fetchCloudinaryCredentials(controller);
+	};
+
+	useEffect(() => {
+		if (!cloudinaryCredentials || !pendingUploadFile) return;
+		uploadProfilePhoto();
+	}, [cloudinaryCredentials, pendingUploadFile, uploadProfilePhoto]);
 
 	useEffect(() => {
 		if (!user_id) {
@@ -55,12 +182,31 @@ function Profile() {
 
 	return (
 		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax] overflow-auto">
-			<ToastContainer />
+			{isModalOpen && String(user.id) === String(user_id) && (
+				<UploadModal
+					setIsModalOpen={setIsModalOpen}
+					callFunc={handleProfileUpload}
+				/>
+			)}
+			<ToastContainer newestOnTop />
 			{loading && <Loader fullscreen />}
 			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[20vmax] h-[35vmax] bg-(--fore-bg) flex sm:flex-row flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
 				<div className="sm:h-[10vmax] sm:w-[20%] w-full h-[40%] rounded-[1.5vmax] flex justify-start items-start">
-					<div className="h-full w-[30%] sm:w-full object-center object-cover rounded-[1.5vmax]">
-						<ProfilePicture profileUrl={profile.profileUrl ?? ""} />
+					<div className="group relative h-full w-[30%] sm:w-full object-center object-cover rounded-[1.5vmax]">
+						{String(user.id) === String(user_id) && (
+							<Upload
+								onClick={() => setIsModalOpen(true)}
+								className="opacity-0 group-hover:opacity-100 transition-opacity
+			duration-200 text-(--text-heading) mix-blend-difference absolute top-2 left-2 cursor-pointer"
+							/>
+						)}
+						<ProfilePicture
+							profileUrl={
+								String(user.id) === String(user_id)
+									? (user.profileUrl ?? "")
+									: (profile.profileUrl ?? "")
+							}
+						/>
 					</div>
 				</div>
 				<div className="sm:w-[80%] w-full h-[10vmax] flex flex-col justify-center items-center text-(--text-light) sm:gap-0 gap-[0.5vmax]">
@@ -83,27 +229,71 @@ function Profile() {
 						{getYear(profile.year?.toString())}
 					</div>
 				</div>
-				<div className="sm:w-[20%] w-full h-full flex flex-col items-end justify-end gap-[0.7vmax]">
-					<div className="font-light text-[#828282] pr-[0.4vmax] text-[1vmax]">
-						Dream Company
+				{profile.favouriteCompany?.id ? (
+					<div className="sm:w-[20%] w-full h-full flex flex-col items-end justify-end gap-[0.7vmax]">
+						<div className="font-light text-(--text-light) pr-[0.4vmax] text-[1vmax]">
+							Dream Company
+						</div>
+						<button
+							type="button"
+							onClick={handleDreamCompanyClick}
+							className="cursor-pointer bg-transparent border-none p-0"
+						>
+							<img
+								className="w-[7vmax] h-[3vmax] pr-[1vmax] object-contain"
+								src={profile.favouriteCompany?.logoUrl}
+								alt="Dream Company"
+							/>
+						</button>
 					</div>
-					<button
-						type="button"
-						onClick={handleDreamCompanyClick}
-						className="cursor-pointer bg-transparent border-none p-0"
-					>
-						<img
-							className="w-[7vmax] h-[3vmax] pr-[1vmax] object-contain"
-							src={profile.favouriteCompany?.logoUrl}
-							alt="Dream Company"
-						/>
-					</button>
-				</div>
+				) : (
+					<div className="sm:w-[30%] w-full h-full flex flex-col items-end justify-end gap-[0.7vmax] text-(--text-light)">
+						Dream Company: TBD
+					</div>
+				)}
 			</div>
 			<div className="w-[80%] h-fit rounded-[1vmax] bg-(--fore-bg) flex flex-wrap p-[2vmax] gap-[4vmax] items-center sm:justify-start justify-center mb-[2vmax]">
 				{profile.mySubmissions?.map((sub) => {
+					const isOwnProfile = String(user.id) === String(user_id);
 					return (
-						<div key={sub.id} className="w-[22vmax] h-[26vmax]">
+						<div key={sub.id} className="w-[22vmax] h-[26vmax] relative">
+							{isOwnProfile && (
+								<div className="absolute top-2 left-2 z-20 flex flex-col items-start gap-2">
+									<button
+										type="button"
+										onClick={() => setDeleteConfirmId(sub.id!)}
+										className="p-1.5 bg-black/30 hover:bg-red-600 text-white/90 rounded-full transition-all duration-200 backdrop-blur-md shadow-md group"
+										title="Delete Submission"
+									>
+										<Trash2 size={14} className="group-hover:scale-110" />
+									</button>
+
+									{deleteConfirmId === sub.id && (
+										<div className="absolute top-0 left-0 mt-8 w-36 bg-(--fore-bg) border border-red-500/40 rounded-xl p-3 shadow-2xl animate-in fade-in slide-in-from-left-2 duration-200 z-30">
+											<p className="text-[12px] text-left mb-3 font-medium text-(--text-heading)">
+												Delete this submission?
+											</p>
+											<div className="flex gap-2">
+												<button
+													type="button"
+													disabled={deleteLoading}
+													onClick={() => handleDeleteSubmission(sub.id!)}
+													className="flex-1 bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold py-1.5 rounded-lg transition-colors shadow-sm"
+												>
+													{deleteLoading ? "..." : "Delete"}
+												</button>
+												<button
+													type="button"
+													onClick={() => setDeleteConfirmId(null)}
+													className="flex-1 bg-white/10 hover:bg-white/20 text-(--text-light) text-[11px] py-1.5 rounded-lg transition-colors"
+												>
+													Cancel
+												</button>
+											</div>
+										</div>
+									)}
+								</div>
+							)}
 							<SubmissionCard
 								id={sub.id ?? 0}
 								companyLogoUrl={sub.companyLogoUrl ?? "logo"}

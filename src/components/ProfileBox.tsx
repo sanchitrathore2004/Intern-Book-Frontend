@@ -1,6 +1,9 @@
 import { Bookmark } from "lucide-react";
+import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import useToggleFavourite from "../hooks/useToggleFavourite";
+import { DepartmentConfig } from "../utils/departmentConfig";
+import { YearConfig } from "../utils/yearConfig";
 import ProfilePicture from "./ProfilePicture";
 
 interface ProfileBoxProps {
@@ -14,11 +17,27 @@ interface ProfileBoxProps {
 	degree: string;
 	year: string;
 	isFavourite: boolean;
+	likeCount: number;
 }
 
 export const ProfileBox = (props: ProfileBoxProps) => {
 	const navigate = useNavigate();
-	const { isFavourite, handleToggle } = useToggleFavourite(props);
+	const { isFavourite, likeCount, handleToggle } = useToggleFavourite(props);
+
+	const getDepartment = useCallback(
+		(dept: string | undefined): string | undefined => {
+			if (dept === undefined) return "NA";
+			const departmentConfig = new DepartmentConfig();
+			return departmentConfig.getDepartment(dept);
+		},
+		[],
+	);
+
+	const getYear = useCallback((yr: string | undefined): string | undefined => {
+		if (yr === undefined) return "NA";
+		const yearConfig = new YearConfig();
+		return yearConfig.getYear(yr);
+	}, []);
 
 	return (
 		<>
@@ -38,29 +57,36 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 					>
 						{props.name}
 					</button>
-					<div>{props.department}</div>
+					<div>{getDepartment(props.department)}</div>
 					<div>{props.email}</div>
 					<div>{props.degree}</div>
-					<div>{props.year} year</div>
+					<div>{getYear(props.year)}</div>
 					<div className="flex gap-2">
 						<div>CGPA</div>
 						<div className="text-(--text-heading)">{props.cgpa}</div>
 					</div>
 				</div>
-				<button
-					type="button"
-					onClick={handleToggle}
-					className="hover:cursor-pointer self-start ml-auto"
-				>
-					{isFavourite ? (
-						<Bookmark
-							className="text-(--accent) w-4 lg:w-8"
-							fill="var(--accent)"
-						/>
-					) : (
-						<Bookmark className="text-(--accent) w-4 lg:w-8" />
-					)}
-				</button>
+				<div className="flex items-center gap-2 self-start ml-auto">
+					<div className="text-(--text-light) text-sm flex items-center gap-1">
+						<span>❤️</span>
+						<span className="font-medium">{likeCount}</span>
+					</div>
+
+					<button
+						type="button"
+						onClick={handleToggle}
+						className="hover:cursor-pointer"
+					>
+						{isFavourite ? (
+							<Bookmark
+								className="text-(--accent) w-4 lg:w-8"
+								fill="var(--accent)"
+							/>
+						) : (
+							<Bookmark className="text-(--accent) w-4 lg:w-8" />
+						)}
+					</button>
+				</div>
 			</div>
 			{/* Mobile only */}
 			<div className="flex md:hidden flex-col bg-(--fore-bg) p-4 rounded-[0.75em]  w-full">
@@ -95,6 +121,10 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 					<div className="flex gap-2">
 						<div>CGPA</div>
 						<div className="text-(--text-heading)">{props.cgpa}</div>
+					</div>
+					<div className="flex items-center gap-2 mt-1 text-(--text-light)">
+						<span>❤️</span>
+						<span className="font-medium">{likeCount}</span>
 					</div>
 				</div>
 			</div>

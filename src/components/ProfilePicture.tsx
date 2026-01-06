@@ -1,4 +1,4 @@
-import type { ProfilePictureProps } from "../interfaces/ProfilePicture";
+import type { ProfilePictureProps } from "../interfaces/ProfilePictureProps";
 
 const ProfilePicture = (props: ProfilePictureProps) => {
 	return (
