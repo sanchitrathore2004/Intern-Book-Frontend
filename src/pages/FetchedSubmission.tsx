@@ -19,7 +19,7 @@ const FetchedSubmission = ({ submissions }: Props) => {
 					return null;
 				}
 				return (
-					<div key={submission.id} className="w-[22vmax] h-[28vmax]">
+					<div key={submission.id} className="w-[22vmax] h-[29vmax]">
 						<SubmissionCard
 							id={submission.id}
 							companyLogoUrl={submission.companyLogoUrl}

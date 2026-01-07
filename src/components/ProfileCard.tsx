@@ -21,7 +21,7 @@ const ProfileCard = () => {
 				<button
 					type="button"
 					onClick={handleOnNewSubmission}
-					className="w-8 h-8 bg-(--accent) text-(--fore-bg) rounded-full flex items-center justify-center text-lg hover:scale-105 transition"
+					className="w-8 h-8 bg-(--accent) text-(--fore-bg) rounded-full flex items-center justify-center text-lg hover:scale-105 cursor-pointer transition-all active:scale-95"
 				>
 					+
 				</button>

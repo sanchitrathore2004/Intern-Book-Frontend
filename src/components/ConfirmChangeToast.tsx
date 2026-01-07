@@ -48,7 +48,7 @@ export default function ConfirmChangeToast({
 				<button
 					type="button"
 					onClick={() => toast.dismiss()}
-					className="px-3 py-1 rounded bg-(--line-color)"
+					className="px-3 py-1 rounded bg-(--line-color) transition-all active:scale-95 cursor-pointer hover:bg-(--fore-bg)"
 					disabled={loading}
 				>
 					No
@@ -57,7 +57,7 @@ export default function ConfirmChangeToast({
 				<button
 					type="button"
 					onClick={handleConfirm}
-					className="px-3 py-1 rounded bg-(--accent) text-(--bg)"
+					className="px-3 py-1 rounded bg-(--accent) text-(--bg) transition-all active:scale-95 cursor-pointer hover:bg-(--accent-hover)"
 					disabled={loading}
 				>
 					{loading ? "Changing..." : "Yes, change"}

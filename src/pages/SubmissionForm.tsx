@@ -245,8 +245,8 @@ const SubmissionForm = () => {
 					<button
 						type="submit"
 						disabled={submissionLoading}
-						className={`w-full py-3 rounded-xl font-medium transition
-                       ${submissionLoading ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+						className={`w-full py-3 rounded-xl font-medium transition-all
+                       ${submissionLoading ? "opacity-60 cursor-not-allowed" : "cursor-pointer"} active:scale-95`}
 						style={{ background: "var(--accent)", color: "#000" }}
 					>
 						{submissionLoading ? "Submitting..." : "Submit"}
