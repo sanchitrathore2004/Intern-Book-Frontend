@@ -35,7 +35,7 @@ const FavouritesCard: React.FC<FavouritesCardProps> = ({
           w-full flex justify-between items-center
           py-2 text-sm text-(--text-heading)
           hover:bg-(--hover-bg)
-          transition rounded-md px-2"
+          transition rounded-md px-2 cursor-pointer"
 								onClick={() => handleShowDetials(item.id)}
 							>
 								<div className="hover:underline">
@@ -51,7 +51,7 @@ const FavouritesCard: React.FC<FavouritesCardProps> = ({
 			<button
 				type="button"
 				onClick={onSeeMore}
-				className="text-(--accent) text-xs mt-3 hover:underline"
+				className="text-(--accent) text-xs mt-3 hover:underline cursor-pointer"
 			>
 				See More
 			</button>

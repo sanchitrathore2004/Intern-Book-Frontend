@@ -8,9 +8,6 @@ import {
 	type JwtResponseDto,
 	type UserDto,
 } from "../../web-client/src/generated";
-import AppIcon from "../assets/images/app_icon_light.png";
-import BackgroundImage from "../assets/images/bgimage.png";
-import DAuthLogo from "../assets/images/deltaLogo.svg";
 import { DAUTH_CLIENT_ID, DAUTH_REDIRECT_URI } from "../config/config";
 import UserContext from "../contexts/UserContext";
 import useRestoreUser from "../hooks/useRestoreUser";
@@ -150,16 +147,14 @@ const Login = () => {
 			<ToastContainer newestOnTop />
 			<div
 				className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
-				style={{ backgroundImage: `url(${BackgroundImage})` }}
+				style={{ backgroundImage: `url(/assets/images/bgimage.png)` }}
 			/>
 			<div className="absolute top-0 left-0 w-full md:w-[35%] h-[35%] md:h-full bg-[#8a7a3a]/15 border-b md:border-b-0 md:border-r border-white/5 backdrop-blur-[1px] z-10" />
 			<div className="relative z-20 flex flex-col md:flex-row items-center justify-center w-full max-w-5xl">
 				<div
-					className="w-full max-w-[290px] md:max-w-[300px] h-[320px] md:h-[460px] bg-[#1a1a1a] 
-            /* Mobile: Only top corners rounded. Laptop: All corners rounded */
+					className="w-full max-w-72.5 md:max-w-75 h-80 md:h-115 bg-[#1a1a1a] 
             rounded-t-[40px] md:rounded-[40px] 
             shadow-2xl flex flex-col items-center justify-center md:justify-between p-8 md:p-10 text-center border border-white/10 
-            /* z-index is lower than yellow card */
             z-20 md:z-30 md:-translate-y-8"
 				>
 					<div className="space-y-1 mb-6 md:mb-0">
@@ -173,7 +168,8 @@ const Login = () => {
 
 					<div className="mb-8 md:mb-0">
 						<img
-							src={AppIcon}
+							fetchPriority="high"
+							src="/assets/images/app_icon_light.png"
 							alt="InternBook Logo"
 							className="w-20 h-20 md:w-24 md:h-24 object-contain"
 						/>
@@ -185,11 +181,9 @@ const Login = () => {
 				</div>
 
 				<div
-					className="w-full max-w-[290px] md:max-w-[300px] h-[320px] md:h-[460px] bg-[#eef0bc] 
-            /* All corners rounded to overlap the black card properly */
-            rounded-[40px] 
+					className="w-full max-w-72.5 md:max-w-75 h-80 md:h-115 bg-[#eef0bc] 
+            rounded-10 
             shadow-[0_-10px_25px_rgba(0,0,0,0.3)] flex flex-col items-center justify-center p-8 md:p-10 
-            /* z-index is higher to stay on top. -mt-16 pulls it over the black card */
             z-40 -mt-16 md:mt-0 md:translate-y-8 md:ml-10"
 				>
 					<div className="w-full text-left mb-8 md:mb-12">
@@ -202,11 +196,12 @@ const Login = () => {
 					<button
 						type="button"
 						onClick={handleDAuthLogin}
-						className="w-full flex items-center justify-center gap-3 bg-black text-white py-3 rounded-2xl hover:bg-zinc-900 transition-all active:scale-95 shadow-xl"
+						className="w-full flex items-center justify-center gap-3 bg-black text-white py-3 rounded-2xl hover:bg-zinc-900 transition-all active:scale-95 shadow-xl cursor-pointer"
 					>
 						<span className="text-sm font-medium opacity-80">Login with</span>
 						<img
-							src={DAuthLogo}
+							fetchPriority="high"
+							src="/assets/svgs/deltaLogo.svg"
 							alt="DAuth Logo"
 							className="h-5 w-5 object-contain"
 						/>

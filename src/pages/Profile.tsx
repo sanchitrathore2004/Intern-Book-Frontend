@@ -31,6 +31,7 @@ function Profile() {
 
 	// delete a submission
 	const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+	const confirmRef = useRef<HTMLDivElement | null>(null);
 	const { deleteSubmission, loading: deleteLoading } = useDeleteSubmission();
 
 	const handleDeleteSubmission = async (submissionId: number) => {
@@ -45,6 +46,27 @@ function Profile() {
 		}
 		setDeleteConfirmId(null);
 	};
+
+	useEffect(() => {
+		if (deleteConfirmId === null) return;
+		const handleClickOutside = (e: MouseEvent) => {
+			if (
+				confirmRef.current &&
+				!confirmRef.current.contains(e.target as Node)
+			) {
+				setDeleteConfirmId(null);
+			}
+		};
+		const handleEsc = (e: KeyboardEvent) => {
+			if (e.key === "Escape") setDeleteConfirmId(null);
+		};
+		document.addEventListener("mousedown", handleClickOutside);
+		document.addEventListener("keydown", handleEsc);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+			document.removeEventListener("keydown", handleEsc);
+		};
+	}, [deleteConfirmId]);
 
 	useEffect(() => {
 		if (location.state?.submissionSaved) {
@@ -77,33 +99,37 @@ function Profile() {
 			const controller = new AbortController();
 			try {
 				const success = await updateUserProfilePicture(secureUrl, controller);
-				if (success) {
-					dispatch({
-						type: "UPDATE_PROFILE",
-						payload: { profileUrl: secureUrl },
-					});
-					toast.update(toastIdRef.current!, {
-						render: "Profile updated!",
-						type: "success",
-						isLoading: false,
-						autoClose: 3000,
-					});
-				} else {
-					toast.update(toastIdRef.current!, {
-						render:
-							"Profile updated successfully, it will take a while to reflect on the complete site",
-						type: "error",
-						isLoading: false,
-						autoClose: 3000,
-					});
+				if (toastIdRef.current) {
+					if (success) {
+						dispatch({
+							type: "UPDATE_PROFILE",
+							payload: { profileUrl: secureUrl },
+						});
+						toast.update(toastIdRef.current, {
+							render: "Profile updated!",
+							type: "success",
+							isLoading: false,
+							autoClose: 3000,
+						});
+					} else {
+						toast.update(toastIdRef.current, {
+							render:
+								"Profile updated successfully, it will take a while to reflect on the complete site",
+							type: "error",
+							isLoading: false,
+							autoClose: 3000,
+						});
+					}
 				}
 			} catch (error) {
-				toast.update(toastIdRef.current!, {
-					render: "Upload failed",
-					type: "error",
-					isLoading: false,
-					autoClose: 1000,
-				});
+				console.error(error);
+				if (toastIdRef.current)
+					toast.update(toastIdRef.current, {
+						render: "Upload failed",
+						type: "error",
+						isLoading: false,
+						autoClose: 1000,
+					});
 			}
 		},
 		[updateUserProfilePicture, dispatch],
@@ -242,7 +268,7 @@ function Profile() {
 							<img
 								className="w-[7vmax] h-[3vmax] pr-[1vmax] object-contain"
 								src={profile.favouriteCompany?.logoUrl}
-								alt="Dream Company"
+								alt={profile.favouriteCompany.name}
 							/>
 						</button>
 					</div>
@@ -256,20 +282,23 @@ function Profile() {
 				{profile.mySubmissions?.map((sub) => {
 					const isOwnProfile = String(user.id) === String(user_id);
 					return (
-						<div key={sub.id} className="w-[22vmax] h-[26vmax] relative">
+						<div key={sub.id} className="w-[22vmax] h-[29vmax] relative">
 							{isOwnProfile && (
 								<div className="absolute top-2 left-2 z-20 flex flex-col items-start gap-2">
 									<button
 										type="button"
 										onClick={() => setDeleteConfirmId(sub.id!)}
-										className="p-1.5 bg-black/30 hover:bg-red-600 text-white/90 rounded-full transition-all duration-200 backdrop-blur-md shadow-md group"
+										className="p-1.5 bg-black/30 hover:bg-red-600 text-white/90 rounded-full transition-all duration-200 backdrop-blur-md shadow-md group cursor-pointer"
 										title="Delete Submission"
 									>
 										<Trash2 size={14} className="group-hover:scale-110" />
 									</button>
 
 									{deleteConfirmId === sub.id && (
-										<div className="absolute top-0 left-0 mt-8 w-36 bg-(--fore-bg) border border-red-500/40 rounded-xl p-3 shadow-2xl animate-in fade-in slide-in-from-left-2 duration-200 z-30">
+										<div
+											ref={confirmRef}
+											className="absolute top-0 left-0 mt-8 w-36 bg-(--fore-bg) border border-red-500/40 rounded-xl p-3 shadow-2xl animate-in fade-in slide-in-from-left-2 duration-200 z-30"
+										>
 											<p className="text-[12px] text-left mb-3 font-medium text-(--text-heading)">
 												Delete this submission?
 											</p>
@@ -278,14 +307,14 @@ function Profile() {
 													type="button"
 													disabled={deleteLoading}
 													onClick={() => handleDeleteSubmission(sub.id!)}
-													className="flex-1 bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold py-1.5 rounded-lg transition-colors shadow-sm"
+													className="flex-1 bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold py-1.5 rounded-lg transition-colors shadow-sm cursor-pointer transision-all active:scale-95"
 												>
 													{deleteLoading ? "..." : "Delete"}
 												</button>
 												<button
 													type="button"
 													onClick={() => setDeleteConfirmId(null)}
-													className="flex-1 bg-white/10 hover:bg-white/20 text-(--text-light) text-[11px] py-1.5 rounded-lg transition-colors"
+													className="flex-1 bg-white/10 hover:bg-white/20 text-(--text-light) text-[11px] py-1.5 rounded-lg transition-colors cursor-pointer transision-all active:scale-95"
 												>
 													Cancel
 												</button>
