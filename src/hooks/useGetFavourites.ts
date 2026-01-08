@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
 	type SubmissionCardResponseDto,
 	UserControllerApi,
@@ -12,7 +12,7 @@ const useGetFavourites = () => {
 	const [error, setError] = useState<Error | null>(null);
 	const [loading, setLoading] = useState(false);
 
-	const fetchFavourites = async () => {
+	const fetchFavourites = useCallback(async () => {
 		setLoading(true);
 		setError(null);
 
@@ -26,7 +26,7 @@ const useGetFavourites = () => {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, []);
 
 	return {
 		submissions,

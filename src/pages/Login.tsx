@@ -1,5 +1,5 @@
 import { useCallback, useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { createSearchParams, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import {
 	AuthControllerApi,
@@ -71,7 +71,15 @@ const Login = () => {
 				dispatch({ type: "UPDATE_PROFILE", payload: user });
 				userRestore();
 
-				navigate("/home", { state: { loggedIn: true } });
+				navigate(
+					{
+						pathname: "/home",
+						search: createSearchParams({
+							view: "home",
+						}).toString(),
+					},
+					{ state: { loggedIn: true } },
+				);
 			} catch (err) {
 				console.error("Login failed:", err);
 				showError("Login failed!");

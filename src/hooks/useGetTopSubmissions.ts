@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
 	type SubmissionCardResponseDto,
 	SubmissionControllerApi,
@@ -12,23 +12,22 @@ const useGetTopSubmissions = () => {
 	const [error, setError] = useState<Error | null>(null);
 	const [loading, setLoading] = useState(true);
 
-	useEffect(() => {
-		const submissionControllerApi = new SubmissionControllerApi(apiConfig);
-
-		submissionControllerApi
-			.getTopSubmissions()
-			.then((res) => {
-				setSubmissions(res ?? []);
-			})
-			.catch((err) => {
-				setError(err as Error);
-			})
-			.finally(() => {
-				setLoading(false);
-			});
+	const fetchTopSubmissions = useCallback(async () => {
+		setLoading(true);
+		setError(null);
+		try {
+			const submissionControllerApi = new SubmissionControllerApi(apiConfig);
+			const res = await submissionControllerApi.getTopSubmissions();
+			setSubmissions(res ?? []);
+		} catch (err) {
+			if (err instanceof Error) setError(err);
+			else setError(new Error("Failed to fetch favourites"));
+		} finally {
+			setLoading(false);
+		}
 	}, []);
 
-	return { submissions, error, loading };
+	return { submissions, error, loading, fetchTopSubmissions };
 };
 
 export default useGetTopSubmissions;
