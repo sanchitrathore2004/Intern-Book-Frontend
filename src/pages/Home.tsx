@@ -1,5 +1,5 @@
-import { type ReactNode, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { type ReactNode, useEffect } from "react";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Loader from "../components/Loader";
 import ProfileSidebar from "../components/ProfileSideBar";
@@ -9,12 +9,15 @@ import FetchedSubmission from "../pages/FetchedSubmission";
 import { showError, showSuccess } from "../utils/toast";
 
 const Home = () => {
-	const [view, setView] = useState<"top" | "favourites">("top");
+	type HomeView = "top" | "favourite";
+	const [searchParams, setSearchParams] = useSearchParams();
+	const view = (searchParams.get("view") as HomeView) ?? "top";
 
 	const {
 		submissions: topSubmissions,
 		loading: topLoading,
 		error: topError,
+		fetchTopSubmissions,
 	} = useGetTopSubmissions();
 
 	const {
@@ -30,9 +33,17 @@ const Home = () => {
 	const error = view === "top" ? topError : favError;
 
 	const handleSeeMoreFavourites = () => {
-		setView("favourites");
-		fetchFavourites();
+		setSearchParams({ view: "favourite" });
 	};
+
+	useEffect(() => {
+		if (view === "favourite") {
+			fetchFavourites();
+		} else {
+			fetchTopSubmissions();
+		}
+	}, [view, fetchFavourites, fetchTopSubmissions]);
+
 	const location = useLocation();
 	const navigate = useNavigate();
 

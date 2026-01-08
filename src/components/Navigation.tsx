@@ -76,6 +76,10 @@ function Navigation(props: NavigationBarProps) {
 		return () => document.removeEventListener("click", onDoc);
 	}, []);
 
+	const onClickFavourites = () => {
+		navigate("/home?view=favourite");
+	};
+
 	return (
 		<div className="w-full h-full flex justify-between items-center border-b border-(--line-color)">
 			{/* Logo & Name */}
@@ -190,7 +194,9 @@ function Navigation(props: NavigationBarProps) {
 				>
 					<Search className="text-(--text-light) w-full" />
 				</button>
-				<div
+				<button
+					type="button"
+					onClick={onClickFavourites}
 					className="h-[50%] w-fit aspect-square
             bg-(--bg)
             border-[0.5px] border-(--border-color)
@@ -202,7 +208,7 @@ function Navigation(props: NavigationBarProps) {
 			"
 				>
 					<Bookmark className="text-(--accent) w-full" fill="var(--accent)" />
-				</div>
+				</button>
 
 				<button
 					type="button"
