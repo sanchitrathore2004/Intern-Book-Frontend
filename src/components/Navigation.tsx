@@ -1,8 +1,6 @@
 import { Bookmark, House, LogOut, Moon, Search, Sun, User } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import darkAppIcon from "../assets/images/app_icon_dark.png";
-import lightAppIcon from "../assets/images/app_icon_light.png";
 import { useTheme } from "../contexts/ThemeContext.tsx";
 import UserContext from "../contexts/UserContext.tsx";
 
@@ -89,7 +87,11 @@ function Navigation(props: NavigationBarProps) {
 				>
 					<img
 						className="h-[3.7vmax]"
-						src={theme === "light" ? darkAppIcon : lightAppIcon}
+						src={
+							theme === "light"
+								? "/assets/images/app_icon_dark.png"
+								: "/assets/images/app_icon_light.png"
+						}
 						alt=""
 					/>
 				</button>
@@ -233,6 +235,7 @@ function Navigation(props: NavigationBarProps) {
 						className="h-full w-full aspect-square bg-(--bg) rounded-[0.6vmax]"
 					>
 						<img
+							fetchPriority="high"
 							className="h-full w-full object-cover object-center 
                     bg-(--bg)
                     border-[0.5px] border-(--border-color)

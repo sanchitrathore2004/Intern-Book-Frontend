@@ -1,7 +1,5 @@
 import { Bookmark } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import lightPlaceholder from "../assets/images/app_icon_dark.png";
-import darkPlaceholder from "../assets/images/app_icon_light.png";
 import { useTheme } from "../contexts/ThemeContext";
 import useToggleFavourite from "../hooks/useToggleFavourite";
 import { YearConfig } from "../utils/yearConfig";
@@ -28,7 +26,6 @@ const getYear = (yr: string | undefined): string | undefined => {
 
 function SubmissionCard(props: SubmissionCardProps) {
 	const navigate = useNavigate();
-	console.log(props.likeCount);
 	const { theme } = useTheme();
 	const { isFavourite, likeCount, handleToggle } = useToggleFavourite({
 		submissionId: props.id,
@@ -44,16 +41,21 @@ function SubmissionCard(props: SubmissionCardProps) {
 		<div className="w-full h-full flex flex-col justify-between items-center p-1 rounded-[0.6vmax] bg-(--bg) transition-all duration-200 hover:shadow-[0_0_8px_var(--shadow-color)]">
 			<div className="relative w-full max-h-[40%] flex justify-center items-center">
 				<img
+					fetchPriority="high"
 					key={theme}
 					className="h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-contain"
 					src={
 						props.companyLogoUrl ||
-						(theme === "light" ? lightPlaceholder : darkPlaceholder)
+						(theme === "light"
+							? "/assets/images/app_icon_dark.png"
+							: "/assets/images/app_icon_light.png")
 					}
 					alt={`${props.companyName} logo`}
 					onError={(e) => {
 						e.currentTarget.src =
-							theme === "light" ? lightPlaceholder : darkPlaceholder;
+							theme === "light"
+								? "/assets/images/app_icon_dark.png"
+								: "/assets/images/app_icon_light.png";
 					}}
 				/>
 				<div className="absolute top-2 right-2 flex items-center gap-1  backdrop-blur-sm px-2 py-0.5 rounded-full text--(text-light) text-[1.2vmax] font-medium">
@@ -68,12 +70,13 @@ function SubmissionCard(props: SubmissionCardProps) {
 				>
 					{props.companyName}
 				</div>
-				<div className="w-full max-h-[40%] flex items-start text-(--text-light) font-light text-[1.2vmax] pl-[0.5vmax]">
+				<div className="w-full max-h-[40%] flex items-start text-(--text-light) font-light text-[1.2vmax] pl-[0.5vmax] mb-2">
 					{props.userName.split(" ")[0]} . {props.type} . {props.role} .{" "}
 					{getYear(String(props.year))}
 				</div>
 			</div>
-			<div className="w-full h-[18%] flex flex-wrap gap-[0.5vmax] pl-[0.5vmax]">
+
+			<div className="w-full h-fit flex flex-wrap gap-[0.5vmax] pl-[0.5vmax]">
 				{props.tags.map((tag) => {
 					return (
 						<div key={tag} className="h-fit">
@@ -82,11 +85,12 @@ function SubmissionCard(props: SubmissionCardProps) {
 					);
 				})}
 			</div>
+
 			<div className="w-full h-[12%] justify-center flex items-end pl-[0.5vmax] pb-[0.3vmax]">
 				<button
 					type="button"
 					onClick={handleShowDetials}
-					className="h-[80%] w-[80%] flex justify-center items-center bg-(--accent) rounded-md font-bold cursor-pointer text-[1.4vmax] text-(--bg)"
+					className="h-[80%] w-[80%] flex justify-center items-center bg-(--accent) rounded-md font-bold cursor-pointer text-[1.4vmax] text-(--bg) transition-all active:scale-95"
 				>
 					Show Details
 				</button>

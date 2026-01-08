@@ -3,7 +3,7 @@ import { z } from "zod";
 const nullableNumber = z.preprocess((val) => {
 	if (val === "" || val === undefined || val === null) return null;
 	return val;
-}, z.number().nullable());
+}, z.coerce.number().nullable());
 
 export const submissionSchema = z
 	.object({

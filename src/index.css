@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: "GoldmanSansBd";
-  src: url("./assets/fonts/GoldmanSans_Bd.ttf") format("truetype");
+  src: url("/assets/fonts/GoldmanSans_Bd.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -12,7 +12,7 @@
 
 @font-face {
   font-family: "GoldmanSansLt";
-  src: url("./assets/fonts/GoldmanSans_Lt.ttf") format("truetype");
+  src: url("/assets/fonts/GoldmanSans_Lt.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -30,6 +30,8 @@
   --bg: #f8f9fa;
   --fore-bg: #ffffff;
   --accent: #01be94;
+  --accent-hover: #00ffc8;
+  --accent-bg-hover: #c5fef2;
   --accent-bg: #d9f5ef;
   --text-heading: #000000;
   --text-light: #868e96;
@@ -42,12 +44,22 @@
   --bg: #242424;
   --fore-bg: #2e2e2e;
   --accent: #ffd43b;
+  --accent-hover: #dab11e;
+  --accent-bg-hover: #564b25;
   --accent-bg: #443e28;
   --text-heading: #ffffff;
   --text-light: #7e7e7e;
   --border-color: #585858;
   --line-color: #424242;
   --shadow-color: rgba(23, 23, 23, 0.75);
+}
+
+img,
+a {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
 }
 
 body {
@@ -159,5 +171,5 @@ select.input:has(option:checked:not([value=""])) {
 
 .Toastify__toast-container--top-right {
   top: 10vh !important;
-  right: 1rem; 
+  right: 1rem;
 }

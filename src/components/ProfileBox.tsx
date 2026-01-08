@@ -53,7 +53,7 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 					<button
 						type="button"
 						onClick={() => navigate(`/profile/${props.authorId}`)}
-						className="text-(--text-heading) hover:text-(--accent) text-3xl font-[GoldmanSansBd] font-bold mb-4 cursor-pointer"
+						className="text-(--text-heading) hover:text-(--accent) text-left text-3xl font-[GoldmanSansBd] font-bold mb-4 cursor-pointer transition-all active:scale-95"
 					>
 						{props.name}
 					</button>
@@ -92,7 +92,7 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 			<div className="flex md:hidden flex-col bg-(--fore-bg) p-4 rounded-[0.75em]  w-full">
 				<div className="flex justify-between">
 					<div className="border border-(--border-color) rounded-[0.75em] max-w-40 min-w-32 overflow-hidden">
-						<img src={props.profileUrl} alt="profile" />
+						<img fetchPriority="high" src={props.profileUrl} alt="profile" />
 					</div>
 					<button
 						type="button"

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import {
@@ -9,6 +9,7 @@ import {
 import ConfirmChangeToast from "../components/ConfirmChangeToast";
 import Loader from "../components/Loader";
 import SubmissionCard from "../components/SubmissionCard";
+import { useTheme } from "../contexts/ThemeContext";
 import useGetCompany from "../hooks/useGetCompany";
 import { apiConfig } from "../utils/apiConfig";
 import { showError, showInfo, showSuccess } from "../utils/toast";
@@ -16,7 +17,36 @@ import { showError, showInfo, showSuccess } from "../utils/toast";
 function Company() {
 	const { company_id } = useParams<{ company_id: string }>();
 	const navigate = useNavigate();
+	const { theme } = useTheme();
 	const { company, loading, error, fetchCompanyDetails } = useGetCompany();
+	const [imgSrc, setImgSrc] = useState<string>(
+		company?.logoUrl ??
+			(theme === "light"
+				? "/assets/images/app_icon_dark.png"
+				: "/assets/images/app_icon_light.png"),
+	);
+
+	useEffect(() => {
+		setImgSrc(
+			company?.logoUrl ??
+				(theme === "light"
+					? "/assets/images/app_icon_dark.png"
+					: "/assets/images/app_icon_light.png"),
+		);
+	}, [company?.logoUrl, theme]);
+
+	useEffect(() => {
+		if (
+			imgSrc === "/assets/images/app_icon_dark.png" ||
+			imgSrc === "/assets/images/app_icon_light.png"
+		) {
+			setImgSrc(
+				theme === "light"
+					? "/assets/images/app_icon_dark.png"
+					: "/assets/images/app_icon_light.png",
+			);
+		}
+	}, [imgSrc, theme]);
 
 	const handleDreamCompanyClick = useCallback(
 		async (companyId: number) => {
@@ -70,6 +100,7 @@ function Company() {
 
 	if (error) showError(error.message);
 	if (!company) return <Loader fullscreen />;
+	console.log(company);
 
 	return (
 		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax] overflow-auto">
@@ -78,9 +109,17 @@ function Company() {
 			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[50vmax] h-[60vmax] bg-(--fore-bg) flex flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
 				<div className="w-full h-[50%] flex justify-start items-center p-[0.8vmax]">
 					<img
+						fetchPriority="high"
 						className="w-[25vmax] h-[12vmax] object-contain"
-						src={company.logoUrl}
-						alt="company"
+						src={imgSrc}
+						alt={`${company.name} logo`}
+						onError={() => {
+							setImgSrc(
+								theme === "light"
+									? "/assets/images/app_icon_dark.png"
+									: "/assets/images/app_icon_light.png",
+							);
+						}}
 					/>
 				</div>
 				<div
@@ -96,7 +135,7 @@ function Company() {
 					<button
 						type="button"
 						onClick={() => handleDreamCompanyClick(company.id ?? 1)}
-						className="w-[8vmax] h-[3vmax] rounded-[2vmax] bg-(--accent-bg) text-(--accent) text-[1.5vmax]"
+						className="w-[8vmax] h-[3vmax] rounded-[2vmax] bg-(--accent-bg) text-(--accent) text-[1.5vmax] font-bold transition-all active:scale-95 cursor-pointer hover:bg-(--accent-bg-hover)"
 					>
 						Dream
 					</button>
