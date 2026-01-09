@@ -1,10 +1,12 @@
 import "../index.css";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useContext, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Loader from "../components/Loader";
+import TextEditor from "../components/TextEditor";
+import { useTheme } from "../contexts/ThemeContext";
 import UserContext from "../contexts/UserContext";
 import useCreateSubmission from "../hooks/useCreateSubmission";
 import useGetAllCompany from "../hooks/useGetAllCompany";
@@ -15,12 +17,17 @@ import { submissionSchema } from "../interfaces/submissionSchema";
 const SubmissionForm = () => {
 	const navigate = useNavigate();
 	const { user } = useContext(UserContext);
+	const { theme } = useTheme();
 	const {
 		register,
 		handleSubmit,
+		control,
 		formState: { errors },
 	} = useForm({
 		resolver: zodResolver(submissionSchema),
+		defaultValues: {
+			experience: "",
+		},
 	});
 
 	const {
@@ -136,32 +143,65 @@ const SubmissionForm = () => {
 							</select>
 						</Field>
 					</Section>
-
 					<Section title="Experience">
 						<Field error={errors.experience?.message}>
-							<textarea
-								className="textarea min-h-40"
-								{...register("experience")}
-								placeholder="Write your detailed experience"
+							<Controller
+								name="experience"
+								control={control}
+								render={({ field }) => (
+									<TextEditor
+										value={field.value || ""}
+										onChange={field.onChange}
+										theme={theme}
+										placeholder="Describe your interview / internship experience in detail"
+										size="medium"
+									/>
+								)}
 							/>
 						</Field>
 					</Section>
 
 					<Section title="Insights">
-						<textarea
-							className="textarea"
-							{...register("benefits")}
-							placeholder="Benefits"
+						<Controller
+							name="benefits"
+							control={control}
+							render={({ field }) => (
+								<TextEditor
+									value={field.value || ""}
+									onChange={field.onChange}
+									theme={theme}
+									placeholder="What benefits did you get from this experience?"
+									size="small"
+								/>
+							)}
 						/>
-						<textarea
-							className="textarea"
-							{...register("mistakes")}
-							placeholder="Mistakes"
+
+						<Controller
+							name="mistakes"
+							control={control}
+							render={({ field }) => (
+								<TextEditor
+									value={field.value || ""}
+									onChange={field.onChange}
+									theme={theme}
+									placeholder="Mistakes you made (so others can avoid them)"
+									size="small"
+								/>
+							)}
 						/>
-						<textarea
-							className="textarea"
-							{...register("resources")}
-							placeholder="Resources"
+
+						<Controller
+							name="resources"
+							control={control}
+							render={({ field }) => (
+								<TextEditor
+									value={field.value || ""}
+									onChange={field.onChange}
+									theme={theme}
+									placeholder="Books, links, courses, or resources you used"
+									size="small"
+								/>
+							)}
 						/>
 					</Section>
 
