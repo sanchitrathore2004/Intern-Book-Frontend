@@ -10,8 +10,16 @@ import { showError, showSuccess } from "../utils/toast";
 
 const Home = () => {
 	type HomeView = "top" | "favourite";
+
 	const [searchParams, setSearchParams] = useSearchParams();
-	const view = (searchParams.get("view") as HomeView) ?? "top";
+	const rawView = searchParams.get("view");
+
+	const view: HomeView =
+		rawView === "top" || rawView === "favourite" ? rawView : "top";
+
+	if (rawView !== view) {
+		setSearchParams({ view }, { replace: true });
+	}
 
 	const {
 		submissions: topSubmissions,
