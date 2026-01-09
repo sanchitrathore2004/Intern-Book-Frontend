@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import {
@@ -93,6 +93,8 @@ const Login = () => {
 		typeof window !== "undefined" ? window.location.origin : null;
 
 	//  get the authorization code from the Url
+	// keep track of processed auth codes to avoid handling the same code multiple times
+	const processedCodesRef = useRef<Set<string>>(new Set());
 
 	const receiveMessage = useCallback(
 		(event: MessageEvent<{ source: string; code: string }>) => {
@@ -101,8 +103,12 @@ const Login = () => {
 			}
 			const { data } = event;
 			if (data.source === "dauth-login-callback") {
-				if (data.code) {
-					sendAuthCodeToServer(data.code);
+				const code = data.code;
+				if (code) {
+					if (processedCodesRef.current.has(code)) return;
+					processedCodesRef.current.add(code);
+					setTimeout(() => processedCodesRef.current.delete(code), 10_000);
+					sendAuthCodeToServer(code);
 				}
 			}
 		},
@@ -119,7 +125,6 @@ const Login = () => {
 	const openSignInWindow = useCallback(
 		(url: string, name: string) => {
 			console.log("openSignInWindow");
-			//   window.removeEventListener("message", receiveMessage);
 
 			const strWindowFeatures = isMobile
 				? "_blank"
@@ -134,13 +139,17 @@ const Login = () => {
 				windowObjectReference.focus();
 			}
 
-			window.addEventListener("message", receiveMessage, false);
-
 			setPreviousUrl(url);
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[previousUrl, receiveMessage, windowObjectReference],
+		[previousUrl, windowObjectReference],
 	);
+
+	// register message listener once; avoid duplicates that trigger multiple login calls
+	useEffect(() => {
+		window.addEventListener("message", receiveMessage);
+		return () => window.removeEventListener("message", receiveMessage);
+	}, [receiveMessage]);
 
 	const generateDauthStringAndOpenUrl = useCallback(() => {
 		const dauthURL = generateDauthAuthorizeUrl();

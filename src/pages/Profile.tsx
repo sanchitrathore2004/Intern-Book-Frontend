@@ -287,7 +287,7 @@ function Profile() {
 								<div className="absolute top-2 left-2 z-20 flex flex-col items-start gap-2">
 									<button
 										type="button"
-										onClick={() => setDeleteConfirmId(sub.id!)}
+										onClick={() => setDeleteConfirmId(sub.id ?? 1)}
 										className="p-1.5 bg-black/30 hover:bg-red-600 text-white/90 rounded-full transition-all duration-200 backdrop-blur-md shadow-md group cursor-pointer"
 										title="Delete Submission"
 									>
@@ -306,7 +306,7 @@ function Profile() {
 												<button
 													type="button"
 													disabled={deleteLoading}
-													onClick={() => handleDeleteSubmission(sub.id!)}
+													onClick={() => handleDeleteSubmission(sub.id ?? 1)}
 													className="flex-1 bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold py-1.5 rounded-lg transition-colors shadow-sm cursor-pointer transision-all active:scale-95"
 												>
 													{deleteLoading ? "..." : "Delete"}
