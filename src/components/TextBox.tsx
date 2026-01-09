@@ -1,10 +1,24 @@
-const TextBox = ({ label, value }: { label: string; value: string | null }) => {
+import { sanitizeHtml } from "../utils/sanitizeHTML";
+
+interface TextBoxProps {
+	label: string;
+	value: string;
+}
+
+function TextBox({ label, value }: TextBoxProps) {
 	return (
-		<div className="col-span-10 p-5 rounded-[0.75em] md:rounded-[1.5em] w-fit flex flex-col bg-(--fore-bg)">
-			<div className="md:text-lg text-(--text-light) mb-1">{label}</div>
-			<div className="md:text-lg text-(--text-heading)">{value}</div>
+		<div className="col-span-10 bg-(--fore-bg) p-5 rounded-[0.75em] md:rounded-[1.5em]">
+			<h3 className="mb-3 text-lg font-medium">{label}</h3>
+
+			<div
+				className="experience-view"
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+				dangerouslySetInnerHTML={{
+					__html: sanitizeHtml(value),
+				}}
+			/>
 		</div>
 	);
-};
+}
 
 export default TextBox;
