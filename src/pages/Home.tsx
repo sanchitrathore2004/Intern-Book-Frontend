@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Loader from "../components/Loader";
 import ProfileSidebar from "../components/ProfileSideBar";
@@ -53,14 +53,13 @@ const Home = () => {
 	}, [view, fetchFavourites, fetchTopSubmissions]);
 
 	const location = useLocation();
-	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (location.state?.loggedIn) {
 			showSuccess("Logged in successfully!");
-			navigate(location.pathname, { replace: true, state: {} });
+			window.history.replaceState({}, "", location.pathname);
 		}
-	}, [location, navigate]);
+	}, [location]);
 
 	let content: ReactNode;
 	if (loading)
