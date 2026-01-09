@@ -80,7 +80,7 @@ const Home = () => {
 	return (
 		<div className="w-full h-full bg-(--bg) text-(--text-heading) flex justify-center">
 			<ToastContainer newestOnTop />
-			<div className="max-w-368 w-full h-full px-[3vmax] flex gap-[3vmax]">
+			<div className=" w-full h-full px-[3vmax] flex gap-[3vmax]">
 				<div className="hidden md:block pt-[2vmax]">
 					<ProfileSidebar onSeeMoreFavourites={handleSeeMoreFavourites} />
 				</div>

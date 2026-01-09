@@ -156,7 +156,7 @@ function Navigation(props: NavigationBarProps) {
 					/>
 
 					{showDropdown && suggestions.length > 0 && (
-						<ul className="absolute flex flex-col p-[0.5vmax] top-13 left-0 mt-[0.4vmax] w-full max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-20">
+						<ul className="absolute flex flex-col p-[0.5vmax] top-[7vh] left-0 mt-[0.4vmax] w-full max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-20 text-md 2xl:text-lg">
 							{suggestions.map((s, idx) => (
 								<li
 									key={s}
@@ -255,7 +255,7 @@ function Navigation(props: NavigationBarProps) {
 						/>
 					</button>
 					{showProfileDropDown && (
-						<ul className="absolute flex flex-col p-[0.5vmax] text-sm top-10 min-w-[8em] right-0 max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-20">
+						<ul className="absolute flex flex-col p-[0.5vmax] text-md 2xl:text-lg top-[5.2vh] min-w-30 w-fit 2xl:min-w-[9vw] right-0 max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-20">
 							<li
 								onMouseDown={(e) => {
 									e.preventDefault();
@@ -265,7 +265,7 @@ function Navigation(props: NavigationBarProps) {
 								className="hover:cursor-pointer p-1 hover:bg-(--fore-bg) rounded-md"
 							>
 								<div className="flex items-center">
-									<House className="text-(--accent) w-5" />
+									<House className="text-(--accent) w-6 h-6 2xl:w-7 2xl:h-7" />
 									<div className="ml-1">Home</div>
 								</div>
 							</li>
@@ -278,7 +278,7 @@ function Navigation(props: NavigationBarProps) {
 								className="hover:cursor-pointer p-1 hover:bg-(--fore-bg) rounded-md"
 							>
 								<div className="flex items-center">
-									<User className="text-(--accent) w-5" />
+									<User className="text-(--accent) w-6 h-6 2xl:w-7 2xl:h-7" />
 									<div className="ml-1">Profile</div>
 								</div>
 							</li>
@@ -292,7 +292,7 @@ function Navigation(props: NavigationBarProps) {
 								className="p-1 hover:cursor-pointer hover:bg-(--fore-bg) rounded-md"
 							>
 								<div className="flex items-center">
-									<LogOut className="text-(--accent) w-5" />
+									<LogOut className="text-(--accent) w-6 h-6 2xl:w-7 2xl:h-7" />
 									<div className="ml-1">Log out</div>
 								</div>
 							</li>
@@ -360,7 +360,7 @@ function Navigation(props: NavigationBarProps) {
 							/>
 
 							{showDropdown && suggestions.length > 0 && (
-								<ul className="absolute flex flex-col p-[0.5vmax] left-0 top-full mt-2 w-full max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-30">
+								<ul className="absolute flex flex-col p-[0.5vmax] left-0 mt-2 w-full max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-30">
 									{suggestions.map((s, idx) => (
 										<li
 											key={s}
