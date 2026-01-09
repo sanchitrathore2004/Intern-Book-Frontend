@@ -287,7 +287,7 @@ function Navigation(props: NavigationBarProps) {
 									e.preventDefault();
 									setProfileDropDown(false);
 									localStorage.removeItem("token");
-									navigate("/");
+									navigate("/", { replace: true });
 								}}
 								className="p-1 hover:cursor-pointer hover:bg-(--fore-bg) rounded-md"
 							>
