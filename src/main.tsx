@@ -10,7 +10,7 @@ import { UserProvider } from "./providers/UserProvider.tsx";
 
 const queryClient = new QueryClient();
 
-// biome-ignore lint/style/noNonNullAssertion: <this will never happen>
+// biome-ignore lint/style/noNonNullAssertion: <root is alway available>
 createRoot(document.getElementById("root")!).render(
 	// <StrictMode>
 	<QueryClientProvider client={queryClient}>

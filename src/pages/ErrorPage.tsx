@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { navigateWithModifiers } from "../utils/navigateWithModifiers";
 
 const ErrorPage = () => {
 	const navigate = useNavigate();
-	const handleOnclick = () => {
-		navigate("/home");
+	const handleOnclick = (e: React.MouseEvent) => {
+		navigateWithModifiers(e, navigate, "/home");
 	};
 	return (
 		<>

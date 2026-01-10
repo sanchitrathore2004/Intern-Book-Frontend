@@ -18,7 +18,8 @@ function Company() {
 	const { company_id } = useParams<{ company_id: string }>();
 	const navigate = useNavigate();
 	const { theme } = useTheme();
-	const { company, loading, error, fetchCompanyDetails } = useGetCompany();
+	const { company, setCompany, loading, error, fetchCompanyDetails } =
+		useGetCompany();
 	const [imgSrc, setImgSrc] = useState<string>(
 		company?.logoUrl ??
 			(theme === "light"
@@ -60,25 +61,41 @@ function Company() {
 
 				if (res.removed) {
 					showInfo(`${company?.name} is removed from dream company`, 2500);
+					setCompany((prev) =>
+						prev
+							? { ...prev, favoriteCount: (prev.favoriteCount ?? 0) - 1 }
+							: prev,
+					);
 				} else if (res.conflict) {
 					toast.info(
 						<ConfirmChangeToast
 							companyId={companyId}
 							currentCompanyName={res.currentCompanyName ?? ""}
 							newCompanyName={company?.name}
-							onDone={() => {}}
+							onDone={() => {
+								setCompany((prev) =>
+									prev
+										? { ...prev, favoriteCount: (prev.favoriteCount ?? 0) + 1 }
+										: prev,
+								);
+							}}
 						/>,
 						{ autoClose: false },
 					);
 				} else {
 					showSuccess(`Dream company set to ${res.currentCompanyName}`, 2500);
+					setCompany((prev) =>
+						prev
+							? { ...prev, favoriteCount: (prev.favoriteCount ?? 0) + 1 }
+							: prev,
+					);
 				}
 			} catch (error) {
 				console.log(error);
 				if (error instanceof Error) showError(error.message);
 			}
 		},
-		[company?.name],
+		[company?.name, setCompany],
 	);
 
 	useEffect(() => {
@@ -100,7 +117,6 @@ function Company() {
 
 	if (error) showError(error.message);
 	if (!company) return <Loader fullscreen />;
-	console.log(company);
 
 	return (
 		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax] overflow-auto">
@@ -129,8 +145,12 @@ function Company() {
 					{company.name}
 				</div>
 				<div className="w-full h-fit fles justiyf-start items-center p-[0.8vmax] text-(--text-light) text-[1.1vmax]">
-					{company.description} {company.favoriteCount} Favourite Counts
+					<div>{company.description}</div>
+					<div className="text-lg font-bold text-(--accent)">
+						{company.favoriteCount} followers
+					</div>
 				</div>
+
 				<div className="w-full h-[10%] flex justify-start items-center p-[0.8vmax]">
 					<button
 						type="button"

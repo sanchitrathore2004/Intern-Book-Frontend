@@ -39,6 +39,7 @@ const useGetCompany = () => {
 
 	return {
 		company,
+		setCompany,
 		error,
 		loading,
 		fetchCompanyDetails,
