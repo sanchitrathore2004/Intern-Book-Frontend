@@ -1,13 +1,12 @@
 import { Bookmark, House, LogOut, Moon, Search, Sun, User } from "lucide-react";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext.tsx";
 import UserContext from "../contexts/UserContext.tsx";
-
-interface SuggestionResponse {
-	suggestion: string;
-	submissionIds: number[];
-}
+import useAutoComplete from "../hooks/useAutoComplete.ts";
+import useGetAllSubmissions from "../hooks/useGetAllSubmissions.ts";
+import { useSubmissions } from "../hooks/useSubmissions.ts";
+import Loader from "./Loader.tsx";
 
 interface NavigationBarProps {
 	profilePictureUrl: string;
@@ -17,7 +16,6 @@ function Navigation(props: NavigationBarProps) {
 	const { theme, toggleTheme } = useTheme();
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [query, setQuery] = useState("");
-	const [suggestions, setSuggestions] = useState<string[]>([]);
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [showProfileDropDown, setProfileDropDown] = useState(false);
@@ -25,40 +23,61 @@ function Navigation(props: NavigationBarProps) {
 	const desktopInputRef = useRef<HTMLInputElement | null>(null);
 	const modalInputRef = useRef<HTMLInputElement | null>(null);
 	const { user } = useContext(UserContext);
+	const { setSubmissions } = useSubmissions();
+	const fetchControllerRef = useRef<AbortController | null>(null);
 	const navigate = useNavigate();
+
+	const { fetchSubmissions, submissions } = useGetAllSubmissions();
+
+	const { suggestions, setSuggestions, fetchSuggestions, loading } =
+		useAutoComplete();
 
 	// debounce + fetch suggestions
 	useEffect(() => {
 		if (!query.trim()) return;
 
 		const controller = new AbortController();
-		const id = setTimeout(async () => {
-			try {
-				const res = await fetch(`/mocks/suggestion.json`, {
-					signal: controller.signal,
-				});
-				const data = await res.json();
-				if (Array.isArray(data)) {
-					const filtered = data
-						.map((item: SuggestionResponse) => item.suggestion)
-						.filter((s: string) =>
-							s.toLowerCase().includes(query.toLowerCase()),
-						);
-					setSuggestions(filtered);
-				} else {
-					setSuggestions([]);
-				}
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			} catch (err: any) {
-				if (err?.name !== "AbortError") setSuggestions([]);
-			}
-		}, 300);
+		const id = setTimeout(() => {
+			fetchSuggestions(query, controller);
+		}, 500);
 
 		return () => {
 			clearTimeout(id);
 			controller.abort();
 		};
-	}, [query]);
+	}, [fetchSuggestions, query]);
+
+	//	pre-fetch submissions on suggestions update
+	useEffect(() => {
+		if (suggestions.length === 0) return;
+
+		fetchControllerRef.current?.abort();
+		const controller = new AbortController();
+		fetchControllerRef.current = controller;
+
+		const allIds = Array.from(new Set(suggestions.flatMap((s) => s.ids ?? [])));
+
+		if (allIds.length === 0) return;
+
+		fetchSubmissions(allIds, controller);
+
+		return () => controller.abort();
+	}, [suggestions, fetchSubmissions]);
+
+	useEffect(() => {
+		setSubmissions(submissions);
+	}, [submissions, setSubmissions]);
+
+	const onSelectSuggestion = useCallback(
+		(suggestion: string) => {
+			setQuery(suggestion);
+			setShowDropdown(false);
+			setSearchOpen(false);
+
+			navigate("/home?view=search");
+		},
+		[navigate],
+	);
 
 	useEffect(() => {
 		function onDoc(e: MouseEvent) {
@@ -131,7 +150,7 @@ function Navigation(props: NavigationBarProps) {
 								e.preventDefault();
 							} else if (e.key === "Enter") {
 								if (activeIndex >= 0 && suggestions[activeIndex]) {
-									setQuery(suggestions[activeIndex]);
+									setQuery(suggestions[activeIndex].word ?? "");
 									setShowDropdown(false);
 								}
 							} else if (e.key === "Escape") {
@@ -159,18 +178,17 @@ function Navigation(props: NavigationBarProps) {
 						<ul className="absolute flex flex-col p-[0.5vmax] top-[7vh] left-0 mt-[0.4vmax] w-full max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-20 text-md 2xl:text-lg">
 							{suggestions.map((s, idx) => (
 								<li
-									key={s}
+									key={s.word}
 									onMouseDown={(e) => {
 										e.preventDefault();
-										setQuery(s);
-										setShowDropdown(false);
+										onSelectSuggestion(s.word ?? "");
 									}}
 									onMouseEnter={() => setActiveIndex(idx)}
 									className={`px-[0.8vmax] py-[0.6vmax] cursor-pointer rounded-md ${
 										idx === activeIndex ? "bg-(--fore-bg)" : ""
 									}`}
 								>
-									{s}
+									{loading ? <Loader size={10} /> : s.word}
 								</li>
 							))}
 						</ul>
@@ -336,7 +354,7 @@ function Navigation(props: NavigationBarProps) {
 										e.preventDefault();
 									} else if (e.key === "Enter") {
 										if (activeIndex >= 0 && suggestions[activeIndex]) {
-											setQuery(suggestions[activeIndex]);
+											setQuery(suggestions[activeIndex].word ?? "");
 											setShowDropdown(false);
 											setSearchOpen(false);
 										}
@@ -360,22 +378,20 @@ function Navigation(props: NavigationBarProps) {
 							/>
 
 							{showDropdown && suggestions.length > 0 && (
-								<ul className="absolute flex flex-col p-[0.5vmax] left-0 mt-2 w-full max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-30">
+								<ul className="absolute flex flex-col p-[0.5vmax] left-0 top-[4vh] mt-2 w-full max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-30">
 									{suggestions.map((s, idx) => (
 										<li
-											key={s}
+											key={s.word}
 											onMouseDown={(e) => {
 												e.preventDefault();
-												setQuery(s);
-												setShowDropdown(false);
-												setSearchOpen(false);
+												onSelectSuggestion(s.word ?? "");
 											}}
 											onMouseEnter={() => setActiveIndex(idx)}
 											className={`px-[0.8vmax] py-[0.6vmax] cursor-pointer rounded-md ${
 												idx === activeIndex ? "bg-[rgba(255,255,255,0.04)]" : ""
 											}`}
 										>
-											{s}
+											{loading ? <Loader size={10} /> : s.word}
 										</li>
 									))}
 								</ul>

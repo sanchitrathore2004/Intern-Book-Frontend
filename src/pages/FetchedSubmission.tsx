@@ -1,11 +1,8 @@
-import type { SubmissionCardResponseDto } from "../../web-client/src/generated";
 import SubmissionCard from "../components/SubmissionCard";
+import { useSubmissions } from "../hooks/useSubmissions";
 
-interface Props {
-	submissions: SubmissionCardResponseDto[];
-}
-
-const FetchedSubmission = ({ submissions }: Props) => {
+const FetchedSubmission = () => {
+	const { submissions } = useSubmissions();
 	return (
 		<>
 			{submissions.map((submission) => {

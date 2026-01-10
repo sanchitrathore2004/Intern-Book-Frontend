@@ -5,6 +5,7 @@ import Loader from "../components/Loader";
 import ProfileSidebar from "../components/ProfileSideBar";
 import useGetFavourites from "../hooks/useGetFavourites";
 import useGetTopSubmissions from "../hooks/useGetTopSubmissions";
+import { useSubmissions } from "../hooks/useSubmissions";
 import FetchedSubmission from "../pages/FetchedSubmission";
 import { showError, showSuccess } from "../utils/toast";
 
@@ -13,13 +14,16 @@ const Home = () => {
 
 	const [searchParams, setSearchParams] = useSearchParams();
 	const rawView = searchParams.get("view");
+	const { setSubmissions } = useSubmissions();
 
 	const view: HomeView =
 		rawView === "top" || rawView === "favourite" ? rawView : "top";
 
-	if (rawView !== view) {
-		setSearchParams({ view }, { replace: true });
-	}
+	useEffect(() => {
+		if (rawView !== view) {
+			setSearchParams({ view }, { replace: true });
+		}
+	}, [rawView, view, setSearchParams]);
 
 	const {
 		submissions: topSubmissions,
@@ -35,8 +39,6 @@ const Home = () => {
 		fetchFavourites,
 	} = useGetFavourites();
 
-	const submissions =
-		view === "top" ? (topSubmissions ?? []) : (favouriteSubmissions ?? []);
 	const loading = view === "top" ? topLoading : favLoading;
 	const error = view === "top" ? topError : favError;
 
@@ -45,12 +47,14 @@ const Home = () => {
 	};
 
 	useEffect(() => {
-		if (view === "favourite") {
-			fetchFavourites();
-		} else {
-			fetchTopSubmissions();
-		}
+		if (view === "favourite") fetchFavourites();
+		else fetchTopSubmissions();
 	}, [view, fetchFavourites, fetchTopSubmissions]);
+
+	useEffect(() => {
+		if (view === "favourite") setSubmissions(favouriteSubmissions ?? []);
+		else setSubmissions(topSubmissions ?? []);
+	}, [view, favouriteSubmissions, topSubmissions, setSubmissions]);
 
 	const location = useLocation();
 
@@ -61,6 +65,10 @@ const Home = () => {
 		}
 	}, [location]);
 
+	useEffect(() => {
+		if (error) showError(error.message);
+	}, [error]);
+
 	let content: ReactNode;
 	if (loading)
 		content = (
@@ -69,13 +77,12 @@ const Home = () => {
 			</div>
 		);
 	else if (error) {
-		showError(error.message);
 		content = (
 			<div className="p-4 h-full">
 				<Loader />
 			</div>
 		);
-	} else content = <FetchedSubmission submissions={submissions} />;
+	} else content = <FetchedSubmission />;
 
 	return (
 		<div className="w-full h-full bg-(--bg) text-(--text-heading) flex justify-center">

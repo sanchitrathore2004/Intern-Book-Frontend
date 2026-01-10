@@ -201,7 +201,7 @@ const Login = () => {
 					className="w-full max-w-72.5 md:max-w-75 h-80 md:h-115 bg-[#eef0bc] 
             rounded-10 
             shadow-[0_-10px_25px_rgba(0,0,0,0.3)] flex flex-col items-center justify-center p-8 md:p-10 
-            z-40 -mt-16 md:mt-0 md:translate-y-8 md:ml-10"
+            z-40 -mt-16 md:mt-0 md:translate-y-8 md:ml-10 rounded-t-[40px] md:rounded-[40px] "
 				>
 					<div className="w-full text-left mb-8 md:mb-12">
 						<h2 className="text-[34px] md:text-[42px] text-zinc-900 leading-[1.05] font-galdeano">
