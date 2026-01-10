@@ -7,12 +7,12 @@ interface TextBoxProps {
 
 function TextBox({ label, value }: TextBoxProps) {
 	return (
-		<div className="col-span-10 bg-(--fore-bg) p-5 rounded-[0.75em] md:rounded-[1.5em]">
+		<div className="col-span-10 w-fit bg-(--fore-bg) p-5 rounded-[0.75em] md:rounded-[1.5em]">
 			<h3 className="mb-3 text-lg font-medium">{label}</h3>
 
 			<div
 				className="experience-view"
-				// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: <the content is sanitized so its safe to embedd>
 				dangerouslySetInnerHTML={{
 					__html: sanitizeHtml(value),
 				}}
