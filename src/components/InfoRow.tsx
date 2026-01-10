@@ -1,20 +1,23 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { navigateWithModifiers } from "../utils/navigateWithModifiers";
 
 interface InfoRowProps {
 	label: string;
-	value: string;
+	value: string | undefined;
 	companyId?: number;
 }
 
 export const InfoRow = (props: InfoRowProps) => {
 	const navigate = useNavigate();
 
-	const handlClick = useCallback(() => {
-		if (!props.companyId) return;
-
-		navigate(`/company/${props.companyId}`);
-	}, [navigate, props.companyId]);
+	const handlClick = useCallback(
+		(e: React.MouseEvent<HTMLDivElement>) => {
+			if (!props.companyId) return;
+			navigateWithModifiers(e, navigate, `/company/${props.companyId}`);
+		},
+		[navigate, props.companyId],
+	);
 
 	const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
 		if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
@@ -23,12 +26,12 @@ export const InfoRow = (props: InfoRowProps) => {
 	};
 
 	return (
-		<div className="grid grid-cols-2">
+		<div className="grid grid-cols-2 min-w-60 lg:min-w-80">
 			<div className="text-(--text-light) text-sm col-span-1">
 				{props.label}
 			</div>
 			{props.companyId ? (
-				// biome-ignore lint/a11y/useSemanticElements: <explanation>
+				// biome-ignore lint/a11y/useSemanticElements: <this is safely clickable>
 				<div
 					role="button"
 					tabIndex={0}
@@ -37,11 +40,11 @@ export const InfoRow = (props: InfoRowProps) => {
 					onKeyDown={onKeyDown}
 					className="text-(--text-heading) hover:text-(--accent) cursor-pointer col-span-1"
 				>
-					{props.value ?? "---"}
+					{props.value || "NA"}
 				</div>
 			) : (
 				<div className="text-(--text-heading) cursor-pointer col-span-1">
-					{props.value ?? "---"}
+					{props.value || "NA"}
 				</div>
 			)}
 		</div>

@@ -1,6 +1,7 @@
 import type React from "react";
 import { useNavigate } from "react-router-dom";
 import type { FavouriteItems } from "../interfaces/FavouriteItem";
+import { navigateWithModifiers } from "../utils/navigateWithModifiers";
 
 interface FavouritesCardProps {
 	items: FavouriteItems[] | null;
@@ -13,8 +14,8 @@ const FavouritesCard: React.FC<FavouritesCardProps> = ({
 }) => {
 	const navigate = useNavigate();
 
-	const handleShowDetials = (id: number) => {
-		navigate(`/submission/${id}`);
+	const handleShowDetials = (e: React.MouseEvent, id: number) => {
+		navigateWithModifiers(e, navigate, `/submission/${id}`);
 	};
 
 	return (
@@ -36,7 +37,7 @@ const FavouritesCard: React.FC<FavouritesCardProps> = ({
           py-2 text-sm text-(--text-heading)
           hover:bg-(--hover-bg)
           transition rounded-md px-2 cursor-pointer"
-								onClick={() => handleShowDetials(item.id)}
+								onClick={(e) => handleShowDetials(e, item.id)}
 							>
 								<div className="hover:underline">
 									<span>{item.company}</span>

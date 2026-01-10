@@ -1,8 +1,9 @@
-import { type ReactNode, useEffect } from "react";
+import { type ReactNode, useEffect, useMemo, useRef } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Loader from "../components/Loader";
 import ProfileSidebar from "../components/ProfileSideBar";
+import useGetAllSubmissions from "../hooks/useGetAllSubmissions";
 import useGetFavourites from "../hooks/useGetFavourites";
 import useGetTopSubmissions from "../hooks/useGetTopSubmissions";
 import { useSubmissions } from "../hooks/useSubmissions";
@@ -10,20 +11,54 @@ import FetchedSubmission from "../pages/FetchedSubmission";
 import { showError, showSuccess } from "../utils/toast";
 
 const Home = () => {
-	type HomeView = "top" | "favourite";
+	type HomeView = "top" | "favourite" | "search";
 
 	const [searchParams, setSearchParams] = useSearchParams();
 	const rawView = searchParams.get("view");
-	const { setSubmissions } = useSubmissions();
+	const rawIds = searchParams.get("ids");
+	const { submissions, setSubmissions } = useSubmissions();
+	const searchAbortRef = useRef<AbortController | null>(null);
 
 	const view: HomeView =
-		rawView === "top" || rawView === "favourite" ? rawView : "top";
+		rawView === "top" || rawView === "favourite" || rawView === "search"
+			? rawView
+			: "top";
+
+	const searchIds = useMemo(() => {
+		if (!rawIds) return [];
+		const ids = rawIds
+			.split(",")
+			.map((s) => Number(s.trim()))
+			.filter((n) => Number.isFinite(n) && n > 0);
+		return Array.from(new Set(ids));
+	}, [rawIds]);
+
+	const canonicalSearchIds = useMemo(() => {
+		if (searchIds.length === 0) return null;
+		return [...searchIds].sort((a, b) => a - b).join(",");
+	}, [searchIds]);
 
 	useEffect(() => {
-		if (rawView !== view) {
+		// Normalize URL params.
+		if (view === "search") {
+			if (!canonicalSearchIds) {
+				setSearchParams({ view: "top" }, { replace: true });
+				return;
+			}
+			if (rawIds !== canonicalSearchIds || rawView !== "search") {
+				setSearchParams(
+					{ view: "search", ids: canonicalSearchIds },
+					{ replace: true },
+				);
+			}
+			return;
+		}
+
+		// In non-search views, drop stale ids and normalize invalid views.
+		if (rawIds != null || rawView !== view) {
 			setSearchParams({ view }, { replace: true });
 		}
-	}, [rawView, view, setSearchParams]);
+	}, [canonicalSearchIds, rawIds, rawView, view, setSearchParams]);
 
 	const {
 		submissions: topSubmissions,
@@ -33,14 +68,27 @@ const Home = () => {
 	} = useGetTopSubmissions();
 
 	const {
+		submissions: searchSubmissions,
+		loading: searchLoading,
+		error: searchError,
+		fetchSubmissions: fetchSearchSubmissions,
+	} = useGetAllSubmissions();
+
+	const {
 		submissions: favouriteSubmissions,
 		loading: favLoading,
 		error: favError,
 		fetchFavourites,
 	} = useGetFavourites();
 
-	const loading = view === "top" ? topLoading : favLoading;
-	const error = view === "top" ? topError : favError;
+	const loading =
+		view === "top"
+			? topLoading
+			: view === "favourite"
+				? favLoading
+				: searchLoading;
+	const error =
+		view === "top" ? topError : view === "favourite" ? favError : searchError;
 
 	const handleSeeMoreFavourites = () => {
 		setSearchParams({ view: "favourite" });
@@ -48,13 +96,36 @@ const Home = () => {
 
 	useEffect(() => {
 		if (view === "favourite") fetchFavourites();
-		else fetchTopSubmissions();
+		else if (view === "top") fetchTopSubmissions();
 	}, [view, fetchFavourites, fetchTopSubmissions]);
 
 	useEffect(() => {
+		if (view !== "search") return;
+		if (!canonicalSearchIds) return;
+		searchAbortRef.current?.abort();
+		const controller = new AbortController();
+		searchAbortRef.current = controller;
+		fetchSearchSubmissions(searchIds, controller);
+		return () => controller.abort();
+	}, [view, canonicalSearchIds, fetchSearchSubmissions, searchIds]);
+
+	useEffect(() => {
 		if (view === "favourite") setSubmissions(favouriteSubmissions ?? []);
-		else setSubmissions(topSubmissions ?? []);
+		else if (view === "top") setSubmissions(topSubmissions ?? []);
 	}, [view, favouriteSubmissions, topSubmissions, setSubmissions]);
+
+	useEffect(() => {
+		if (view !== "search") return;
+		// Navigation may have already populated context from its prefetch cache.
+		if (searchSubmissions.length > 0) setSubmissions(searchSubmissions);
+		else if (submissions.length === 0 && canonicalSearchIds) setSubmissions([]);
+	}, [
+		view,
+		canonicalSearchIds,
+		searchSubmissions,
+		submissions.length,
+		setSubmissions,
+	]);
 
 	const location = useLocation();
 

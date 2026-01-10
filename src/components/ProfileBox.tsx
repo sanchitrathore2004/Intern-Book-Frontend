@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import useToggleFavourite from "../hooks/useToggleFavourite";
 import { DepartmentConfig } from "../utils/departmentConfig";
+import { navigateWithModifiers } from "../utils/navigateWithModifiers";
 import { YearConfig } from "../utils/yearConfig";
 import ProfilePicture from "./ProfilePicture";
 
@@ -52,7 +53,9 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 					<div className="font-bold text-lg">Author</div>
 					<button
 						type="button"
-						onClick={() => navigate(`/profile/${props.authorId}`)}
+						onClick={(e) =>
+							navigateWithModifiers(e, navigate, `/profile/${props.authorId}`)
+						}
 						className="text-(--text-heading) hover:text-(--accent) text-left text-3xl font-[GoldmanSansBd] font-bold mb-4 cursor-pointer transition-all active:scale-95"
 					>
 						{props.name}

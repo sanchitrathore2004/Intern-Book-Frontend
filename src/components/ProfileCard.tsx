@@ -1,15 +1,12 @@
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../contexts/UserContext";
+import { navigateWithModifiers } from "../utils/navigateWithModifiers";
 import ProfilePicture from "./ProfilePicture";
 
 const ProfileCard = () => {
 	const { user } = useContext(UserContext);
 	const navigate = useNavigate();
-
-	const handleOnNewSubmission = () => {
-		navigate("/submissionForm");
-	};
 
 	return (
 		<div className="w-full bg-(--fore-bg) rounded-2xl px-6 py-5 shadow-md">
@@ -20,7 +17,7 @@ const ProfileCard = () => {
 
 				<button
 					type="button"
-					onClick={handleOnNewSubmission}
+					onClick={(e) => navigateWithModifiers(e, navigate, "/submissionForm")}
 					className="w-8 h-8 bg-(--accent) text-(--fore-bg) rounded-full flex items-center justify-center text-lg hover:scale-105 cursor-pointer transition-all active:scale-95"
 				>
 					+

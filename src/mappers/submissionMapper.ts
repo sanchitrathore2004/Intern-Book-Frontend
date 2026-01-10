@@ -13,15 +13,15 @@ const submissionMapper = (
 	mistakes: form.mistakes || undefined,
 	resources: form.resources || undefined,
 
-	cgpa: form.cgpa,
+	cgpa: form.cgpa ?? undefined,
 	clubPositions: form.clubPositions,
 
-	ctc: form.ctc,
-	basePay: form.basePay,
-	stipendValue: form.stipend,
+	ctc: form.ctc ?? undefined,
+	basePay: form.basePay ?? undefined,
+	stipendValue: form.stipend ?? undefined,
 
-	otRounds: form.otRounds,
-	piRounds: form.piRounds,
+	otRounds: form.otRounds ?? undefined,
+	piRounds: form.piRounds ?? undefined,
 
 	startDate: form.startDate ? new Date(form.startDate) : undefined,
 	endDate: form.endDate ? new Date(form.endDate) : undefined,

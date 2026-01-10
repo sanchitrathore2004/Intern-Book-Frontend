@@ -201,13 +201,13 @@ select.input:has(option:checked:not([value=""])) {
 }
 
 .quill-small .ql-editor {
-  min-height: 38px; 
+  min-height: 38px;
   max-height: 140px;
 }
 
 .quill-medium .ql-editor {
   min-height: 38px;
-  max-height: 280px; 
+  max-height: 280px;
 }
 
 .ql-snow .ql-stroke {
@@ -227,26 +227,26 @@ select.input:has(option:checked:not([value=""])) {
 
 /*CSS for showing details in experience in submission details page*/
 .experience-view {
-	color: var(--text-heading);
-	font-size: 15px;
-	line-height: 1.7;
+  color: var(--text-heading);
+  line-height: 1.7;
 }
 
 .experience-view p {
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .experience-view strong {
-	font-weight: 600;
+  font-weight: 600;
 }
 
 .experience-view ul,
 .experience-view ol {
-	padding-left: 18px;
-	margin-bottom: 10px;
+  padding-left: 18px;
+  margin-bottom: 10px;
+  list-style: disc;
 }
 
 .experience-view a {
-	color: var(--accent);
-	text-decoration: underline;
+  color: var(--accent);
+  text-decoration: underline;
 }

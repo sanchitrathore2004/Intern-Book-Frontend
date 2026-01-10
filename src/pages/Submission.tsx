@@ -8,6 +8,38 @@ import TextBox from "../components/TextBox.tsx";
 import useGetSubmissions from "../hooks/useGetSubmissions.ts";
 import { showError } from "../utils/toast.ts";
 
+function ordinal(day: number) {
+	const mod100 = day % 100;
+	if (mod100 >= 11 && mod100 <= 13) return `${day}th`;
+	switch (day % 10) {
+		case 1:
+			return `${day}st`;
+		case 2:
+			return `${day}nd`;
+		case 3:
+			return `${day}rd`;
+		default:
+			return `${day}th`;
+	}
+}
+
+function formatDayMonth(date?: Date) {
+	if (!date || Number.isNaN(date.getTime())) return "";
+	const day = ordinal(date.getDate());
+	const month = new Intl.DateTimeFormat("en-GB", { month: "short" }).format(
+		date,
+	);
+	return `${day} ${month}`;
+}
+
+function formatMonthYear(date?: Date) {
+	if (!date || Number.isNaN(date.getTime())) return "";
+	return new Intl.DateTimeFormat("en-GB", {
+		month: "short",
+		year: "numeric",
+	}).format(date);
+}
+
 function Submission() {
 	const { submission_id } = useParams<{ submission_id: string }>();
 	const navigate = useNavigate();
@@ -43,7 +75,7 @@ function Submission() {
 						submissionId={submissions.id ?? 1}
 						isFavourite={submissions.favourite ?? false}
 						authorId={submissions.authorId ?? 106123122}
-						cgpa={submissions.cgpa != null ? String(submissions.cgpa) : ""}
+						cgpa={submissions.cgpa != null ? String(submissions.cgpa) : "NA"}
 						profileUrl={
 							submissions.profileUrl ?? "https://robohash.org/Phunsi%20Kumar"
 						}
@@ -61,37 +93,43 @@ function Submission() {
 					<div className="flex flex-col gap-4">
 						<InfoRow
 							label="Company"
-							value={submissions.company?.name ?? ""}
+							value={submissions.company?.name}
 							companyId={submissions.company?.id}
 						/>
-						<InfoRow
-							label="Company Role"
-							value={submissions.role?.name ?? ""}
-						/>
-						<InfoRow label="Selection Type" value={submissions.type ?? ""} />
+						<InfoRow label="Company Role" value={submissions.role?.name} />
+						<InfoRow label="Selection Type" value={submissions.type} />
 						<InfoRow
 							label="Selected At"
-							value={`${submissions.createdAt?.getDay()} ${submissions.createdAt?.getMonth()}`}
+							value={formatDayMonth(submissions.createdAt)}
 						/>
 						{submissions.type === "INTERN" ? (
 							<InfoRow
 								label="Stipend"
-								value={submissions.stipend?.toString() ?? ""}
+								value={submissions.stipend?.toString()}
 							/>
 						) : (
-							<InfoRow label="Ctc" value={submissions.ctc?.toString() ?? ""} />
+							<InfoRow label="Ctc" value={submissions.ctc?.ctc?.toString()} />
 						)}
 						<InfoRow
 							label="Ot rounds"
-							value={submissions.processStructure?.otRound?.toString() ?? ""}
+							value={submissions.processStructure?.otRound?.toString()}
 						/>
 						<InfoRow
 							label="Pi rounds"
-							value={submissions.processStructure?.piRound?.toString() ?? ""}
+							value={submissions.processStructure?.piRound?.toString()}
 						/>
 						<InfoRow
 							label="Duration"
-							value={`${submissions.processStructure?.startDate?.getDay()} ${submissions.processStructure?.startDate?.getMonth()} ${submissions.processStructure?.startDate?.getFullYear()} - ${submissions.processStructure?.endDate?.getDate()} ${submissions.processStructure?.endDate?.getMonth()} ${submissions.processStructure?.endDate?.getFullYear()}`}
+							value={
+								formatMonthYear(submissions.processStructure?.startDate) &&
+								formatMonthYear(submissions.processStructure?.endDate)
+									? `${formatMonthYear(
+											submissions.processStructure?.startDate,
+										)} - ${formatMonthYear(
+											submissions.processStructure?.endDate,
+										)}`
+									: "NA"
+							}
 						/>
 					</div>
 				</div>
