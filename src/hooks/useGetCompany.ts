@@ -1,49 +1,27 @@
-import { useCallback, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
 	CompanyControllerApi,
 	type CompanyPageResponseDto,
-	type GetCompanyRequest,
 } from "../../web-client/src/generated";
 import { apiConfig } from "../utils/apiConfig";
 
-const useGetCompany = () => {
-	const [company, setCompany] = useState<CompanyPageResponseDto | null>(null);
-	const [error, setError] = useState<Error | null>(null);
-	const [loading, setLoading] = useState(false);
+const api = new CompanyControllerApi(apiConfig);
 
-	const fetchCompanyDetails = useCallback(
-		async (companyId: number, controller: AbortController) => {
-			setLoading(true);
-			setError(null);
-
-			try {
-				const companyControllerApi = new CompanyControllerApi(apiConfig);
-				const request: GetCompanyRequest = { companyId };
-
-				const res: CompanyPageResponseDto =
-					await companyControllerApi.getCompany(request, {
-						signal: controller.signal,
-					});
-
-				if (!res) throw new Error("Some error occured");
-
-				setCompany(res);
-				setLoading(false);
-			} catch (er) {
-				if (er instanceof Error) setError(er);
-				else setError(new Error("failed to get Submission"));
+const useGetCompany = (companyId?: number) => {
+	return useQuery<CompanyPageResponseDto, Error>({
+		queryKey: ["company", companyId],
+		queryFn: async () => {
+			if (!companyId) {
+				throw new Error("Invalid company id");
 			}
+			const res = await api.getCompany({ companyId });
+			if (!res) throw new Error("Some error occurred");
+			return res;
 		},
-		[],
-	);
-
-	return {
-		company,
-		setCompany,
-		error,
-		loading,
-		fetchCompanyDetails,
-	};
+		enabled: !!companyId,
+		staleTime: 2 * 60 * 1000,
+		gcTime: 10 * 60 * 1000,
+	});
 };
 
 export default useGetCompany;
