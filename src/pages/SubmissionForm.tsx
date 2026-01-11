@@ -10,7 +10,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import UserContext from "../contexts/UserContext";
 import useCreateSubmission from "../hooks/useCreateSubmission";
 import useGetAllCompany from "../hooks/useGetAllCompany";
-import useGetAllRoles from "../hooks/useGetAllRoles";
+import useGetAllDomains from "../hooks/useGetAllDomains";
 import type { SubmissionFormData } from "../interfaces/submissionSchema";
 import { submissionSchema } from "../interfaces/submissionSchema";
 
@@ -42,7 +42,7 @@ const SubmissionForm = () => {
 		loading: roleLoading,
 		error: roleError,
 		fetchAllRoles,
-	} = useGetAllRoles();
+	} = useGetAllDomains();
 
 	const { createSubmission, loading: submissionLoading } =
 		useCreateSubmission();

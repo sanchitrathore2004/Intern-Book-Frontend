@@ -243,7 +243,14 @@ select.input:has(option:checked:not([value=""])) {
 .experience-view ol {
   padding-left: 18px;
   margin-bottom: 10px;
-  list-style: disc;
+}
+
+.experience-view ol {
+  list-style-type: decimal;
+}
+
+.experience-view ul {
+  list-style:disc;
 }
 
 .experience-view a {

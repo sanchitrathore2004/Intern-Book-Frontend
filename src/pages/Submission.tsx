@@ -29,7 +29,8 @@ function formatDayMonth(date?: Date) {
 	const month = new Intl.DateTimeFormat("en-GB", { month: "short" }).format(
 		date,
 	);
-	return `${day} ${month}`;
+	const year = date.getFullYear();
+	return `${day} ${month} ${year}`;
 }
 
 function formatMonthYear(date?: Date) {
@@ -62,6 +63,13 @@ function Submission() {
 		fetchSubmission(submissionIdNum, controller);
 		return () => controller.abort();
 	}, [submission_id, navigate, fetchSubmission]);
+
+	useEffect(() => {
+		if (error) {
+			showError(error?.message ?? "error");
+			navigate("/error");
+		}
+	}, [error, navigate]);
 
 	if (error) showError(error.message);
 	if (!submissions) return <Loader fullscreen />;
@@ -99,7 +107,7 @@ function Submission() {
 						<InfoRow label="Domain" value={submissions.domain?.domainName} />
 						<InfoRow label="Selection Type" value={submissions.type} />
 						<InfoRow
-							label="Selected At"
+							label="Created At"
 							value={formatDayMonth(submissions.createdAt)}
 						/>
 						{submissions.type === "INTERN" ? (

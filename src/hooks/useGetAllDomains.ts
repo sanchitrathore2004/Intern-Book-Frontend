@@ -5,7 +5,7 @@ import {
 } from "../../web-client/src/generated";
 import { apiConfig } from "../utils/apiConfig";
 
-const useGetAllRoles = () => {
+const useGetAllDomains = () => {
 	const [domains, setDomains] = useState<DomainResponseDto[]>([]);
 	const [error, setError] = useState<Error | null>(null);
 	const [loading, setLoading] = useState(false);
@@ -14,7 +14,7 @@ const useGetAllRoles = () => {
 		setLoading(true);
 		try {
 			const companyControllerApi = new CompanyControllerApi(apiConfig);
-			const res = await companyControllerApi.getAllRoles();
+			const res = await companyControllerApi.getAllDomains();
 			setDomains(res ?? []);
 		} catch (err) {
 			if (err instanceof Error) setError(err);
@@ -26,4 +26,4 @@ const useGetAllRoles = () => {
 	return { domains, error, loading, fetchAllRoles };
 };
 
-export default useGetAllRoles;
+export default useGetAllDomains;
