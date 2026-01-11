@@ -44,25 +44,18 @@ function formatMonthYear(date?: Date) {
 function Submission() {
 	const { submission_id } = useParams<{ submission_id: string }>();
 	const navigate = useNavigate();
-
-	const { submissions, error, fetchSubmission } = useGetSubmissions();
+	const submissionId = Number(submission_id);
+	const {
+		data: submissions,
+		isLoading: loading,
+		error,
+	} = useGetSubmissions(submissionId);
 
 	useEffect(() => {
-		if (!submission_id) {
+		if (!submission_id || Number.isNaN(submissionId)) {
 			navigate("/error");
-			return;
 		}
-
-		const submissionIdNum = Number(submission_id);
-		if (Number.isNaN(submissionIdNum)) {
-			navigate("/error");
-			return;
-		}
-
-		const controller = new AbortController();
-		fetchSubmission(submissionIdNum, controller);
-		return () => controller.abort();
-	}, [submission_id, navigate, fetchSubmission]);
+	}, [submission_id, submissionId, navigate]);
 
 	useEffect(() => {
 		if (error) {
@@ -71,8 +64,15 @@ function Submission() {
 		}
 	}, [error, navigate]);
 
-	if (error) showError(error.message);
-	if (!submissions) return <Loader fullscreen />;
+	useEffect(() => {
+		if (error) {
+			showError(error.message);
+			navigate("/error");
+		}
+	}, [error, navigate]);
+
+	if (loading) return <Loader fullscreen />;
+	if (!submissions) return null;
 
 	return (
 		<>
