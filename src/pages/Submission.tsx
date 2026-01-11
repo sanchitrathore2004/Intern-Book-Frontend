@@ -96,7 +96,7 @@ function Submission() {
 							value={submissions.company?.name}
 							companyId={submissions.company?.id}
 						/>
-						<InfoRow label="Company Role" value={submissions.role?.name} />
+						<InfoRow label="Domain" value={submissions.domain?.domainName} />
 						<InfoRow label="Selection Type" value={submissions.type} />
 						<InfoRow
 							label="Selected At"
@@ -133,16 +133,15 @@ function Submission() {
 						/>
 					</div>
 				</div>
-
-				<TextBox label="Experience" value={submissions.experience ?? ""} />
-				{submissions.mistakes && (
-					<TextBox label="Mistakes" value={submissions.mistakes ?? ""} />
+				{submissions.domainDescription && (
+					<TextBox
+						label="Role Description"
+						value={submissions.domainDescription ?? ""}
+					/>
 				)}
+				<TextBox label="Experience" value={submissions.experience ?? ""} />
 				{submissions.resources && (
 					<TextBox label="Resources" value={submissions.resources ?? ""} />
-				)}
-				{submissions.benefits && (
-					<TextBox label="Benefits" value={submissions.benefits ?? ""} />
 				)}
 				{submissions.clubPositions && (
 					<TextBox

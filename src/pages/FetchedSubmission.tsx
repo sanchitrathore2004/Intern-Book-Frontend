@@ -21,7 +21,7 @@ const FetchedSubmission = () => {
 							id={submission.id}
 							companyLogoUrl={submission.companyLogoUrl}
 							companyName={submission.companyName}
-							role={submission.role}
+							domainName={submission.domainName}
 							tags={submission.tags}
 							type={submission.submissionType}
 							userName={submission.userName}

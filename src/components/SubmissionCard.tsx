@@ -11,7 +11,7 @@ interface SubmissionCardProps {
 	companyName: string;
 	userName: string;
 	type?: string;
-	role?: string;
+	domainName?: string;
 	year: number;
 	tags: string[];
 	companyLogoUrl?: string;
@@ -68,7 +68,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 					{props.companyName}
 				</div>
 				<div className="w-full max-h-[40%] flex items-start text-(--text-light) font-light text-[1.2vmax] pl-[0.5vmax] mb-2">
-					{props.userName.split(" ")[0]} . {props.type} . {props.role} .{" "}
+					{props.userName.split(" ")[0]} . {props.type} . {props.domainName} .{" "}
 					{getYear(String(props.year))}
 				</div>
 			</div>
