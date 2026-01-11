@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Bookmark, House, LogOut, Moon, Search, Sun, User } from "lucide-react";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -5,14 +6,13 @@ import type { SubmissionCardResponseDto } from "../../web-client/src/generated/i
 import { useTheme } from "../contexts/ThemeContext.tsx";
 import UserContext from "../contexts/UserContext.tsx";
 import useAutoComplete from "../hooks/useAutoComplete.ts";
-import useGetAllSubmissions from "../hooks/useGetAllSubmissions.ts";
 import { useSubmissions } from "../hooks/useSubmissions.ts";
+import {
+	fetchSubmissionsByIds,
+	submissionsByIdsKey,
+} from "../queries/submissions";
 import { navigateWithModifiers } from "../utils/navigateWithModifiers";
 import Loader from "./Loader.tsx";
-
-const isSubmission = (
-	x: SubmissionCardResponseDto | undefined | null,
-): x is SubmissionCardResponseDto => x != null;
 
 interface NavigationBarProps {
 	profilePictureUrl: string;
@@ -32,15 +32,10 @@ function Navigation(props: NavigationBarProps) {
 	const modalDropdownRef = useRef<HTMLUListElement | null>(null);
 	const { user } = useContext(UserContext);
 	const { setSubmissions } = useSubmissions();
-	const fetchControllerRef = useRef<AbortController | null>(null);
 	const [searchCommitted, setSearchCommitted] = useState(false);
 	const committedIdsRef = useRef<number[] | null>(null);
-	const prefetchedByIdRef = useRef(
-		new Map<number, SubmissionCardResponseDto>(),
-	);
 	const navigate = useNavigate();
-
-	const { fetchSubmissions, submissions } = useGetAllSubmissions();
+	const queryClient = useQueryClient();
 
 	const { suggestions, setSuggestions, fetchSuggestions, loading } =
 		useAutoComplete();
@@ -79,22 +74,13 @@ function Navigation(props: NavigationBarProps) {
 		const allIds = Array.from(new Set(suggestions.flatMap((s) => s.ids ?? [])));
 		if (allIds.length === 0) return;
 
-		fetchControllerRef.current?.abort();
-		const controller = new AbortController();
-		fetchControllerRef.current = controller;
-		fetchSubmissions(allIds, controller);
-
-		return () => controller.abort();
-	}, [suggestions, fetchSubmissions]);
-
-	// Keep a local cache of prefetched submissions.
-	useEffect(() => {
-		if (!submissions || submissions.length === 0) return;
-		for (const submission of submissions) {
-			if (submission?.id != null)
-				prefetchedByIdRef.current.set(submission.id, submission);
-		}
-	}, [submissions]);
+		queryClient.prefetchQuery({
+			queryKey: submissionsByIdsKey(allIds),
+			queryFn: ({ signal }) =>
+				fetchSubmissionsByIds({ submissionIds: allIds, signal }),
+			staleTime: 2 * 60 * 1000,
+		});
+	}, [suggestions, queryClient]);
 
 	const commitSearch = useCallback(
 		(word: string) => {
@@ -108,26 +94,24 @@ function Navigation(props: NavigationBarProps) {
 			setSearchCommitted(true);
 			navigate(`/home?view=search&ids=${ids.join(",")}`);
 
-			const cached = ids
-				.map((id) => prefetchedByIdRef.current.get(id))
-				.filter(isSubmission);
-			if (cached.length > 0) setSubmissions(cached);
+			const cachedList = queryClient.getQueryData<SubmissionCardResponseDto[]>(
+				submissionsByIdsKey(ids),
+			);
+			if (cachedList && cachedList.length > 0) setSubmissions(cachedList);
 		},
-		[suggestions, navigate, setSubmissions],
+		[suggestions, navigate, queryClient, setSubmissions],
 	);
 
 	// After commit, if some ids weren't in cache yet, fill them in when prefetch completes.
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <this effect depends on submissions>
 	useEffect(() => {
 		if (!searchCommitted) return;
 		const ids = committedIdsRef.current;
 		if (!ids || ids.length === 0) return;
-		const cached = ids
-			.map((id) => prefetchedByIdRef.current.get(id))
-			.filter(isSubmission);
-		if (cached !== undefined && cached.length === ids.length)
-			setSubmissions(cached);
-	}, [searchCommitted, submissions, setSubmissions]);
+		const cachedList = queryClient.getQueryData<SubmissionCardResponseDto[]>(
+			submissionsByIdsKey(ids),
+		);
+		if (cachedList && cachedList.length > 0) setSubmissions(cachedList);
+	}, [searchCommitted, queryClient, setSubmissions]);
 
 	const onSelectSuggestion = useCallback(
 		(suggestion: string) => {
