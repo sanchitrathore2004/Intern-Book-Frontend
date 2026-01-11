@@ -8,7 +8,7 @@ const nullableNumber = z.preprocess((val) => {
 export const submissionSchema = z
 	.object({
 		company: z.coerce.number().min(1, "Company is required"),
-		role: z.coerce.number().min(1, "Role is required"),
+		domain: z.coerce.number().min(1, "Role is required"),
 
 		type: z.enum(["INTERN", "PLACED", "INTERN_TO_PPO"]),
 
@@ -16,8 +16,7 @@ export const submissionSchema = z
 			.string()
 			.min(50, "Experience should be of minimum 50 characters"),
 
-		benefits: z.string().optional(),
-		mistakes: z.string().optional(),
+		domainDescription: z.string().max(100).optional(),
 		resources: z.string().optional(),
 
 		cgpa: nullableNumber.refine((v) => v === null || (v >= 0 && v <= 10), {

@@ -195,7 +195,7 @@ function Company() {
 								id={sub.id ?? 0}
 								companyLogoUrl={sub.companyLogoUrl ?? sub.companyName ?? "alt"}
 								companyName={sub.companyName ?? ""}
-								role={sub.role ?? ""}
+								domainName={sub.domainName ?? ""}
 								tags={sub.tags ?? []}
 								type={sub.submissionType ?? ""}
 								userName={sub.userName ?? ""}

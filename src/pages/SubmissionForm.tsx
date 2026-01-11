@@ -10,7 +10,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import UserContext from "../contexts/UserContext";
 import useCreateSubmission from "../hooks/useCreateSubmission";
 import useGetAllCompany from "../hooks/useGetAllCompany";
-import useGetAllRoles from "../hooks/useGetAllRoles";
+import useGetAllDomains from "../hooks/useGetAllDomains";
 import type { SubmissionFormData } from "../interfaces/submissionSchema";
 import { submissionSchema } from "../interfaces/submissionSchema";
 
@@ -38,11 +38,11 @@ const SubmissionForm = () => {
 	} = useGetAllCompany();
 
 	const {
-		roles,
+		domains,
 		loading: roleLoading,
 		error: roleError,
 		fetchAllRoles,
-	} = useGetAllRoles();
+	} = useGetAllDomains();
 
 	const { createSubmission, loading: submissionLoading } =
 		useCreateSubmission();
@@ -108,22 +108,22 @@ const SubmissionForm = () => {
 								)}
 							</Field>
 
-							<Field error={errors.role?.message}>
-								<label htmlFor="role" className="field-label">
-									Role
+							<Field error={errors.domain?.message}>
+								<label htmlFor="domain" className="field-label">
+									Domain
 								</label>
 								<select
-									id="role"
+									id="domain"
 									className="input"
-									{...register("role")}
+									{...register("domain")}
 									disabled={roleLoading}
 								>
 									<option value="">
-										{roleLoading ? "Loading roles..." : "Select role"}
+										{roleLoading ? "Loading domains..." : "Select domain"}
 									</option>
-									{roles.map((role) => (
-										<option key={role.id} value={role.id}>
-											{role.name}
+									{domains.map((domain) => (
+										<option key={domain.id} value={domain.id}>
+											{domain.domainName}
 										</option>
 									))}
 								</select>
@@ -143,6 +143,14 @@ const SubmissionForm = () => {
 							</select>
 						</Field>
 					</Section>
+					<Section title="Role Description">
+						<textarea
+							className="textarea"
+							{...register("domainDescription")}
+							placeholder="Role Description"
+						/>
+					</Section>
+
 					<Section title="Experience">
 						<Field error={errors.experience?.message}>
 							<Controller
@@ -161,35 +169,7 @@ const SubmissionForm = () => {
 						</Field>
 					</Section>
 
-					<Section title="Insights">
-						<Controller
-							name="benefits"
-							control={control}
-							render={({ field }) => (
-								<TextEditor
-									value={field.value || ""}
-									onChange={field.onChange}
-									theme={theme}
-									placeholder="What benefits did you get from this experience?"
-									size="small"
-								/>
-							)}
-						/>
-
-						<Controller
-							name="mistakes"
-							control={control}
-							render={({ field }) => (
-								<TextEditor
-									value={field.value || ""}
-									onChange={field.onChange}
-									theme={theme}
-									placeholder="Mistakes you made (so others can avoid them)"
-									size="small"
-								/>
-							)}
-						/>
-
+					<Section title="Resources">
 						<Controller
 							name="resources"
 							control={control}

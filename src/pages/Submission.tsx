@@ -29,7 +29,8 @@ function formatDayMonth(date?: Date) {
 	const month = new Intl.DateTimeFormat("en-GB", { month: "short" }).format(
 		date,
 	);
-	return `${day} ${month}`;
+	const year = date.getFullYear();
+	return `${day} ${month} ${year}`;
 }
 
 function formatMonthYear(date?: Date) {
@@ -62,6 +63,13 @@ function Submission() {
 		fetchSubmission(submissionIdNum, controller);
 		return () => controller.abort();
 	}, [submission_id, navigate, fetchSubmission]);
+
+	useEffect(() => {
+		if (error) {
+			showError(error?.message ?? "error");
+			navigate("/error");
+		}
+	}, [error, navigate]);
 
 	if (error) showError(error.message);
 	if (!submissions) return <Loader fullscreen />;
@@ -96,10 +104,10 @@ function Submission() {
 							value={submissions.company?.name}
 							companyId={submissions.company?.id}
 						/>
-						<InfoRow label="Company Role" value={submissions.role?.name} />
+						<InfoRow label="Domain" value={submissions.domain?.domainName} />
 						<InfoRow label="Selection Type" value={submissions.type} />
 						<InfoRow
-							label="Selected At"
+							label="Created At"
 							value={formatDayMonth(submissions.createdAt)}
 						/>
 						{submissions.type === "INTERN" ? (
@@ -133,16 +141,15 @@ function Submission() {
 						/>
 					</div>
 				</div>
-
-				<TextBox label="Experience" value={submissions.experience ?? ""} />
-				{submissions.mistakes && (
-					<TextBox label="Mistakes" value={submissions.mistakes ?? ""} />
+				{submissions.domainDescription && (
+					<TextBox
+						label="Role Description"
+						value={submissions.domainDescription ?? ""}
+					/>
 				)}
+				<TextBox label="Experience" value={submissions.experience ?? ""} />
 				{submissions.resources && (
 					<TextBox label="Resources" value={submissions.resources ?? ""} />
-				)}
-				{submissions.benefits && (
-					<TextBox label="Benefits" value={submissions.benefits ?? ""} />
 				)}
 				{submissions.clubPositions && (
 					<TextBox

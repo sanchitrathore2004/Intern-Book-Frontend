@@ -5,12 +5,11 @@ const submissionMapper = (
 	form: SubmissionFormData,
 ): SaveSubmissionRequestDto => ({
 	companyId: form.company,
-	roleId: form.role,
+	domainId: form.domain,
 	type: form.type,
 
 	experience: form.experience,
-	benefits: form.benefits || undefined,
-	mistakes: form.mistakes || undefined,
+	domainDescription: form.domainDescription || undefined,
 	resources: form.resources || undefined,
 
 	cgpa: form.cgpa ?? undefined,
