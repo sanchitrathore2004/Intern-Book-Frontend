@@ -60,8 +60,16 @@ function Submission() {
 
 		const controller = new AbortController();
 		fetchSubmission(submissionIdNum, controller);
+
 		return () => controller.abort();
 	}, [submission_id, navigate, fetchSubmission]);
+
+	useEffect(() => {
+		if (error) {
+			showError(error?.message ?? "error");
+			navigate("/error");
+		}
+	}, [error, navigate]);
 
 	if (error) showError(error.message);
 	if (!submissions) return <Loader fullscreen />;
