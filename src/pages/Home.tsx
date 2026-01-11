@@ -3,10 +3,10 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Loader from "../components/Loader";
 import ProfileSidebar from "../components/ProfileSideBar";
-import useGetAllSubmissions from "../hooks/useGetAllSubmissions";
 import useGetFavourites from "../hooks/useGetFavourites";
 import useGetTopSubmissions from "../hooks/useGetTopSubmissions";
 import { useSubmissions } from "../hooks/useSubmissions";
+import { useSubmissionsByIds } from "../hooks/useSubmissionsByIds";
 import FetchedSubmission from "../pages/FetchedSubmission";
 import { showError, showSuccess } from "../utils/toast";
 
@@ -68,11 +68,10 @@ const Home = () => {
 	} = useGetTopSubmissions();
 
 	const {
-		submissions: searchSubmissions,
-		loading: searchLoading,
+		data: searchSubmissions,
+		isLoading: searchLoading,
 		error: searchError,
-		fetchSubmissions: fetchSearchSubmissions,
-	} = useGetAllSubmissions();
+	} = useSubmissionsByIds(searchIds, { enabled: view === "search" });
 
 	const {
 		submissions: favouriteSubmissions,
@@ -102,12 +101,12 @@ const Home = () => {
 	useEffect(() => {
 		if (view !== "search") return;
 		if (!canonicalSearchIds) return;
+		// React Query handles request cancellation via AbortSignal.
+		// Keep this ref to avoid changing unrelated logic elsewhere.
 		searchAbortRef.current?.abort();
-		const controller = new AbortController();
-		searchAbortRef.current = controller;
-		fetchSearchSubmissions(searchIds, controller);
-		return () => controller.abort();
-	}, [view, canonicalSearchIds, fetchSearchSubmissions, searchIds]);
+		searchAbortRef.current = new AbortController();
+		return () => searchAbortRef.current?.abort();
+	}, [view, canonicalSearchIds]);
 
 	useEffect(() => {
 		if (view === "favourite") setSubmissions(favouriteSubmissions ?? []);
@@ -117,7 +116,8 @@ const Home = () => {
 	useEffect(() => {
 		if (view !== "search") return;
 		// Navigation may have already populated context from its prefetch cache.
-		if (searchSubmissions.length > 0) setSubmissions(searchSubmissions);
+		if (searchSubmissions && searchSubmissions.length > 0)
+			setSubmissions(searchSubmissions);
 		else if (submissions.length === 0 && canonicalSearchIds) setSubmissions([]);
 	}, [
 		view,
