@@ -1,4 +1,5 @@
 import { Bookmark } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 import useToggleFavourite from "../hooks/useToggleFavourite";
@@ -28,6 +29,8 @@ const getYear = (yr: string | undefined): string | undefined => {
 function SubmissionCard(props: SubmissionCardProps) {
 	const navigate = useNavigate();
 	const { theme } = useTheme();
+	const [error, setError] = useState(false);
+
 	const { isFavourite, likeCount, handleToggle } = useToggleFavourite({
 		submissionId: props.id,
 		isFavourite: props.isFavourite ?? false,
@@ -36,25 +39,34 @@ function SubmissionCard(props: SubmissionCardProps) {
 
 	return (
 		<div className="w-full h-full flex flex-col justify-between items-center p-1 rounded-[0.6vmax] bg-(--bg) transition-all duration-200 hover:shadow-[0_0_8px_var(--shadow-color)]">
-			<div className="relative w-full max-h-[40%] flex justify-center items-center">
-				<img
-					fetchPriority="high"
-					key={theme}
-					className="h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-contain"
-					src={
-						props.companyLogoUrl ||
-						(theme === "light"
-							? "/assets/images/app_icon_dark.png"
-							: "/assets/images/app_icon_light.png")
-					}
-					alt={`${props.companyName} logo`}
-					onError={(e) => {
-						e.currentTarget.src =
+			<div className="relative w-full max-h-[40%] flex justify-center items-center pt-3">
+				{error ? (
+					<img
+						fetchPriority="high"
+						key={theme}
+						className="h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-contain"
+						src={
 							theme === "light"
 								? "/assets/images/app_icon_dark.png"
-								: "/assets/images/app_icon_light.png";
-					}}
-				/>
+								: "/assets/images/app_icon_light.png"
+						}
+						alt={`${props.companyName} logo`}
+					/>
+				) : (
+					<img
+						fetchPriority="high"
+						key={theme}
+						className={`h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-contain ${
+							theme === "dark" && "logo-invert"
+						}`}
+						src={props.companyLogoUrl}
+						alt={`${props.companyName} logo`}
+						onError={() => {
+							setError(true);
+						}}
+					/>
+				)}
+
 				<div className="absolute top-2 right-2 flex items-center gap-1  backdrop-blur-sm px-2 py-0.5 rounded-full text--(text-light) text-[1.2vmax] font-medium">
 					❤️ {likeCount}
 				</div>
@@ -83,7 +95,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 				})}
 			</div>
 
-			<div className="w-full h-[12%] justify-center flex items-end pl-[0.5vmax] pb-[0.3vmax]">
+			<div className="w-full h-[12%] justify-center flex items-end pl-[0.5vmax] pb-2">
 				<button
 					type="button"
 					onClick={(e) =>
