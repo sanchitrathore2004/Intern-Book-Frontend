@@ -1,54 +1,34 @@
-import { useCallback, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
-	type AutoCompleteResponseDto,
 	type AutocompleteRequestDto,
 	type GetAutoCompleteRequest,
 	SubmissionControllerApi,
 } from "../../web-client/src/generated";
 import { apiConfig } from "../utils/apiConfig";
 
-const useAutoComplete = () => {
-	const [suggestions, setSuggestions] = useState<
-		Array<AutoCompleteResponseDto> | []
-	>([]);
-	const [error, setError] = useState<Error | null>(null);
-	const [loading, setLoading] = useState(false);
+const useAutoComplete = (query: string, enabled: boolean = true) => {
+	const normalizedQuery = query.trim().toLocaleLowerCase();
 
-	const fetchSuggestions = useCallback(
-		async (query: string, controller: AbortController) => {
-			setLoading(true);
-			setError(null);
+	const queryResult = useQuery({
+		queryKey: ["autocomplete", normalizedQuery],
+		queryFn: async ({ signal }) => {
+			const data: AutocompleteRequestDto = { query: normalizedQuery };
+			const request: GetAutoCompleteRequest = {
+				autocompleteRequestDto: data,
+			};
 
-			try {
-				const data: AutocompleteRequestDto = { query };
-				const request: GetAutoCompleteRequest = {
-					autocompleteRequestDto: data,
-				};
-
-				const submissionApi = new SubmissionControllerApi(apiConfig);
-
-				const res: Array<AutoCompleteResponseDto> =
-					await submissionApi.getAutoComplete(request, {
-						signal: controller.signal,
-					});
-				if (!res) throw new Error("Some error occured");
-
-				setSuggestions(res);
-				setLoading(false);
-			} catch (er) {
-				if (er instanceof Error) setError(er);
-				else setError(new Error("failed to get Suggestions"));
-			}
+			const submissionApi = new SubmissionControllerApi(apiConfig);
+			return await submissionApi.getAutoComplete(request, { signal });
 		},
-		[],
-	);
+		enabled: enabled && normalizedQuery.length > 0,
+		staleTime: 2 * 60 * 1000,
+		gcTime: 5 * 60 * 1000,
+	});
 
 	return {
-		suggestions,
-		error,
-		loading,
-		setSuggestions,
-		fetchSuggestions,
+		suggestions: queryResult.data || [],
+		error: queryResult.error,
+		loading: queryResult.isPending,
 	};
 };
 

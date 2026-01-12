@@ -4,10 +4,10 @@ import { ToastContainer } from "react-toastify";
 import type { SubmissionCardResponseDto } from "../../web-client/src/generated";
 import Loader from "../components/Loader";
 import ProfileSidebar from "../components/ProfileSideBar";
-import useGetAllSubmissions from "../hooks/useGetAllSubmissions";
 import useGetFavourites from "../hooks/useGetFavourites";
 import { useInfiniteTopSubmission } from "../hooks/useGetTopSubmissions";
 import { useSubmissions } from "../hooks/useSubmissions";
+import { useSubmissionsByIds } from "../hooks/useSubmissionsByIds";
 import FetchedSubmission from "../pages/FetchedSubmission";
 import { showError, showSuccess } from "../utils/toast";
 
@@ -22,8 +22,9 @@ const Home = () => {
 			? rawView
 			: "top";
 
-	const { submissions, setSubmissions } = useSubmissions();
 	const searchAbortRef = useRef<AbortController | null>(null);
+
+	const { submissions, setSubmissions } = useSubmissions();
 
 	const {
 		data: topData,
@@ -44,7 +45,7 @@ const Home = () => {
 		return Array.from(new Set(ids));
 	}, [rawIds]);
 
-	const canonicalSearchIds = useMemo(() => {
+	const canonicalSearchIds: string | null = useMemo(() => {
 		if (searchIds.length === 0) return null;
 		return [...searchIds].sort((a, b) => a - b).join(",");
 	}, [searchIds]);
@@ -69,11 +70,10 @@ const Home = () => {
 	}, [canonicalSearchIds, rawIds, rawView, view, setSearchParams]);
 
 	const {
-		submissions: searchSubmissions,
-		loading: searchLoading,
+		data: searchSubmissions,
+		isLoading: searchLoading,
 		error: searchError,
-		fetchSubmissions: fetchSearchSubmissions,
-	} = useGetAllSubmissions();
+	} = useSubmissionsByIds(searchIds, { enabled: view === "search" });
 
 	const {
 		submissions: favouriteSubmissions,
@@ -109,14 +109,15 @@ const Home = () => {
 	useEffect(() => {
 		if (view !== "search") return;
 		if (!canonicalSearchIds) return;
-
+		// React Query handles request cancellation via AbortSignal.
+		// Keep this ref to avoid changing unrelated logic elsewhere.
 		searchAbortRef.current?.abort();
+		searchAbortRef.current = new AbortController();
 		const controller = new AbortController();
 		searchAbortRef.current = controller;
-		fetchSearchSubmissions(searchIds, controller);
 
-		return () => controller.abort();
-	}, [view, canonicalSearchIds, fetchSearchSubmissions, searchIds]);
+		return () => searchAbortRef.current?.abort();
+	}, [view, canonicalSearchIds]);
 
 	useEffect(() => {
 		if (view !== "top") return;
@@ -133,8 +134,9 @@ const Home = () => {
 
 	useEffect(() => {
 		if (view !== "search") return;
-
-		if (searchSubmissions.length > 0) setSubmissions(searchSubmissions);
+		// Navigation may have already populated context from its prefetch cache.
+		if (searchSubmissions && searchSubmissions.length > 0)
+			setSubmissions(searchSubmissions);
 		else if (submissions.length === 0 && canonicalSearchIds) setSubmissions([]);
 	}, [
 		view,
@@ -160,6 +162,7 @@ const Home = () => {
 
 		const observer = new IntersectionObserver((entries) => {
 			if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+				console.log("next page");
 				fetchNextPage();
 			}
 		});

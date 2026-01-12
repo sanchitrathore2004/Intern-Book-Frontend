@@ -5,6 +5,7 @@ import { apiConfig } from "../utils/apiConfig";
 type PageParam = {
 	cursorLike?: number;
 	cursorCreatedAt?: Date;
+	cursorId?: number;
 	limit?: number;
 };
 
@@ -19,6 +20,7 @@ export function useInfiniteTopSubmission() {
 			return api.getTopSubmissions({
 				cursorLike: params.cursorLike,
 				cursorCreatedAt: params.cursorCreatedAt,
+				cursorId: params.cursorId,
 				limit: params.limit,
 			});
 		},
@@ -29,6 +31,7 @@ export function useInfiniteTopSubmission() {
 			return {
 				cursorLike: lastPage.nextLikeCount,
 				cursorCreatedAt: lastPage.nextCreatedAt,
+				cursorId: lastPage.nextId,
 				limit: 10,
 			};
 		},

@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Bookmark, House, LogOut, Moon, Search, Sun, User } from "lucide-react";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -5,14 +6,13 @@ import type { SubmissionCardResponseDto } from "../../web-client/src/generated/i
 import { useTheme } from "../contexts/ThemeContext.tsx";
 import UserContext from "../contexts/UserContext.tsx";
 import useAutoComplete from "../hooks/useAutoComplete.ts";
-import useGetAllSubmissions from "../hooks/useGetAllSubmissions.ts";
 import { useSubmissions } from "../hooks/useSubmissions.ts";
+import {
+	fetchSubmissionsByIds,
+	submissionsByIdsKey,
+} from "../hooks/useSubmissionsByIds.ts";
 import { navigateWithModifiers } from "../utils/navigateWithModifiers";
 import Loader from "./Loader.tsx";
-
-const isSubmission = (
-	x: SubmissionCardResponseDto | undefined | null,
-): x is SubmissionCardResponseDto => x != null;
 
 interface NavigationBarProps {
 	profilePictureUrl: string;
@@ -22,6 +22,7 @@ function Navigation(props: NavigationBarProps) {
 	const { theme, toggleTheme } = useTheme();
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [query, setQuery] = useState("");
+	const [debouncedQuery, setDebouncedQuery] = useState("");
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [showProfileDropDown, setProfileDropDown] = useState(false);
@@ -32,18 +33,15 @@ function Navigation(props: NavigationBarProps) {
 	const modalDropdownRef = useRef<HTMLUListElement | null>(null);
 	const { user } = useContext(UserContext);
 	const { setSubmissions } = useSubmissions();
-	const fetchControllerRef = useRef<AbortController | null>(null);
 	const [searchCommitted, setSearchCommitted] = useState(false);
 	const committedIdsRef = useRef<number[] | null>(null);
-	const prefetchedByIdRef = useRef(
-		new Map<number, SubmissionCardResponseDto>(),
-	);
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 
-	const { fetchSubmissions, submissions } = useGetAllSubmissions();
-
-	const { suggestions, setSuggestions, fetchSuggestions, loading } =
-		useAutoComplete();
+	const { suggestions, loading } = useAutoComplete(
+		debouncedQuery,
+		showDropdown && debouncedQuery.trim().length > 0,
+	);
 
 	// Keep dropdown scroll in sync with keyboard navigation
 	useEffect(() => {
@@ -60,41 +58,34 @@ function Navigation(props: NavigationBarProps) {
 
 	// debounce + fetch suggestions
 	useEffect(() => {
-		if (!query.trim()) return;
+		const trimmed = query.trim();
 
-		const controller = new AbortController();
+		if (!trimmed || trimmed.length === 0) {
+			return;
+		}
+
 		const id = setTimeout(() => {
-			fetchSuggestions(query, controller);
+			setDebouncedQuery(trimmed);
 			setActiveIndex(0);
 		}, 300);
 
 		return () => {
 			clearTimeout(id);
-			controller.abort();
 		};
-	}, [fetchSuggestions, query]);
+	}, [query]);
 
 	// Prefetch all submissions referenced by the current suggestions
 	useEffect(() => {
 		const allIds = Array.from(new Set(suggestions.flatMap((s) => s.ids ?? [])));
 		if (allIds.length === 0) return;
 
-		fetchControllerRef.current?.abort();
-		const controller = new AbortController();
-		fetchControllerRef.current = controller;
-		fetchSubmissions(allIds, controller);
-
-		return () => controller.abort();
-	}, [suggestions, fetchSubmissions]);
-
-	// Keep a local cache of prefetched submissions.
-	useEffect(() => {
-		if (!submissions || submissions.length === 0) return;
-		for (const submission of submissions) {
-			if (submission?.id != null)
-				prefetchedByIdRef.current.set(submission.id, submission);
-		}
-	}, [submissions]);
+		queryClient.prefetchQuery({
+			queryKey: submissionsByIdsKey(allIds),
+			queryFn: ({ signal }) =>
+				fetchSubmissionsByIds({ submissionIds: allIds, signal }),
+			staleTime: 2 * 60 * 1000,
+		});
+	}, [suggestions, queryClient]);
 
 	const commitSearch = useCallback(
 		(word: string) => {
@@ -108,26 +99,24 @@ function Navigation(props: NavigationBarProps) {
 			setSearchCommitted(true);
 			navigate(`/home?view=search&ids=${ids.join(",")}`);
 
-			const cached = ids
-				.map((id) => prefetchedByIdRef.current.get(id))
-				.filter(isSubmission);
-			if (cached.length > 0) setSubmissions(cached);
+			const cachedList = queryClient.getQueryData<SubmissionCardResponseDto[]>(
+				submissionsByIdsKey(ids),
+			);
+			if (cachedList && cachedList.length > 0) setSubmissions(cachedList);
 		},
-		[suggestions, navigate, setSubmissions],
+		[suggestions, navigate, queryClient, setSubmissions],
 	);
 
 	// After commit, if some ids weren't in cache yet, fill them in when prefetch completes.
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <this effect depends on submissions>
 	useEffect(() => {
 		if (!searchCommitted) return;
 		const ids = committedIdsRef.current;
 		if (!ids || ids.length === 0) return;
-		const cached = ids
-			.map((id) => prefetchedByIdRef.current.get(id))
-			.filter(isSubmission);
-		if (cached !== undefined && cached.length === ids.length)
-			setSubmissions(cached);
-	}, [searchCommitted, submissions, setSubmissions]);
+		const cachedList = queryClient.getQueryData<SubmissionCardResponseDto[]>(
+			submissionsByIdsKey(ids),
+		);
+		if (cachedList && cachedList.length > 0) setSubmissions(cachedList);
+	}, [searchCommitted, queryClient, setSubmissions]);
 
 	const onSelectSuggestion = useCallback(
 		(suggestion: string) => {
@@ -202,7 +191,6 @@ function Navigation(props: NavigationBarProps) {
 							setQuery(v);
 							setSearchCommitted(false);
 							setShowDropdown(!!v.trim());
-							if (!v.trim()) setSuggestions([]);
 						}}
 						onFocus={() => setShowDropdown(true)}
 						onKeyDown={(e) => {
@@ -413,7 +401,6 @@ function Navigation(props: NavigationBarProps) {
 									setQuery(v);
 									setSearchCommitted(false);
 									setShowDropdown(!!v.trim());
-									if (!v.trim()) setSuggestions([]);
 								}}
 								onKeyDown={(e) => {
 									if (e.key === "ArrowDown") {

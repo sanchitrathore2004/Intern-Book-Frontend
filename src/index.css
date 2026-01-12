@@ -257,3 +257,7 @@ select.input:has(option:checked:not([value=""])) {
   color: var(--accent);
   text-decoration: underline;
 }
+
+.logo-invert {
+  filter: brightness(0) invert(1);
+}
