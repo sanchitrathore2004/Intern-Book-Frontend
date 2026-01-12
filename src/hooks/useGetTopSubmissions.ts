@@ -1,33 +1,37 @@
-import { useCallback, useState } from "react";
-import {
-	type SubmissionCardResponseDto,
-	SubmissionControllerApi,
-} from "../../web-client/src/generated";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { SubmissionControllerApi } from "../../web-client/src/generated";
 import { apiConfig } from "../utils/apiConfig";
 
-const useGetTopSubmissions = () => {
-	const [submissions, setSubmissions] = useState<SubmissionCardResponseDto[]>(
-		[],
-	);
-	const [error, setError] = useState<Error | null>(null);
-	const [loading, setLoading] = useState(true);
-
-	const fetchTopSubmissions = useCallback(async () => {
-		setLoading(true);
-		setError(null);
-		try {
-			const submissionControllerApi = new SubmissionControllerApi(apiConfig);
-			const res = await submissionControllerApi.getTopSubmissions();
-			setSubmissions(res ?? []);
-		} catch (err) {
-			if (err instanceof Error) setError(err);
-			else setError(new Error("Failed to fetch favourites"));
-		} finally {
-			setLoading(false);
-		}
-	}, []);
-
-	return { submissions, error, loading, fetchTopSubmissions };
+type PageParam = {
+	cursorLike?: number;
+	cursorCreatedAt?: Date;
+	limit?: number;
 };
 
-export default useGetTopSubmissions;
+const api = new SubmissionControllerApi(apiConfig);
+
+export function useInfiniteTopSubmission() {
+	return useInfiniteQuery({
+		queryKey: ["top-submission"],
+		queryFn: async ({ pageParam }) => {
+			const params: PageParam = pageParam ?? { limit: 10 };
+
+			return api.getTopSubmissions({
+				cursorLike: params.cursorLike,
+				cursorCreatedAt: params.cursorCreatedAt,
+				limit: params.limit,
+			});
+		},
+		initialPageParam: { limit: 10 },
+		getNextPageParam: (lastPage) => {
+			if (!lastPage.hasNext) return undefined;
+
+			return {
+				cursorLike: lastPage.nextLikeCount,
+				cursorCreatedAt: lastPage.nextCreatedAt,
+				limit: 10,
+			};
+		},
+		staleTime: 60_000,
+	});
+}
