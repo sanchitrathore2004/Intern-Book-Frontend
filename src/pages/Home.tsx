@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect, useMemo, useRef } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import type { SubmissionCardResponseDto } from "../../web-client/src/generated";
 import Loader from "../components/Loader";
 import ProfileSidebar from "../components/ProfileSideBar";
 import useGetAllSubmissions from "../hooks/useGetAllSubmissions";
@@ -9,7 +10,6 @@ import { useInfiniteTopSubmission } from "../hooks/useGetTopSubmissions";
 import { useSubmissions } from "../hooks/useSubmissions";
 import FetchedSubmission from "../pages/FetchedSubmission";
 import { showError, showSuccess } from "../utils/toast";
-import type { SubmissionCardResponseDto } from "../../web-client/src/generated";
 
 const Home = () => {
 	type HomeView = "top" | "favourite" | "search";
@@ -58,7 +58,7 @@ const Home = () => {
 			if (rawIds !== canonicalSearchIds || rawView !== "search") {
 				setSearchParams(
 					{ view: "search", ids: canonicalSearchIds },
-					{ replace: true }
+					{ replace: true },
 				);
 			}
 			return;
@@ -86,15 +86,17 @@ const Home = () => {
 		view === "top"
 			? topLoading
 			: view === "favourite"
-			? favLoading
-			: searchLoading;
+				? favLoading
+				: searchLoading;
 
 	const effectiveError =
 		view === "top"
-			? (topIsError ? topError : null)
+			? topIsError
+				? topError
+				: null
 			: view === "favourite"
-			? favError
-			: searchError;
+				? favError
+				: searchError;
 
 	useEffect(() => {
 		if (effectiveError) showError(effectiveError.message);
@@ -116,12 +118,14 @@ const Home = () => {
 		return () => controller.abort();
 	}, [view, canonicalSearchIds, fetchSearchSubmissions, searchIds]);
 
-useEffect(() => {
-	if (view !== "top") return;
-	if (!topData) return;
-	const merged = topData.pages.flatMap((p) => p.items).filter(Boolean) as SubmissionCardResponseDto[];
-	setSubmissions(merged);
-}, [view, topData, setSubmissions]);
+	useEffect(() => {
+		if (view !== "top") return;
+		if (!topData) return;
+		const merged = topData.pages
+			.flatMap((p) => p.items)
+			.filter(Boolean) as SubmissionCardResponseDto[];
+		setSubmissions(merged);
+	}, [view, topData, setSubmissions]);
 
 	useEffect(() => {
 		if (view === "favourite") setSubmissions(favouriteSubmissions ?? []);
@@ -132,7 +136,13 @@ useEffect(() => {
 
 		if (searchSubmissions.length > 0) setSubmissions(searchSubmissions);
 		else if (submissions.length === 0 && canonicalSearchIds) setSubmissions([]);
-	}, [view, canonicalSearchIds, searchSubmissions, submissions.length, setSubmissions]);
+	}, [
+		view,
+		canonicalSearchIds,
+		searchSubmissions,
+		submissions.length,
+		setSubmissions,
+	]);
 
 	const location = useLocation();
 	useEffect(() => {
@@ -178,7 +188,9 @@ useEffect(() => {
 			<ToastContainer newestOnTop />
 			<div className=" w-full h-full px-[3vmax] flex gap-[3vmax]">
 				<div className="hidden md:block pt-[2vmax]">
-					<ProfileSidebar onSeeMoreFavourites={() => setSearchParams({ view: "favourite" })} />
+					<ProfileSidebar
+						onSeeMoreFavourites={() => setSearchParams({ view: "favourite" })}
+					/>
 				</div>
 				<div className="flex-1 bg-(--fore-bg) mt-4 mb-4 rounded-[1.6vmax] flex flex-col">
 					<div className="flex-1 overflow-auto no-scrollbar pt-[1.5vmax] pb-[1.5vmax] px-[2.5vmax]">
@@ -187,7 +199,10 @@ useEffect(() => {
 						</div>
 
 						{view === "top" && hasNextPage && (
-							<div ref={loaderRef} className="w-full h-16 flex justify-center items-center">
+							<div
+								ref={loaderRef}
+								className="w-full h-16 flex justify-center items-center"
+							>
 								{isFetchingNextPage && <Loader />}
 							</div>
 						)}
