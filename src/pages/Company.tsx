@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -5,6 +6,7 @@ import {
 	type ChangeDreamCompanyRequest,
 	type ChangeDreamCompanyResponseDto,
 	CompanyControllerApi,
+	type CompanyPageResponseDto,
 } from "../../web-client/src/generated";
 import ConfirmChangeToast from "../components/ConfirmChangeToast";
 import Loader from "../components/Loader";
@@ -18,8 +20,11 @@ function Company() {
 	const { company_id } = useParams<{ company_id: string }>();
 	const navigate = useNavigate();
 	const { theme } = useTheme();
-	const { company, setCompany, loading, error, fetchCompanyDetails } =
-		useGetCompany();
+	const companyId = Number(company_id);
+	const queryClient = useQueryClient();
+
+	const { data: company, isLoading: loading, error } = useGetCompany(companyId);
+
 	const [imgSrc, setImgSrc] = useState<string>(
 		company?.logoUrl ??
 			(theme === "light"
@@ -61,10 +66,12 @@ function Company() {
 
 				if (res.removed) {
 					showInfo(`${company?.name} is removed from dream company`, 2500);
-					setCompany((prev) =>
-						prev
-							? { ...prev, favoriteCount: (prev.favoriteCount ?? 0) - 1 }
-							: prev,
+					queryClient.setQueryData(
+						["company", companyId],
+						(prev: CompanyPageResponseDto | undefined) =>
+							prev
+								? { ...prev, favoriteCount: (prev.favoriteCount ?? 0) - 1 }
+								: prev,
 					);
 				} else if (res.conflict) {
 					toast.info(
@@ -73,10 +80,15 @@ function Company() {
 							currentCompanyName={res.currentCompanyName ?? ""}
 							newCompanyName={company?.name}
 							onDone={() => {
-								setCompany((prev) =>
-									prev
-										? { ...prev, favoriteCount: (prev.favoriteCount ?? 0) + 1 }
-										: prev,
+								queryClient.setQueryData(
+									["company", companyId],
+									(prev: CompanyPageResponseDto | undefined) =>
+										prev
+											? {
+													...prev,
+													favoriteCount: (prev.favoriteCount ?? 0) + 1,
+												}
+											: prev,
 								);
 							}}
 						/>,
@@ -84,10 +96,12 @@ function Company() {
 					);
 				} else {
 					showSuccess(`Dream company set to ${res.currentCompanyName}`, 2500);
-					setCompany((prev) =>
-						prev
-							? { ...prev, favoriteCount: (prev.favoriteCount ?? 0) + 1 }
-							: prev,
+					queryClient.setQueryData(
+						["company", companyId],
+						(prev: CompanyPageResponseDto | undefined) =>
+							prev
+								? { ...prev, favoriteCount: (prev.favoriteCount ?? 0) + 1 }
+								: prev,
 					);
 				}
 			} catch (error) {
@@ -95,27 +109,19 @@ function Company() {
 				if (error instanceof Error) showError(error.message);
 			}
 		},
-		[company?.name, setCompany],
+		[company?.name, queryClient.setQueryData],
 	);
 
 	useEffect(() => {
-		if (!company_id) {
+		if (!company_id || Number.isNaN(companyId)) {
 			navigate("/error");
-			return;
 		}
+	}, [company_id, companyId, navigate]);
 
-		const submissionIdNum = Number(company_id);
-		if (Number.isNaN(submissionIdNum)) {
-			navigate("/error");
-			return;
-		}
+	useEffect(() => {
+		if (error) showError(error.message);
+	}, [error]);
 
-		const controller = new AbortController();
-		fetchCompanyDetails(submissionIdNum, controller);
-		return () => controller.abort();
-	}, [company_id, fetchCompanyDetails, navigate]);
-
-	if (error) showError(error.message);
 	if (!company) return <Loader fullscreen />;
 
 	return (

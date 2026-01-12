@@ -12,6 +12,7 @@ import useGetProfile from "../hooks/useGetProfile";
 import useUpdateProfilePicture from "../hooks/useUpdateProfilePicture";
 import UploadModal from "../modals/UploadModal";
 import { DepartmentConfig } from "../utils/departmentConfig";
+import { resizeImageToMax256 } from "../utils/imageResize";
 import { showError, showSuccess } from "../utils/toast";
 import { YearConfig } from "../utils/yearConfig";
 
@@ -170,11 +171,15 @@ function Profile() {
 		sendUploadSecureUrlToBackend(formattedCloudinaryUploadResposne.secure_url);
 	}, [cloudinaryCredentials, sendUploadSecureUrlToBackend, pendingUploadFile]);
 
-	const handleProfileUpload = (file: File) => {
+	const handleProfileUpload = async (file: File) => {
 		uploadControllerRef.current?.abort();
 		const controller = new AbortController();
 		uploadControllerRef.current = controller;
-		setPendingUploadFile(file);
+		const resizedFile = await resizeImageToMax256(file);
+		setPendingUploadFile(resizedFile);
+		console.log(file.size);
+		console.log(resizedFile.size);
+
 		toastIdRef.current = toast.loading(
 			"Updating profile picture, this may take a while..",
 		);
