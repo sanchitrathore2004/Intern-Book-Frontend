@@ -34,7 +34,12 @@ function UploadModal(props: UploadModalProps) {
 	};
 
 	return (
-		<div className="fixed inset-0 bg-black/70 z-10 flex items-center justify-center">
+		// biome-ignore lint:a11y/useKeyWithClickEvents
+		<div
+			role="application"
+			onClick={handleClose}
+			className="fixed inset-0 bg-black/70 z-100 flex items-center justify-center"
+		>
 			<button
 				type="button"
 				onClick={handleClose}
@@ -42,7 +47,12 @@ function UploadModal(props: UploadModalProps) {
 			>
 				X
 			</button>
-			<div className="relative w-[40vmax] h-[30vmax] rounded-[1vmax] bg-(--bg) border-2 border-dashed border-(--border-color) flex flex-col items-center">
+			{/* biome-ignore lint:a11y/useKeyWithClickEvents */}
+			<div
+				role="dialog"
+				onClick={(e) => e.stopPropagation()}
+				className="relative w-[40vmax] h-[30vmax] rounded-[1vmax] bg-(--bg) border-2 border-dashed border-(--border-color) flex flex-col items-center"
+			>
 				<div
 					{...getRootProps()}
 					className={`
