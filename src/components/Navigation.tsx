@@ -10,7 +10,7 @@ import { useSubmissions } from "../hooks/useSubmissions.ts";
 import {
 	fetchSubmissionsByIds,
 	submissionsByIdsKey,
-} from "../queries/submissions";
+} from "../hooks/useSubmissionsByIds.ts";
 import { navigateWithModifiers } from "../utils/navigateWithModifiers";
 import Loader from "./Loader.tsx";
 
@@ -22,6 +22,7 @@ function Navigation(props: NavigationBarProps) {
 	const { theme, toggleTheme } = useTheme();
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [query, setQuery] = useState("");
+	const [debouncedQuery, setDebouncedQuery] = useState("");
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [showProfileDropDown, setProfileDropDown] = useState(false);
@@ -37,8 +38,10 @@ function Navigation(props: NavigationBarProps) {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 
-	const { suggestions, setSuggestions, fetchSuggestions, loading } =
-		useAutoComplete();
+	const { suggestions, loading } = useAutoComplete(
+		debouncedQuery,
+		showDropdown && debouncedQuery.trim().length > 0,
+	);
 
 	// Keep dropdown scroll in sync with keyboard navigation
 	useEffect(() => {
@@ -55,19 +58,21 @@ function Navigation(props: NavigationBarProps) {
 
 	// debounce + fetch suggestions
 	useEffect(() => {
-		if (!query.trim()) return;
+		const trimmed = query.trim();
 
-		const controller = new AbortController();
+		if (!trimmed || trimmed.length === 0) {
+			return;
+		}
+
 		const id = setTimeout(() => {
-			fetchSuggestions(query, controller);
+			setDebouncedQuery(trimmed);
 			setActiveIndex(0);
 		}, 300);
 
 		return () => {
 			clearTimeout(id);
-			controller.abort();
 		};
-	}, [fetchSuggestions, query]);
+	}, [query]);
 
 	// Prefetch all submissions referenced by the current suggestions
 	useEffect(() => {
@@ -186,7 +191,6 @@ function Navigation(props: NavigationBarProps) {
 							setQuery(v);
 							setSearchCommitted(false);
 							setShowDropdown(!!v.trim());
-							if (!v.trim()) setSuggestions([]);
 						}}
 						onFocus={() => setShowDropdown(true)}
 						onKeyDown={(e) => {
@@ -397,7 +401,6 @@ function Navigation(props: NavigationBarProps) {
 									setQuery(v);
 									setSearchCommitted(false);
 									setShowDropdown(!!v.trim());
-									if (!v.trim()) setSuggestions([]);
 								}}
 								onKeyDown={(e) => {
 									if (e.key === "ArrowDown") {
