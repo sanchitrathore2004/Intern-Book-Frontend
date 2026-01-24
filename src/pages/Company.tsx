@@ -199,6 +199,7 @@ function Company() {
 						<div key={sub.id} className="w-[22vmax] h-[26vmax]">
 							<SubmissionCard
 								id={sub.id ?? 0}
+								companyId={sub.companyId ?? 0}
 								companyLogoUrl={sub.companyLogoUrl ?? sub.companyName ?? "alt"}
 								companyName={sub.companyName ?? ""}
 								domainName={sub.domainName ?? ""}

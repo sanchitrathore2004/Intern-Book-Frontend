@@ -330,6 +330,7 @@ function Profile() {
 							)}
 							<SubmissionCard
 								id={sub.id ?? 0}
+								companyId={sub.companyId ?? 0}
 								companyLogoUrl={sub.companyLogoUrl ?? "logo"}
 								companyName={sub.companyName ?? ""}
 								domainName={sub.domainName ?? ""}

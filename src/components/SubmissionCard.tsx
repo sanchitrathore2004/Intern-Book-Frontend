@@ -9,6 +9,7 @@ import Tags from "./Tags";
 
 interface SubmissionCardProps {
 	id: number;
+	companyId: number;
 	companyName: string;
 	userName: string;
 	type?: string;
@@ -77,7 +78,15 @@ function SubmissionCard(props: SubmissionCardProps) {
 					style={{ fontFamily: "GoldmanSansBd" }}
 					className="w-full h-fit flex items-center text-[2vmax] font-bold text-(--text-heading) pl-[0.5vmax]"
 				>
-					{props.companyName}
+					<button
+						type="button"
+						onClick={(e) =>
+							navigateWithModifiers(e, navigate, `/company/${props.companyId}`)
+						}
+						className="cursor-pointer"
+					>
+						{props.companyName}
+					</button>
 				</div>
 				<div className="w-full max-h-[40%] flex items-start text-(--text-light) font-light text-[1.2vmax] pl-[0.5vmax] mb-2">
 					{props.userName.split(" ")[0]} . {props.type} . {props.domainName} .{" "}
