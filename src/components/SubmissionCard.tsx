@@ -19,6 +19,7 @@ interface SubmissionCardProps {
 	companyLogoUrl?: string;
 	isFavourite?: boolean;
 	likeCount?: number;
+	isAnonymous?: boolean;
 }
 
 const getYear = (yr: string | undefined): string | undefined => {
@@ -89,8 +90,17 @@ function SubmissionCard(props: SubmissionCardProps) {
 					</button>
 				</div>
 				<div className="w-full max-h-[40%] flex items-start text-(--text-light) font-light text-[1.2vmax] pl-[0.5vmax] mb-2">
-					{props.userName.split(" ")[0]} . {props.type} . {props.domainName} .{" "}
-					{getYear(String(props.year))}
+					{props.isAnonymous ? "Anonymous" : props.userName.split(" ")[0]}
+					{" . "}
+					{props.type}
+					{" . "}
+					{props.domainName}
+					{!props.isAnonymous && (
+						<>
+							{" . "}
+							{getYear(String(props.year))}
+						</>
+					)}
 				</div>
 			</div>
 

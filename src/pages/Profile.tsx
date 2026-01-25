@@ -2,6 +2,7 @@ import { Trash2, Upload } from "lucide-react";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import AnonymousToggle from "../components/AnonymousToggle";
 import Loader from "../components/Loader";
 import ProfilePicture from "../components/ProfilePicture";
 import SubmissionCard from "../components/SubmissionCard";
@@ -9,6 +10,7 @@ import UserContext from "../contexts/UserContext";
 import useDeleteSubmission from "../hooks/useDeleteSubmission";
 import useGetCloudinaryCredentials from "../hooks/useGetCloudinaryCredentials";
 import useGetProfile from "../hooks/useGetProfile";
+import useGetToggleUser from "../hooks/useGetToggleUser";
 import useUpdateProfilePicture from "../hooks/useUpdateProfilePicture";
 import UploadModal from "../modals/UploadModal";
 import { DepartmentConfig } from "../utils/departmentConfig";
@@ -29,6 +31,8 @@ function Profile() {
 	const toastIdRef = useRef<string | number | null>(null);
 	const navigate = useNavigate();
 	const location = useLocation();
+	const isOwnProfile = String(user.id) === String(user_id);
+	const [anonymousState, setAnonymousState] = useState(false);
 
 	// delete a submission
 	const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
@@ -208,6 +212,17 @@ function Profile() {
 		return () => controller.abort();
 	}, [user_id, fetchProfileDetails, navigate]);
 
+	const { isAnonymous, getToggleResponse } = useGetToggleUser();
+
+	useEffect(() => {
+		if (!isOwnProfile) return;
+		getToggleResponse();
+	}, [isOwnProfile, getToggleResponse]);
+
+	useEffect(() => {
+		setAnonymousState(isAnonymous);
+	}, [isAnonymous]);
+
 	if (error) showError(error.message);
 	if (!profile) return <Loader fullscreen />;
 
@@ -224,7 +239,7 @@ function Profile() {
 			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[20vmax] h-[35vmax] bg-(--fore-bg) flex sm:flex-row flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
 				<div className="sm:h-[10vmax] sm:w-[20%] w-full h-[40%] rounded-[1.5vmax] flex justify-start items-start">
 					<div className="group relative h-full w-[30%] sm:w-full object-center object-cover rounded-[1.5vmax]">
-						{String(user.id) === String(user_id) && (
+						{isOwnProfile && (
 							<Upload
 								onClick={() => setIsModalOpen(true)}
 								className="opacity-0 group-hover:opacity-100 transition-opacity
@@ -247,6 +262,7 @@ function Profile() {
 					>
 						{profile.name}
 					</div>
+
 					<div className="w-full h-fit pl-[2vmax] sm:text-[1.1vmax] text-[1.5vmax]">
 						{getDepartment(profile.department)}
 					</div>
@@ -261,7 +277,13 @@ function Profile() {
 					</div>
 				</div>
 				{profile.favouriteCompany?.id ? (
-					<div className="sm:w-[20%] w-full h-full flex flex-col items-end justify-end gap-[0.7vmax]">
+					<div className="sm:w-[20%] w-full h-full flex flex-col items-end justify-end gap-[0.7vmax] justify-between items-center w-full">
+						{isOwnProfile && (
+							<AnonymousToggle
+								isAnonymous={anonymousState}
+								setIsAnonymous={setAnonymousState}
+							/>
+						)}
 						<div className="font-light text-(--text-light) pr-[0.4vmax] text-[1vmax]">
 							Dream Company
 						</div>
@@ -285,7 +307,6 @@ function Profile() {
 			</div>
 			<div className="w-[80%] h-fit rounded-[1vmax] bg-(--fore-bg) flex flex-wrap p-[2vmax] gap-[4vmax] items-center sm:justify-start justify-center mb-[2vmax]">
 				{profile.mySubmissions?.map((sub) => {
-					const isOwnProfile = String(user.id) === String(user_id);
 					return (
 						<div key={sub.id} className="w-[22vmax] h-[29vmax] relative">
 							{isOwnProfile && (
@@ -340,6 +361,7 @@ function Profile() {
 								year={sub.year ?? 1}
 								isFavourite={sub.favourite ?? false}
 								likeCount={sub.likeCount ?? 0}
+								isAnonymous={sub.anonymous}
 							/>
 						</div>
 					);

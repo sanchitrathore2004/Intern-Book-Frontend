@@ -29,6 +29,7 @@ const FetchedSubmission = () => {
 							year={submission.year}
 							isFavourite={submission.favourite}
 							likeCount={submission.likeCount}
+							isAnonymous={submission.anonymous}
 						/>
 					</div>
 				);

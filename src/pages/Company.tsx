@@ -208,6 +208,7 @@ function Company() {
 								userName={sub.userName ?? ""}
 								year={sub.year ?? 1}
 								isFavourite={sub.favourite ?? false}
+								isAnonymous={sub.anonymous}
 							/>
 						</div>
 					);
