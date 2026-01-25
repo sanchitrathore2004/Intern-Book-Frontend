@@ -34,6 +34,7 @@ const TextEditor = ({
 			modules: {
 				toolbar: [
 					["bold", "italic", "underline"],
+					[{ header: 1 }, { header: 2 }, { header: 3 }],
 					[{ list: "ordered" }, { list: "bullet" }],
 					["link"],
 				],

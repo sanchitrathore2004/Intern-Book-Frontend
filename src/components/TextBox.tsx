@@ -7,9 +7,8 @@ interface TextBoxProps {
 
 function TextBox({ label, value }: TextBoxProps) {
 	return (
-		<div className="col-span-10 w-fit bg-(--fore-bg) p-5 rounded-[0.75em] md:rounded-[1.5em]">
+		<div className="col-span-10 w-full bg-(--fore-bg) py-5 px-6 md:px-10 rounded-[0.75em] md:rounded-[1.5em]">
 			<h3 className="mb-3 text-lg font-medium text-(--text-light)">{label}</h3>
-
 			<div
 				className="experience-view text-md md:text-lg"
 				// biome-ignore lint/security/noDangerouslySetInnerHtml: <the content is sanitized so its safe to embedd>
