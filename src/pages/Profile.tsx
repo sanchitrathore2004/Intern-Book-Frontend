@@ -276,34 +276,28 @@ function Profile() {
 						{getYear(profile.year?.toString())}
 					</div>
 				</div>
-				<div className="sm:w-[20%] w-full h-full flex flex-col items-end justify-between gap-[0.7vmax]">
-					{isOwnProfile && (
-						<AnonymousToggle
-							isAnonymous={anonymousState}
-							setIsAnonymous={setAnonymousState}
-						/>
-					)}
-					{profile.favouriteCompany?.id ? (
-						<>
-							<div className="font-light text-(--text-light) pr-[0.4vmax] text-[1vmax]">
-								Dream Company
-							</div>
-							<button
-								type="button"
-								onClick={handleDreamCompanyClick}
-								className="cursor-pointer bg-transparent border-none p-0"
-							>
-								<img
-									className="w-[7vmax] h-[3vmax] pr-[1vmax] object-contain"
-									src={profile.favouriteCompany?.logoUrl}
-									alt={profile.favouriteCompany.name}
-								/>
-							</button>
-						</>
-					) : (
-						<div className="text-(--text-light)">Dream Company: TBD</div>
-					)}
-				</div>
+				 {profile.favouriteCompany?.id ? (
+					<div className="sm:w-[20%] w-full h-full flex flex-col items-end justify-end gap-[0.7vmax]">
+						<div className="font-light text-(--text-light) pr-[0.4vmax] text-[1vmax]">
+							Dream Company
+						</div>
+						<button
+							type="button"
+							onClick={handleDreamCompanyClick}
+							className="cursor-pointer bg-transparent border-none p-0"
+						>
+							<img
+								className="w-[7vmax] h-[3vmax] pr-[1vmax] object-contain"
+								src={profile.favouriteCompany?.logoUrl}
+								alt={profile.favouriteCompany.name}
+							/>
+						</button>
+					</div>
+				) : (
+					<div className="sm:w-[30%] w-full h-full flex flex-col items-end justify-end gap-[0.7vmax] text-(--text-light)">
+						Dream Company: TBD
+					</div>
+				)}
 			</div>
 			<div className="w-[80%] h-fit rounded-[1vmax] bg-(--fore-bg) flex flex-wrap p-[2vmax] gap-[4vmax] items-center sm:justify-start justify-center mb-[2vmax]">
 				{profile.mySubmissions?.map((sub) => {
