@@ -19,6 +19,7 @@ interface ProfileBoxProps {
 	year: string;
 	isFavourite: boolean;
 	likeCount: number;
+	isAnonymous: boolean;
 }
 
 export const ProfileBox = (props: ProfileBoxProps) => {
@@ -51,15 +52,23 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 				</div>
 				<div className="text-(--text-light) flex flex-col gap-0 justify-center">
 					<div className="font-bold text-lg">Author</div>
-					<button
-						type="button"
-						onClick={(e) =>
-							navigateWithModifiers(e, navigate, `/profile/${props.authorId}`)
-						}
-						className="text-(--text-heading) hover:text-(--accent) text-left text-3xl font-[GoldmanSansBd] font-bold mb-4 cursor-pointer transition-all active:scale-95"
-					>
-						{props.name}
-					</button>
+
+					{props.isAnonymous ? (
+						<div className="text-(--text-heading) text-3xl font-[GoldmanSansBd] font-bold mb-4 opacity-70 cursor-not-allowed">
+							Anonymous
+						</div>
+					) : (
+						<button
+							type="button"
+							onClick={(e) =>
+								navigateWithModifiers(e, navigate, `/profile/${props.authorId}`)
+							}
+							className="text-(--text-heading) hover:text-(--accent) text-left text-3xl font-[GoldmanSansBd] font-bold mb-4 cursor-pointer transition-all active:scale-95"
+						>
+							{props.name}
+						</button>
+					)}
+
 					<div>{getDepartment(props.department)}</div>
 					<div>{props.email}</div>
 					<div>{props.degree}</div>

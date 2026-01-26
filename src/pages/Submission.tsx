@@ -71,6 +71,8 @@ function Submission() {
 		}
 	}, [error, navigate]);
 
+	const isAnonymous = submissions?.isAnonymous ?? false;
+
 	if (loading) return <Loader fullscreen />;
 	if (!submissions) return null;
 
@@ -83,16 +85,26 @@ function Submission() {
 						submissionId={submissions.id ?? 1}
 						isFavourite={submissions.favourite ?? false}
 						authorId={submissions.authorId ?? 106123122}
-						cgpa={submissions.cgpa != null ? String(submissions.cgpa) : "NA"}
-						profileUrl={
-							submissions.profileUrl ?? "https://robohash.org/Phunsi%20Kumar"
+						cgpa={
+							isAnonymous
+								? "NA"
+								: submissions.cgpa != null
+									? String(submissions.cgpa)
+									: "NA"
 						}
-						name={submissions.name ?? ""}
-						department={submissions.department?.name ?? ""}
-						email={submissions.email ?? ""}
+						profileUrl={
+							isAnonymous
+								? "https://robohash.org/anonymous"
+								: (submissions.profileUrl ??
+									"https://robohash.org/Phunsi%20Kumar")
+						}
+						name={isAnonymous ? "Anonymous" : (submissions.name ?? "")}
+						department={isAnonymous ? "" : (submissions.department?.name ?? "")}
+						email={isAnonymous ? "" : (submissions.email ?? "")}
 						degree={submissions.degree ?? ""}
-						year={submissions.year?.toString() ?? ""}
+						year={isAnonymous ? "" : (submissions.year?.toString() ?? "")}
 						likeCount={submissions.likeCount ?? 0}
+						isAnonymous={isAnonymous}
 					/>
 				</div>
 

@@ -19,6 +19,7 @@ const FetchedSubmission = () => {
 					<div key={submission.id} className="w-[22vmax] h-[29vmax]">
 						<SubmissionCard
 							id={submission.id}
+							companyId={submission.companyId ?? 0}
 							companyLogoUrl={submission.companyLogoUrl}
 							companyName={submission.companyName}
 							domainName={submission.domainName}
@@ -28,6 +29,7 @@ const FetchedSubmission = () => {
 							year={submission.year}
 							isFavourite={submission.favourite}
 							likeCount={submission.likeCount}
+							isAnonymous={submission.anonymous}
 						/>
 					</div>
 				);

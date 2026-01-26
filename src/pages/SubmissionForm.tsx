@@ -31,10 +31,9 @@ const SubmissionForm = () => {
 	});
 
 	const {
-		companies,
-		loading: companyLoading,
+		data: companies = [],
+		isLoading: companyLoading,
 		error: companyError,
-		fetchAllCompany,
 	} = useGetAllCompany();
 
 	const {
@@ -48,9 +47,8 @@ const SubmissionForm = () => {
 		useCreateSubmission();
 
 	useEffect(() => {
-		fetchAllCompany();
 		fetchAllRoles();
-	}, [fetchAllCompany, fetchAllRoles]);
+	}, [fetchAllRoles]);
 
 	const onSubmit = async (data: SubmissionFormData) => {
 		const res = await createSubmission(data);

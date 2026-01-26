@@ -227,9 +227,11 @@ select.input:has(option:checked:not([value=""])) {
 
 /*CSS for showing details in experience in submission details page*/
 .experience-view {
-  color: var(--text-heading);
-  line-height: 1.7;
+  white-space: normal ;
+  word-break: keep-all ;
+  overflow-wrap: break-word ;
 }
+
 
 .experience-view p {
   margin-bottom: 10px;
