@@ -26,6 +26,7 @@ function AppRoutes() {
 					{/* Dont remove company_id I will use it to direct user from submission to company page */}
 					<Route path="/company/:company_id" element={<Company />} />
 					<Route path="/submissionForm" element={<SubmissionForm />} />
+					<Route path="/submissionForm/:id" element={<SubmissionForm />} />
 				</Route>
 			</Route>
 			<Route path="*" element={<ErrorPage />} />
