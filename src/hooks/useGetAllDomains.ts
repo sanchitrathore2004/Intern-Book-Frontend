@@ -1,29 +1,21 @@
-import { useCallback, useState } from "react";
-import {
-	CompanyControllerApi,
-	type DomainResponseDto,
-} from "../../web-client/src/generated";
+import { useQuery } from "@tanstack/react-query";
+import { CompanyControllerApi,type DomainResponseDto } from "../../web-client/src/generated";
 import { apiConfig } from "../utils/apiConfig";
 
-const useGetAllDomains = () => {
-	const [domains, setDomains] = useState<DomainResponseDto[]>([]);
-	const [error, setError] = useState<Error | null>(null);
-	const [loading, setLoading] = useState(false);
+const api = new CompanyControllerApi(apiConfig);
 
-	const fetchAllRoles = useCallback(async () => {
-		setLoading(true);
-		try {
-			const companyControllerApi = new CompanyControllerApi(apiConfig);
-			const res = await companyControllerApi.getAllDomains();
-			setDomains(res ?? []);
-		} catch (err) {
-			if (err instanceof Error) setError(err);
-			else setError(new Error("Failed to fetch companies"));
-		} finally {
-			setLoading(false);
-		}
-	}, []);
-	return { domains, error, loading, fetchAllRoles };
+const useGetAllDomains = () => {
+	return useQuery<DomainResponseDto[], Error>({
+		queryKey:["domains"],
+		queryFn :async ()=>{
+			const res = await api.getAllDomains();
+			if(!res) throw new Error("Error fetching domains");
+			return res;
+		},
+		staleTime: 3 * 60 * 1000,
+		gcTime: 5 * 60 * 1000,
+	}
+	)
 };
 
 export default useGetAllDomains;

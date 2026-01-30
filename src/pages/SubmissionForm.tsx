@@ -1,8 +1,7 @@
-import "../index.css";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useContext, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Loader from "../components/Loader";
 import TextEditor from "../components/TextEditor";
@@ -13,15 +12,29 @@ import useGetAllCompany from "../hooks/useGetAllCompany";
 import useGetAllDomains from "../hooks/useGetAllDomains";
 import type { SubmissionFormData } from "../interfaces/submissionSchema";
 import { submissionSchema } from "../interfaces/submissionSchema";
+import useGetSubmissions from "../hooks/useGetSubmissions";
+import useUpdateSubmission from "../hooks/useUpdateSubmission";
 
 const SubmissionForm = () => {
 	const navigate = useNavigate();
 	const { user } = useContext(UserContext);
 	const { theme } = useTheme();
+	const { id } = useParams();
+	const isEditMode = Boolean(id);
+	const submissionId = id ? Number(id) : undefined;
+	const { data, isLoading, error } = useGetSubmissions(submissionId);
+
+	useEffect(()=>{
+       if(id && data && data?.authorId !== user.id){
+		navigate(`/error`);
+	   }
+	}, [data?.authorId, id, user.id, navigate, data])
+
 	const {
 		register,
 		handleSubmit,
 		control,
+		reset,
 		formState: { errors },
 	} = useForm({
 		resolver: zodResolver(submissionSchema),
@@ -37,25 +50,77 @@ const SubmissionForm = () => {
 	} = useGetAllCompany();
 
 	const {
-		domains,
-		loading: roleLoading,
+		data:domains=[],
+		isLoading: roleLoading,
 		error: roleError,
-		fetchAllRoles,
 	} = useGetAllDomains();
+
+	useEffect(() => {
+		if (!isEditMode) return;
+
+		const loadSubmission = async () => {
+			if (!data) return;
+
+			reset({
+				company: data.company?.id?.toString(),
+				domain: data.domain?.id?.toString(),
+				type: data.type,
+				domainDescription: data.domainDescription,
+				experience: data.experience,
+				resources: data.resources,
+				cgpa: data.cgpa,
+				clubPositions: data.clubPositions,
+				ctc: data.ctc?.ctc,
+				basePay: data.ctc?.basePay,
+				stipend: data.stipend,
+				otRounds: data.processStructure?.otRound,
+				piRounds: data.processStructure?.piRound,
+				startDate: data.processStructure?.startDate
+					? new Date(data.processStructure.startDate)
+							.toISOString()
+							.split("T")[0]
+					: undefined,
+
+				endDate: data.processStructure?.endDate
+					? new Date(data.processStructure.endDate).toISOString().split("T")[0]
+					: undefined,
+			});
+		};
+
+		loadSubmission();
+	}, [isEditMode, data, reset]);
 
 	const { createSubmission, loading: submissionLoading } =
 		useCreateSubmission();
 
-	useEffect(() => {
-		fetchAllRoles();
-	}, [fetchAllRoles]);
+	const { editSubmission } = useUpdateSubmission();
 
 	const onSubmit = async (data: SubmissionFormData) => {
-		const res = await createSubmission(data);
+		let res: boolean;
+
+		if (isEditMode && submissionId) {
+			res = await editSubmission(data, submissionId);
+		} else {
+			res = await createSubmission(data);
+		}
 		if (res) {
-			navigate(`/profile/${user.id}`, { state: { submissionSaved: true } });
+			navigate(`/profile/${user.id}`, {
+				state: { submissionSaved: true },
+			});
 		}
 	};
+
+	if (isEditMode && isLoading) {
+		return (
+			<div className="h-full flex items-center justify-center">
+				<Loader size={80} />
+			</div>
+		);
+	}
+
+	if (isEditMode && error) {
+			navigate(`/error`);
+	}
 
 	return (
 		<div className="h-full overflow-y-auto no-scrollbar">
@@ -72,7 +137,7 @@ const SubmissionForm = () => {
 				>
 					<div className="space-y-2">
 						<h1 className="text-2xl sm:text-3xl font-semibold">
-							Create Submission
+							{isEditMode ? "Edit Submission" : "Create Submission"}
 						</h1>
 						<p className="text-sm text-(--text-light)">
 							Share your internship / placement experience
