@@ -1,4 +1,4 @@
-import { Trash2, Upload } from "lucide-react";
+import { Pencil, Trash2, Upload } from "lucide-react";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -17,6 +17,7 @@ import { DepartmentConfig } from "../utils/departmentConfig";
 import { resizeImageToMax256 } from "../utils/imageResize";
 import { showError, showSuccess } from "../utils/toast";
 import { YearConfig } from "../utils/yearConfig";
+import { navigateWithModifiers } from "../utils/navigateWithModifiers";
 
 function Profile() {
 	const { user_id } = useParams<{ user_id: string }>();
@@ -32,7 +33,6 @@ function Profile() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const isOwnProfile = String(user.id) === String(user_id);
-	const [anonymousState, setAnonymousState] = useState(false);
 
 	// delete a submission
 	const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
@@ -212,7 +212,7 @@ function Profile() {
 		return () => controller.abort();
 	}, [user_id, fetchProfileDetails, navigate]);
 
-	const { isAnonymous, getToggleResponse } = useGetToggleUser();
+	const { getToggleResponse } = useGetToggleUser();
 
 	useEffect(() => {
 		if (!isOwnProfile) return;
@@ -220,8 +220,9 @@ function Profile() {
 	}, [isOwnProfile, getToggleResponse]);
 
 	useEffect(() => {
-		setAnonymousState(isAnonymous);
-	}, [isAnonymous]);
+		if (!isOwnProfile) return;
+		getToggleResponse();
+	}, [isOwnProfile, getToggleResponse]);
 
 	if (error) showError(error.message);
 	if (!profile) return <Loader fullscreen />;
@@ -242,8 +243,8 @@ function Profile() {
 						{isOwnProfile && (
 							<Upload
 								onClick={() => setIsModalOpen(true)}
-								className="opacity-0 group-hover:opacity-100 transition-opacity
-			duration-200 text-(--text-heading) mix-blend-difference absolute top-2 left-2 cursor-pointer"
+								className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 
+  text-(--text-heading) hover:text-(--accent) absolute top-2 left-2 cursor-pointer"
 							/>
 						)}
 						<ProfilePicture
@@ -278,10 +279,7 @@ function Profile() {
 				</div>
 				<div className="sm:w-[20%] w-full h-full flex flex-col items-end justify-between gap-[0.7vmax]">
 					{isOwnProfile && (
-						<AnonymousToggle
-							isAnonymous={anonymousState}
-							setIsAnonymous={setAnonymousState}
-						/>
+						<AnonymousToggle isAnonymous={user.anonymous ?? false} />
 					)}
 					{profile.favouriteCompany?.id ? (
 						<>
@@ -318,6 +316,21 @@ function Profile() {
 										title="Delete Submission"
 									>
 										<Trash2 size={14} className="group-hover:scale-110" />
+									</button>
+
+									<button
+										type="button"
+										onClick={(e) => {
+											navigateWithModifiers(
+												e,
+												navigate,
+												`/submissionForm/${sub.id}`,
+											);
+										}}
+										className="p-1.5 bg-black/30 hover:bg-red-600 text-white/90 rounded-full transition-all duration-200 backdrop-blur-md shadow-md group cursor-pointer"
+										title="Edit Submission"
+									>
+										<Pencil size={14} className="group-hover:scale-110" />
 									</button>
 
 									{deleteConfirmId === sub.id && (

@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 import { SubmissionControllerApi } from "../../web-client/src/generated";
 import type { SubmissionFormData } from "../interfaces/submissionSchema";
-import submissionMapper from "../mappers/submissionMapper";
 import { apiConfig } from "../utils/apiConfig";
 import { showError } from "../utils/toast";
+import { baseSubmissionMapper } from "../mappers/baseSubmissionMapper";
 
 const useCreateSubmission = () => {
 	const [loading, setLoading] = useState(false);
@@ -13,7 +13,7 @@ const useCreateSubmission = () => {
 		async (data: SubmissionFormData): Promise<boolean> => {
 			setLoading(true);
 			try {
-				const requestDto = submissionMapper(data);
+				const requestDto = baseSubmissionMapper(data);
 				const submissionControllerApi = new SubmissionControllerApi(apiConfig);
 				await submissionControllerApi.saveSubmission({
 					saveSubmissionRequestDto: requestDto,

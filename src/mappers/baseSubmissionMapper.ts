@@ -1,7 +1,7 @@
 import type { SaveSubmissionRequestDto } from "../../web-client/src/generated";
 import type { SubmissionFormData } from "../interfaces/submissionSchema";
 
-const submissionMapper = (
+export const baseSubmissionMapper = (
 	form: SubmissionFormData,
 ): SaveSubmissionRequestDto => ({
 	companyId: form.company,
@@ -25,5 +25,3 @@ const submissionMapper = (
 	startDate: form.startDate ? new Date(form.startDate) : undefined,
 	endDate: form.endDate ? new Date(form.endDate) : undefined,
 });
-
-export default submissionMapper;

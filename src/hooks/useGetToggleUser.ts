@@ -1,29 +1,37 @@
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { UserControllerApi } from "../../web-client/src/generated";
 import { apiConfig } from "../utils/apiConfig";
+import UserContext from "../contexts/UserContext";
 
 const useGetToggleUser = () => {
-	const [isAnonymous, setAnonymous] = useState(false);
+	const { dispatch } = useContext(UserContext);
+
 	const [error, setError] = useState<Error | null>(null);
 	const [isLoading, setLoading] = useState(false);
 
 	const getToggleResponse = useCallback(async () => {
 		setLoading(true);
 		setError(null);
+
 		try {
 			const api = new UserControllerApi(apiConfig);
 			const res = await api.getAnonymousProfile();
-			setAnonymous(res.isAnonymous ?? false);
+
+			dispatch({
+				type: "UPDATE_PROFILE",
+				payload: {
+					anonymous: res.isAnonymous ?? false,
+				},
+			});
 		} catch (err) {
 			if (err instanceof Error) setError(err);
 			else setError(new Error("Failed to fetch toggle response"));
 		} finally {
 			setLoading(false);
 		}
-	}, []);
+	}, [dispatch]);
 
 	return {
-		isAnonymous,
 		error,
 		isLoading,
 		getToggleResponse,

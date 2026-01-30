@@ -1,18 +1,37 @@
 import { Ghost, User } from "lucide-react";
 import { toast } from "react-toastify";
 import ChangeAnonymousToast from "./ChangeAnonymousToast";
+import { useContext } from "react";
+import UserContext from "../contexts/UserContext";
+import { UserControllerApi } from "../../web-client/src/generated";
+import { apiConfig } from "../utils/apiConfig";
 
 interface Props {
 	isAnonymous: boolean;
-	setIsAnonymous: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AnonymousToggle = ({ isAnonymous, setIsAnonymous }: Props) => {
+const AnonymousToggle = ({ isAnonymous }: Props) => {
+	const { dispatch } = useContext(UserContext);
+
+	const toggleAnonymous = async () => {
+		try {
+			const api = new UserControllerApi(apiConfig);
+			await api.getAnonymousProfile();
+			dispatch({
+				type: "UPDATE_PROFILE",
+				payload: { anonymous: !isAnonymous },
+			});
+		} catch (err) {
+			console.error(err);
+			toast.error("Failed to update anonymous mode");
+		}
+	};
+
 	const openConfirmToast = () => {
 		toast(
 			<ChangeAnonymousToast
 				isAnonymous={isAnonymous}
-				onDone={() => setIsAnonymous((prev) => !prev)}
+				onDone={toggleAnonymous}
 			/>,
 			{
 				autoClose: false,
