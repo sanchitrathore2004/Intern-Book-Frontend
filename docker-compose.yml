@@ -6,7 +6,7 @@ services:
     ports:
       - "5173:80"
     networks:
-      - interern-book-network
+      - intern-book-network
    
 networks:
   intern-book-network:
