@@ -5,3 +5,10 @@ services:
     build: .
     ports:
       - "5173:80"
+    networks:
+      - interern-book-network
+   
+networks:
+  intern-book-network:
+    external: true
+    name: intern-book-network
