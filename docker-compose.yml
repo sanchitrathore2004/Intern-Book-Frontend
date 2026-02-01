@@ -4,4 +4,4 @@ services:
     container_name: "Intern-Book-Frontend"
     build: .
     ports:
-      - "5173:5173"
+      - "5173:80"

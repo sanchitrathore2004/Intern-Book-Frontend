@@ -1,8 +1,4 @@
-FROM node:25-alpine3.23
-
-RUN ["apk", "add", "--no-cache", "curl"]
-
-RUN ["apk", "add", "--no-cache", "openjdk17"]
+FROM node:25-alpine3.23 AS build
 
 WORKDIR /app
 
@@ -14,8 +10,14 @@ RUN ["pnpm", "install"]
 
 COPY . .
 
-EXPOSE 5173
+RUN ["pnpm", "run", "build"]
 
-RUN ["pnpm", "generate"]
+FROM nginx:1.26-alpine AS runtime
 
-ENTRYPOINT [ "pnpm", "run", "dev" ]
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

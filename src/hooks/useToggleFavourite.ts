@@ -1,6 +1,6 @@
 import { useCallback, useContext, useState } from "react";
 import {
-	type AddToFavouritesRequest,
+	type ToggleFavouritesRequest,
 	type ToggleResponseDto,
 	UserControllerApi,
 } from "../../web-client/src/generated";
@@ -25,7 +25,7 @@ const useToggleFavourite = (props: useToggleFavouriteProps) => {
 			return !prev;
 		});
 		try {
-			const request: AddToFavouritesRequest = {
+			const request: ToggleFavouritesRequest = {
 				submissionId: props.submissionId,
 			};
 			const userApi = new UserControllerApi(apiConfig);
