@@ -58,9 +58,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 					<img
 						fetchPriority="high"
 						key={theme}
-						className={`h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-contain ${
-							theme === "dark" && "logo-invert"
-						}`}
+						className={`h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-contain`}
 						src={props.companyLogoUrl}
 						alt={`${props.companyName} logo`}
 						onError={() => {

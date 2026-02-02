@@ -123,9 +123,15 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 				</div>
 				<div className="text-(--text-light) ml-4 mt-2 flex flex-col gap-0 justify-center">
 					<div className="font-bold text-lg">Author</div>
-					<div className="text-(--text-heading) text-3xl font-[GoldmanSansBd] font-bold mb-4">
+					<button
+						type="button"
+						onClick={(e) =>
+							navigateWithModifiers(e, navigate, `/profile/${props.authorId}`)
+						}
+						className="text-(--text-heading) hover:text-(--accent) text-left text-3xl font-[GoldmanSansBd] font-bold cursor-pointer transition-all active:scale-95"
+					>
 						{props.name}
-					</div>
+					</button>
 					<div>{props.department}</div>
 					<div>{props.email}</div>
 					<div>{props.degree}</div>

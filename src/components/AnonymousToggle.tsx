@@ -42,7 +42,7 @@ const AnonymousToggle = ({ isAnonymous }: Props) => {
 	};
 
 	return (
-		<div className="relative flex items-center gap-1.5 px-1.5 py-[2px] w-fit">
+		<div className="relative flex items-center gap-1.5 px-1.5 py-0.5 w-fit">
 			<span className="text-[10px] sm:text-[12px] font-semibold text-(--text-light)">
 				{isAnonymous ? "Anonymous" : "Public"}
 			</span>
@@ -50,16 +50,20 @@ const AnonymousToggle = ({ isAnonymous }: Props) => {
 			<button
 				type="button"
 				onClick={openConfirmToast}
-				className={`relative w-7 h-3.5 sm:w-9 sm:h-5 flex items-center rounded-full p-[1px] transition-colors duration-300 ${
-					isAnonymous ? "bg-purple-600" : "bg-blue-500"
+				className={`relative w-7 h-3.5 sm:w-9 sm:h-5 flex items-center rounded-full p-0.5 transition-colors duration-300 ${
+					isAnonymous ? "bg-(--bg)" : "bg-(--accent)"
 				}`}
 			>
 				<div
-					className={`bg-white w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full shadow-md transform transition-transform duration-300 flex items-center justify-center ${
+					className={`bg-(--fore-bg) w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full shadow-md transform transition-transform duration-300 flex items-center justify-center ${
 						isAnonymous ? "translate-x-3.5 sm:translate-x-4" : "translate-x-0"
 					}`}
 				>
-					{isAnonymous ? <Ghost size={10} /> : <User size={10} />}
+					{isAnonymous ? (
+						<Ghost size={10} className="text-(--text-heading)" />
+					) : (
+						<User size={10} className="text-(--text-heading)" />
+					)}
 				</div>
 			</button>
 		</div>
