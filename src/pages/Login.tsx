@@ -23,6 +23,14 @@ const Login = () => {
 	const navigate = useNavigate();
 	const { dispatch } = useContext(UserContext);
 	const userRestore = useRestoreUser();
+	const [token, setToken] = useState(localStorage.getItem("token") || "");
+
+	// To redirect the user to home page is token exist in the local storage
+	useEffect(() => {
+		if (token) {
+			navigate("/home");
+		}
+	}, [token, navigate]);
 
 	//  generate the api to call it to get the authorization code
 	const generateDauthAuthorizeUrl = useCallback(() => {

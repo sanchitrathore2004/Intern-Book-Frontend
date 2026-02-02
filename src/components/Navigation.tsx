@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Bookmark, House, LogOut, Moon, Search, Sun, User } from "lucide-react";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import type { SubmissionCardResponseDto } from "../../web-client/src/generated/index.ts";
 import { useTheme } from "../contexts/ThemeContext.tsx";
 import UserContext from "../contexts/UserContext.tsx";
@@ -37,6 +37,40 @@ function Navigation(props: NavigationBarProps) {
 	const committedIdsRef = useRef<number[] | null>(null);
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
+	const location = useLocation();
+	const [view, setView] = useState<string | null>(null);
+
+	// Get the view of the current page using search
+	const getViewFromLocationSearch = useCallback((search: string): string => {
+		const view = search.split("=")[1];
+		return view;
+	}, []);
+
+	// Get the view of the current page using pathname
+	const getViewFromLocationPathname = useCallback(
+		(pathname: string): string => {
+			const segments = pathname.split("/").filter(Boolean); // removes empty strings
+			return segments[0] || "home"; // default to "home" if no segment
+		},
+		[],
+	);
+
+	// Listen for the change in location
+	useEffect(() => {
+		console.log(location);
+		var view = null;
+		if (location.search.length === 0) {
+			view = getViewFromLocationPathname(location.pathname);
+		} else {
+			view = getViewFromLocationSearch(location.search);
+		}
+		setView(view);
+	}, [
+		location,
+		location.search,
+		getViewFromLocationPathname,
+		getViewFromLocationSearch,
+	]);
 
 	const { suggestions, loading } = useAutoComplete(
 		debouncedQuery,
@@ -170,19 +204,24 @@ function Navigation(props: NavigationBarProps) {
 						alt=""
 					/>
 				</button>
-				<div
+				<button
+					type="button"
 					style={{
 						fontFamily: "GoldmanSansLt",
 						fontSize: "1.5rem",
 					}}
-					className="h-full hidden sm:flex items-center pt-[0.8vmax] text-(--text-heading)"
+					onClick={(e) => {
+						if (navigateWithModifiers(e, navigate, "/home?view=top")) return;
+						setQuery("");
+					}}
+					className="h-full hidden sm:flex items-center pt-[0.8vmax] text-(--text-heading) cursor-pointer"
 				>
 					Intern Book
-				</div>
+				</button>
 			</div>
 			{/* Utility buttons */}
 			<div className="w-full h-full flex items-center justify-end gap-[1.5vmax] pr-[1.5vmax]">
-				<div className="relative hidden sm:flex h-full items-center">
+				<div className="relative hidden sm:flex h-full items-center -mt-3.5">
 					<input
 						ref={desktopInputRef}
 						value={query}
@@ -252,84 +291,217 @@ function Navigation(props: NavigationBarProps) {
 						</ul>
 					)}
 				</div>
-				<button
-					type="button"
-					tabIndex={0}
-					onClick={() => setSearchOpen(true)}
-					onKeyDown={(e) => {
-						if (e.key === "Enter" || e.key === " ") setSearchOpen(true);
-					}}
-					className="h-[50%] w-fit aspect-square
-            bg-(--bg)
-            border-[0.5px] border-(--border-color)
-            rounded-[0.6vmax]
-            sm:hidden flex justify-center items-center
-            cursor-text
-            transition-all duration-200
-            hover:bg-(--fore-bg)"
-				>
-					<Search className="text-(--text-light) w-full" />
-				</button>
-				<button
-					type="button"
-					onClick={onClickFavourites}
-					className="h-[50%] w-fit aspect-square
-            bg-(--bg)
-            border-[0.5px] border-(--border-color)
-            rounded-[0.6vmax]
-            flex justify-center items-center
-            cursor-pointer
-            transition-all duration-200
-            hover:bg-(--fore-bg)
-			"
-				>
-					<Bookmark className="text-(--accent) w-full" fill="var(--accent)" />
-				</button>
-
-				<button
-					type="button"
-					onClick={toggleTheme}
-					className="h-[50%] w-fit aspect-square
-                    bg-(--bg)
-                    border-[0.5px] border-(--border-color)
-                    rounded-[0.6vmax]
-                    flex justify-center items-center
-                    cursor-pointer
-                    transition-all duration-200
-                    hover:bg-(--fore-bg)
-					"
-				>
-					{theme === "dark" ? (
-						<Sun className="w-full" color="var(--accent)" />
-					) : (
-						<Moon className="w-full" color="var(--accent)" />
-					)}
-				</button>
-				<div ref={profileRef} className="relative h-[50%] w-fit aspect-square">
+				<div className="flex flex-col items-center justify-center h-full sm:hidden">
 					<button
 						type="button"
-						onClick={() => setProfileDropDown(!showProfileDropDown)}
+						tabIndex={0}
+						onClick={() => setSearchOpen(true)}
 						onKeyDown={(e) => {
-							if (e.key === "Escape") setProfileDropDown(false);
+							if (e.key === "Enter" || e.key === " ") setSearchOpen(true);
 						}}
-						aria-haspopup="menu"
-						aria-expanded={showProfileDropDown}
-						className="h-full w-full aspect-square bg-(--bg) rounded-[0.6vmax]"
+						className={`
+			h-10 w-10
+			rounded-[0.6vmax]
+			flex justify-center items-center
+			cursor-text
+			transition-all duration-200 ease-out
+			bg-(--bg)
+			border-[0.5px] border-(--border-color)
+			hover:bg-(--fore-bg)
+		`}
 					>
-						<img
-							fetchPriority="high"
-							className="h-full w-full object-cover object-center 
-                    bg-(--bg)
-                    border-[0.5px] border-(--border-color)
-                    rounded-[0.6vmax]
-                    flex justify-center items-center
-                    cursor-pointer
-                    transition-all duration-200
-                    hover:bg-(--fore-bg)"
-							src={props.profilePictureUrl}
-							alt=""
+						<Search className="w-6 h-6 text-(--text-light)" />
+					</button>
+
+					<span className="sm:visible hidden mt-0.5 text-[0.75rem] font-medium leading-none text-(--muted-text)">
+						Search
+					</span>
+				</div>
+
+				<div className="flex flex-col items-center justify-center h-full">
+					<button
+						type="button"
+						onClick={toggleTheme}
+						className={`
+			h-10 w-10
+			rounded-[0.6vmax]
+			flex justify-center items-center
+			cursor-pointer
+			transition-all duration-200 ease-out
+			bg-(--bg)
+			border-[0.5px] border-(--border-color)
+			hover:bg-(--fore-bg)
+		`}
+					>
+						{theme === "dark" ? (
+							<Sun className="w-6 h-6" color="var(--accent)" />
+						) : (
+							<Moon className="w-6 h-6" color="var(--accent)" />
+						)}
+					</button>
+
+					<span className="mt-1 hidden sm:block text-[0.75rem] font-medium leading-none text-(--muted-text)">
+						{theme.charAt(0).toLocaleUpperCase() + theme.substring(1)}
+					</span>
+				</div>
+
+				<div className="flex flex-col items-center justify-center h-full">
+					<button
+						type="button"
+						onClick={onClickFavourites}
+						className={`
+			h-10 w-10
+			rounded-[0.6vmax]
+			flex justify-center items-center
+			cursor-pointer
+			transition-all duration-200 ease-out
+
+			${
+				view === "favourite"
+					? `
+					bg-(--accent-bg)
+					border border-(--accent)
+					ring ring-(--accent)/50
+					shadow-[0_0_3px_var(--accent)]
+					scale-105
+				`
+					: `
+					bg-(--bg)
+					border-[0.5px] border-(--border-color)
+					hover:bg-(--fore-bg)
+				`
+			}
+		`}
+					>
+						<Bookmark
+							className={`
+				w-6 h-6
+				transition-all duration-200
+				${view === "favourite" ? "text-(--accent) scale-110" : "text-(--accent)"}
+			`}
+							fill="var(--accent)"
 						/>
 					</button>
+
+					<span
+						className={`
+			mt-1 hidden sm:block 
+			text-[0.75rem] font-medium leading-none
+			transition-colors duration-200
+			${view === "favourite" ? "text-(--accent)" : "text-(--muted-text)"}
+		`}
+					>
+						Favourites
+					</span>
+				</div>
+
+				<div className="flex flex-col items-center justify-center h-full">
+					<button
+						type="button"
+						onClick={(e) => {
+							if (navigateWithModifiers(e, navigate, "/home?view=top")) return;
+							setQuery("");
+						}}
+						className={`
+			w-10 h-10
+			rounded-[0.6vmax]
+			flex justify-center items-center
+			cursor-pointer
+			transition-all duration-200 ease-out
+
+			${
+				view === "top"
+					? `
+					bg-(--accent-bg)
+					border border-(--accent)
+					ring ring-(--accent)/50
+					shadow-[0_0_3px_var(--accent)]
+					scale-105
+				`
+					: `
+					bg-(--bg)
+					border-[0.5px] border-(--border-color)
+					hover:bg-(--fore-bg)
+				`
+			}
+		`}
+					>
+						<House
+							className={`
+				w-6 h-6
+				transition-all duration-200
+				${view === "top" ? "text-(--accent) scale-110" : "text-(--accent)"}
+			`}
+						/>
+					</button>
+
+					<span
+						className={`
+			mt-1 hidden sm:block 
+			text-[0.75rem] font-medium leading-none
+			transition-colors duration-200
+			${view === "top" ? "text-(--accent)" : "text-(--muted-text)"}
+		`}
+					>
+						Home
+					</span>
+				</div>
+
+				<div ref={profileRef} className="relative h-[50%] w-fit aspect-square">
+					<div ref={profileRef} className="relative h-full">
+						<div className="flex flex-col items-center justify-center h-full">
+							<button
+								type="button"
+								onClick={() => setProfileDropDown(!showProfileDropDown)}
+								onKeyDown={(e) => {
+									if (e.key === "Escape") setProfileDropDown(false);
+								}}
+								aria-haspopup="menu"
+								aria-expanded={showProfileDropDown}
+								className="h-10 w-10 rounded-[0.6vmax]"
+							>
+								<img
+									fetchPriority="high"
+									src={props.profilePictureUrl}
+									alt=""
+									className={`
+					h-full w-full object-cover object-center
+					rounded-[0.6vmax]
+					cursor-pointer
+					transition-all duration-200 ease-out
+
+					${
+						view === "profile"
+							? `
+							bg-(--accent-bg)
+							border border-(--accent)
+							ring ring-(--accent)/50
+							shadow-[0_0_5px_var(--accent)]
+							scale-105
+						`
+							: `
+							bg-(--bg)
+							border-[0.5px] border-(--border-color)
+							hover:bg-(--fore-bg)
+						`
+					}
+				`}
+								/>
+							</button>
+
+							<span
+								className={`
+				mt-1 hidden sm:block
+				text-[0.75rem] font-medium leading-none tracking-wide
+				transition-colors duration-200
+				${view === "profile" ? "text-(--accent)" : "text-(--muted-text)"}
+			`}
+							>
+								Profile
+							</span>
+						</div>
+					</div>
+
 					{showProfileDropDown && (
 						<ul className="absolute flex flex-col p-[0.5vmax] text-md 2xl:text-lg top-[5.2vh] min-w-30 w-fit 2xl:min-w-[9vw] right-0 max-h-56 overflow-auto bg-(--bg) border-[0.5px] border-(--border-color) rounded-md shadow-sm z-20">
 							<li
