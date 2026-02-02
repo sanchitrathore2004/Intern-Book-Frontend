@@ -10,7 +10,21 @@ export function sanitizeHtml(html: string): string {
 	const decoded = decodeHtmlEntities(html);
 
 	return DOMPurify.sanitize(decoded, {
-		ALLOWED_TAGS: ["p", "br", "strong", "em", "u", "ul", "ol", "li", "a", "dl"],
+		ALLOWED_TAGS: [
+			"p",
+			"br",
+			"strong",
+			"em",
+			"u",
+			"ul",
+			"ol",
+			"li",
+			"a",
+			"dl",
+			"h1",
+			"h2",
+			"h3",
+		],
 		ALLOWED_ATTR: ["href", "target", "rel"],
 	});
 }

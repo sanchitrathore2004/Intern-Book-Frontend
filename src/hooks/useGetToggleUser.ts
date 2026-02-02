@@ -1,7 +1,7 @@
 import { useCallback, useContext, useState } from "react";
 import { UserControllerApi } from "../../web-client/src/generated";
-import { apiConfig } from "../utils/apiConfig";
 import UserContext from "../contexts/UserContext";
+import { apiConfig } from "../utils/apiConfig";
 
 const useGetToggleUser = () => {
 	const { dispatch } = useContext(UserContext);

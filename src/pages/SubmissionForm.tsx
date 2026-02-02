@@ -10,10 +10,10 @@ import UserContext from "../contexts/UserContext";
 import useCreateSubmission from "../hooks/useCreateSubmission";
 import useGetAllCompany from "../hooks/useGetAllCompany";
 import useGetAllDomains from "../hooks/useGetAllDomains";
-import type { SubmissionFormData } from "../interfaces/submissionSchema";
-import { submissionSchema } from "../interfaces/submissionSchema";
 import useGetSubmissions from "../hooks/useGetSubmissions";
 import useUpdateSubmission from "../hooks/useUpdateSubmission";
+import type { SubmissionFormData } from "../interfaces/submissionSchema";
+import { submissionSchema } from "../interfaces/submissionSchema";
 
 const SubmissionForm = () => {
 	const navigate = useNavigate();
@@ -24,11 +24,11 @@ const SubmissionForm = () => {
 	const submissionId = id ? Number(id) : undefined;
 	const { data, isLoading, error } = useGetSubmissions(submissionId);
 
-	useEffect(()=>{
-       if(id && data && data?.authorId !== user.id){
-		navigate(`/error`);
-	   }
-	}, [data?.authorId, id, user.id, navigate, data])
+	useEffect(() => {
+		if (id && data && data?.authorId !== user.id) {
+			navigate(`/error`);
+		}
+	}, [data?.authorId, id, user.id, navigate, data]);
 
 	const {
 		register,
@@ -50,7 +50,7 @@ const SubmissionForm = () => {
 	} = useGetAllCompany();
 
 	const {
-		data:domains=[],
+		data: domains = [],
 		isLoading: roleLoading,
 		error: roleError,
 	} = useGetAllDomains();
@@ -119,7 +119,7 @@ const SubmissionForm = () => {
 	}
 
 	if (isEditMode && error) {
-			navigate(`/error`);
+		navigate(`/error`);
 	}
 
 	return (
