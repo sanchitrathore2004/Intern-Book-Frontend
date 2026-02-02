@@ -34,7 +34,6 @@ function Profile() {
 	const location = useLocation();
 	const isOwnProfile = String(user.id) === String(user_id);
 
-	// delete a submission
 	const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 	const confirmRef = useRef<HTMLDivElement | null>(null);
 	const { deleteSubmission, loading: deleteLoading } = useDeleteSubmission();
