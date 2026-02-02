@@ -197,7 +197,7 @@ const Home = () => {
 				</div>
 				<div className="flex-1 bg-(--fore-bg) mt-4 mb-4 rounded-[1.6vmax] flex flex-col">
 					<div className="flex-1 overflow-auto no-scrollbar pt-[1.5vmax] pb-[1.5vmax] px-[2.5vmax]">
-						<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[3.5vmax] justify-items-center">
+						<div className="grid grid-cols-1 xl:grid-cols-3 gap-x-[3.5vmax] gap-[1.5vmax] justify-items-center">
 							{content}
 						</div>
 

@@ -67,7 +67,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 					/>
 				)}
 
-				<div className="absolute top-2 right-2 flex items-center gap-1  backdrop-blur-sm px-2 py-0.5 rounded-full text--(text-light) text-[1.2vmax] font-medium">
+				<div className="absolute top-2 right-2 flex items-center gap-1  backdrop-blur-sm px-2 py-0.5 rounded-full text--(text-light) sm:text-[1.2vmax] text-[1.9vmax] font-medium">
 					❤️ {likeCount}
 				</div>
 			</div>
@@ -75,7 +75,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 			<div className=" w-full max-h-[30%] flex flex-col justify-center items-center">
 				<div
 					style={{ fontFamily: "GoldmanSansBd" }}
-					className="w-full h-fit flex items-center text-[2vmax] font-bold text-(--text-heading) pl-[0.5vmax]"
+					className="w-full h-fit flex items-center sm:text-[2vmax] text-[2.2vmax] font-bold text-(--text-heading) pl-[0.5vmax]"
 				>
 					<button
 						type="button"
@@ -87,7 +87,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 						{props.companyName}
 					</button>
 				</div>
-				<div className="w-full max-h-[40%] flex items-start text-(--text-light) font-light text-[1.2vmax] pl-[0.5vmax] mb-2">
+				<div className="w-full max-h-[40%] flex items-start text-(--text-light) font-light sm:text-[1.2vmax] text-[1.6vmax] pl-[0.5vmax] mb-2">
 					{props.isAnonymous ? "Anonymous" : props.userName.split(" ")[0]}
 					{" . "}
 					{props.type}
@@ -118,7 +118,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 					onClick={(e) =>
 						navigateWithModifiers(e, navigate, `/submission/${props.id}`)
 					}
-					className="h-[80%] w-[80%] flex justify-center items-center bg-(--accent) rounded-md font-bold cursor-pointer text-[1.4vmax] text-(--bg) transition-all active:scale-95"
+					className="h-[80%] w-[80%] flex justify-center items-center bg-(--accent) rounded-md font-bold cursor-pointer sm:text-[1.4vmax] text-[1.9vmax] text-(--bg) transition-all active:scale-95"
 				>
 					Show Details
 				</button>
@@ -129,11 +129,11 @@ function SubmissionCard(props: SubmissionCardProps) {
 				>
 					{isFavourite ? (
 						<Bookmark
-							className="text-(--accent) w-4 lg:w-8"
+							className="text-(--accent) sm:w-4 w-8 lg:w-8"
 							fill="var(--accent)"
 						/>
 					) : (
-						<Bookmark className="text-(--accent) w-4 lg:w-8" />
+						<Bookmark className="text-(--accent) sm:w-4 w-8 lg:w-8" />
 					)}
 				</button>
 			</div>
