@@ -1,10 +1,10 @@
 import { Ghost, User } from "lucide-react";
-import { toast } from "react-toastify";
-import ChangeAnonymousToast from "./ChangeAnonymousToast";
 import { useContext } from "react";
-import UserContext from "../contexts/UserContext";
+import { toast } from "react-toastify";
 import { UserControllerApi } from "../../web-client/src/generated";
+import UserContext from "../contexts/UserContext";
 import { apiConfig } from "../utils/apiConfig";
+import ChangeAnonymousToast from "./ChangeAnonymousToast";
 
 interface Props {
 	isAnonymous: boolean;

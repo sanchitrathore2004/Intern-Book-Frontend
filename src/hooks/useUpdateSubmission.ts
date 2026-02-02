@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 import { SubmissionControllerApi } from "../../web-client/src/generated";
 import type { SubmissionFormData } from "../interfaces/submissionSchema";
+import { baseSubmissionMapper } from "../mappers/baseSubmissionMapper";
 import { apiConfig } from "../utils/apiConfig";
 import { showError } from "../utils/toast";
-import { baseSubmissionMapper } from "../mappers/baseSubmissionMapper";
 
 const useUpdateSubmission = () => {
 	const [loading, setLoading] = useState(false);

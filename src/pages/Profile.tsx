@@ -15,9 +15,9 @@ import useUpdateProfilePicture from "../hooks/useUpdateProfilePicture";
 import UploadModal from "../modals/UploadModal";
 import { DepartmentConfig } from "../utils/departmentConfig";
 import { resizeImageToMax256 } from "../utils/imageResize";
+import { navigateWithModifiers } from "../utils/navigateWithModifiers";
 import { showError, showSuccess } from "../utils/toast";
 import { YearConfig } from "../utils/yearConfig";
-import { navigateWithModifiers } from "../utils/navigateWithModifiers";
 
 function Profile() {
 	const { user_id } = useParams<{ user_id: string }>();
