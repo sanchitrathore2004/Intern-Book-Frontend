@@ -124,6 +124,8 @@ function Company() {
 
 	if (!company) return <Loader fullscreen />;
 
+	// comment to make file the modified
+
 	return (
 		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax] overflow-auto">
 			{loading && <Loader fullscreen />}
