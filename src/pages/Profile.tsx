@@ -195,6 +195,7 @@ function Profile() {
 		uploadProfilePhoto();
 	}, [cloudinaryCredentials, pendingUploadFile, uploadProfilePhoto]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <we need to refetch the cards when user.anonymous is changed>
 	useEffect(() => {
 		if (!user_id) {
 			navigate("/error");
@@ -210,7 +211,7 @@ function Profile() {
 		const controller = new AbortController();
 		fetchProfileDetails(submissionIdNum, controller);
 		return () => controller.abort();
-	}, [user_id, fetchProfileDetails, navigate]);
+	}, [user_id, user.anonymous, fetchProfileDetails, navigate]);
 
 	const { getToggleResponse } = useGetToggleUser();
 
