@@ -11,6 +11,7 @@ import {
 import { DAUTH_CLIENT_ID, DAUTH_REDIRECT_URI } from "../config/config";
 import UserContext from "../contexts/UserContext";
 import useRestoreUser from "../hooks/useRestoreUser";
+import useValidateToken from "../hooks/useValidateToken";
 import { authConfig } from "../utils/apiConfig";
 import { showError } from "../utils/toast";
 
@@ -24,13 +25,32 @@ const Login = () => {
 	const { dispatch } = useContext(UserContext);
 	const userRestore = useRestoreUser();
 	const [token, setToken] = useState(localStorage.getItem("token") || "");
+	const { validateToken } = useValidateToken();
+	const validateControllerRef = useRef<AbortController | null>(null);
+
+	// To validate if the token present in the local storage is valid or not
+	const validateCurrentAccessToken = useCallback(
+		async (token: string) => {
+			validateControllerRef.current?.abort();
+			const controller = new AbortController();
+			validateControllerRef.current = controller;
+			const status = await validateToken(token, validateControllerRef.current);
+			if (status === 204) {
+				navigate("/home");
+			} else {
+				localStorage.removeItem("token");
+				navigate("/", { replace: true });
+			}
+		},
+		[validateToken, navigate],
+	);
 
 	// To redirect the user to home page is token exist in the local storage
 	useEffect(() => {
 		if (token) {
-			navigate("/home");
+			validateCurrentAccessToken(token);
 		}
-	}, [token, navigate]);
+	}, [token, validateCurrentAccessToken]);
 
 	//  generate the api to call it to get the authorization code
 	const generateDauthAuthorizeUrl = useCallback(() => {

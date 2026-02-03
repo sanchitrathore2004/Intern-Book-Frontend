@@ -198,7 +198,10 @@ function Company() {
 			<div className="w-[80%] h-fit rounded-[1vmax] bg-(--fore-bg) flex flex-wrap p-[2vmax] gap-[4vmax] items-center sm:justify-start justify-center mb-[2vmax]">
 				{company.submission?.map((sub) => {
 					return (
-						<div key={sub.id} className="w-[22vmax] h-[26vmax]">
+						<div
+							key={sub.id}
+							className="sm:w-[22vmax] sm:h-[29vmax] w-[85%] h-[40vmax]"
+						>
 							<SubmissionCard
 								id={sub.id ?? 0}
 								companyId={sub.companyId ?? 0}
