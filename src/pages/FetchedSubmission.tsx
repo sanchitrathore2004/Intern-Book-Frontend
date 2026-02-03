@@ -18,7 +18,7 @@ const FetchedSubmission = () => {
 				return (
 					<div
 						key={submission.id}
-						className="w-[80%] h-[40vmax] sm:w-[22vmax] sm:h-[28vmax]"
+						className="w-[85%] h-[40vmax] sm:w-[22vmax] sm:h-[28vmax]"
 					>
 						<SubmissionCard
 							id={submission.id}

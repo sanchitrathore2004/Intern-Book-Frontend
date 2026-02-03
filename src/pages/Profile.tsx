@@ -244,7 +244,7 @@ function Profile() {
 						{isOwnProfile && (
 							<Upload
 								onClick={() => setIsModalOpen(true)}
-								className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 
+								className="sm:opacity-0 group-hover:opacity-100 transition-opacity duration-200 
   text-(--text-heading) hover:text-(--accent) absolute top-2 left-2 cursor-pointer"
 							/>
 						)}
@@ -300,14 +300,19 @@ function Profile() {
 							</button>
 						</>
 					) : (
-						<div className="text-(--text-light)">Dream Company: TBD</div>
+						<div className="text-(--text-light) sm:text-[0.9vmax] text-[1.5vmax]">
+							Dream Company: TBD
+						</div>
 					)}
 				</div>
 			</div>
 			<div className="w-[80%] h-fit rounded-[1vmax] bg-(--fore-bg) flex flex-wrap p-[2vmax] gap-[4vmax] items-center sm:justify-start justify-center mb-[2vmax]">
 				{profile.mySubmissions?.map((sub) => {
 					return (
-						<div key={sub.id} className="w-[22vmax] h-[29vmax] relative">
+						<div
+							key={sub.id}
+							className="sm:w-[22vmax] sm:h-[29vmax] w-[85%] h-[40vmax] relative"
+						>
 							{isOwnProfile && (
 								<div className="absolute top-2 left-2 z-20 flex flex-col items-start gap-2">
 									<button
