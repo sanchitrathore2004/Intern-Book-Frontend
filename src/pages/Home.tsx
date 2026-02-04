@@ -189,8 +189,8 @@ const Home = () => {
 	return (
 		<div className="w-full h-full bg-(--bg) text-(--text-heading) flex justify-center">
 			<ToastContainer newestOnTop />
-			<div className=" w-full h-full px-[3vmax] flex gap-[3vmax]">
-				<div className="hidden md:block pt-[2vmax]">
+			<div className=" w-full h-full px-[3vmax] flex flex-col sm:flex-row gap-[3vmax]">
+				<div className="md:block pt-[2vmax]">
 					<ProfileSidebar
 						onSeeMoreFavourites={() => setSearchParams({ view: "favourite" })}
 					/>

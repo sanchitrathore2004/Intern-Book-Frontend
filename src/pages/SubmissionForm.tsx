@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -23,12 +23,19 @@ const SubmissionForm = () => {
 	const isEditMode = Boolean(id);
 	const submissionId = id ? Number(id) : undefined;
 	const { data, isLoading, error } = useGetSubmissions(submissionId);
+	const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
 	useEffect(() => {
 		if (id && data && data?.authorId !== user.id) {
 			navigate(`/error`);
 		}
 	}, [data?.authorId, id, user.id, navigate, data]);
+
+	useEffect(() => {
+		const onResize = () => setScreenWidth(window.innerWidth);
+		window.addEventListener("resize", onResize);
+		return () => window.removeEventListener("resize", onResize);
+	}, []);
 
 	const {
 		register,
@@ -221,10 +228,15 @@ const SubmissionForm = () => {
 								control={control}
 								render={({ field }) => (
 									<TextEditor
+										key={screenWidth <= 500 ? "mobile" : "desktop"}
 										value={field.value || ""}
 										onChange={field.onChange}
 										theme={theme}
-										placeholder="Describe your interview / internship experience in detail"
+										placeholder={
+											screenWidth <= 500
+												? "Describe your experience"
+												: "Describe your interview / internship experience in detail"
+										}
 										size="medium"
 									/>
 								)}
@@ -238,10 +250,19 @@ const SubmissionForm = () => {
 							control={control}
 							render={({ field }) => (
 								<TextEditor
+									key={
+										screenWidth <= 500
+											? "mobile-resources"
+											: "desktop-resources"
+									}
 									value={field.value || ""}
 									onChange={field.onChange}
 									theme={theme}
-									placeholder="Books, links, courses, or resources you used"
+									placeholder={
+										screenWidth <= 500
+											? "Resources used"
+											: "Books, links, courses, or resources you used"
+									}
 									size="small"
 								/>
 							)}

@@ -6,7 +6,7 @@ import UserContext from "../contexts/UserContext";
 function RootLayout() {
 	const { user } = useContext(UserContext);
 	return (
-		<div className="w-screen h-screen flex flex-col justify-center items-center bg-(--bg) pb-0">
+		<div className="w-screen h-screen flex flex-col justify-center items-center bg-(--bg) mb-17">
 			<div className="w-full h-[10vh]">
 				<Navigation profilePictureUrl={user.profileUrl ?? "user"} />
 			</div>
