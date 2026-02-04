@@ -57,8 +57,7 @@ function Navigation(props: NavigationBarProps) {
 
 	// Listen for the change in location
 	useEffect(() => {
-		console.log(location);
-		var view = null;
+		let view = null;
 		if (location.search.length === 0) {
 			view = getViewFromLocationPathname(location.pathname);
 		} else {

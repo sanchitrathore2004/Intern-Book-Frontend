@@ -341,7 +341,7 @@ function Profile() {
 									<button
 										type="button"
 										onClick={(e) => {
-											handleEditClick(e, sub.anonymous, sub.id);
+											handleEditClick(e, sub.anonymous ?? false, sub.id);
 										}}
 										className="p-1.5 bg-black/30 hover:bg-red-600 text-white/90 rounded-full transition-all duration-200 backdrop-blur-md shadow-md group cursor-pointer"
 										title="Edit Submission"
