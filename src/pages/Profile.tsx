@@ -99,6 +99,20 @@ function Profile() {
 		navigate(`/company/${profile?.favouriteCompany?.id}`);
 	};
 
+	const handleEditClick = (
+		e: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>,
+		anonymmous: boolean,
+		id?: number,
+	) => {
+		if (anonymmous) {
+			toast.warning(
+				"Editing is disabled while your profile is private. Switch to public to continue.",
+			);
+		} else {
+			navigateWithModifiers(e, navigate, `/submissionForm/${id}`);
+		}
+	};
+
 	const sendUploadSecureUrlToBackend = useCallback(
 		async (secureUrl: string) => {
 			const controller = new AbortController();
@@ -327,11 +341,7 @@ function Profile() {
 									<button
 										type="button"
 										onClick={(e) => {
-											navigateWithModifiers(
-												e,
-												navigate,
-												`/submissionForm/${sub.id}`,
-											);
+											handleEditClick(e, sub.id, sub.anonymous);
 										}}
 										className="p-1.5 bg-black/30 hover:bg-red-600 text-white/90 rounded-full transition-all duration-200 backdrop-blur-md shadow-md group cursor-pointer"
 										title="Edit Submission"
