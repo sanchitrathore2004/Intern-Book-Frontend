@@ -101,7 +101,7 @@ function Profile() {
 
 	const handleEditClick = (
 		e: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>,
-		anonymmous: boolean,
+		anonymmous: boolean | undefined,
 		id?: number,
 	) => {
 		if (anonymmous) {
@@ -341,7 +341,7 @@ function Profile() {
 									<button
 										type="button"
 										onClick={(e) => {
-											handleEditClick(e, sub.id, sub.anonymous);
+											handleEditClick(e, sub.anonymous, sub.id);
 										}}
 										className="p-1.5 bg-black/30 hover:bg-red-600 text-white/90 rounded-full transition-all duration-200 backdrop-blur-md shadow-md group cursor-pointer"
 										title="Edit Submission"
