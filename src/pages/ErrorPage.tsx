@@ -12,7 +12,7 @@ const ErrorPage = () => {
 			<div className="hidden md:block h-full">
 				<div className="flex items-center justify-around h-full">
 					<div className="flex flex-col justify-center items-start p-16 gap-8">
-						<div className="text-(--text-heading) text-3xl lg:text-5xl font-[GoldmanSansBd]">
+						<div className="text-(--text-heading) text-3xl lg:text-5xl font-[Galdeano]">
 							Something is not right...
 						</div>
 						<div className="text-(--text-light) text-md lg:text-xl">
@@ -49,7 +49,7 @@ const ErrorPage = () => {
 						/>
 					</div>
 					<div className="flex flex-col justify-center items-start max-w-[80vw] gap-8">
-						<div className="text-(--text-heading) text-3xl font-[GoldmanSansBd]">
+						<div className="text-(--text-heading) text-3xl font-[Galdeano]">
 							Something is not right...
 						</div>
 						<div className="text-(--text-light) text-md">

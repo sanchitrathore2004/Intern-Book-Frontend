@@ -42,11 +42,13 @@ function SubmissionCard(props: SubmissionCardProps) {
 	});
 
 	return (
-		<div className="w-full h-full flex flex-col justify-between items-center p-1 rounded-[0.6vmax] bg-(--bg) transition-all duration-200 hover:shadow-[0_0_8px_var(--shadow-color)]">
+		<div className="w-full h-full flex flex-col justify-between items-center p-1 rounded-[0.6vmax] bg-(--bg) transition-all duration-200 hover:shadow-md">
 			<div className="relative w-full max-h-[40%] flex justify-center items-center pt-3">
 				{error ? (
 					<img
 						fetchPriority="high"
+						loading="eager"
+						decoding="async"
 						key={theme}
 						className="h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-contain"
 						src={
@@ -59,6 +61,8 @@ function SubmissionCard(props: SubmissionCardProps) {
 				) : (
 					<img
 						fetchPriority="high"
+						loading="eager"
+						decoding="async"
 						key={theme}
 						className={`h-full w-full rounded-tl-[0.6vmax] rounded-tr-[0.6vmax] p-[0.1vmax] object-contain`}
 						src={props.companyLogoUrl}
@@ -76,7 +80,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 
 			<div className=" w-full max-h-[30%] flex flex-col justify-center items-center">
 				<div
-					style={{ fontFamily: "GoldmanSansBd" }}
+					style={{ fontFamily: "Galdeano" }}
 					className="w-full h-fit flex items-center sm:text-[2vmax] text-[2.2vmax] font-bold text-(--text-heading) pl-[0.5vmax]"
 				>
 					<button

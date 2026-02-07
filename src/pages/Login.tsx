@@ -28,6 +28,10 @@ const Login = () => {
 	const { validateToken } = useValidateToken();
 	const validateControllerRef = useRef<AbortController | null>(null);
 
+	useEffect(() => {
+		setToken(localStorage.getItem("token") || "");
+	}, []);
+
 	// To validate if the token present in the local storage is valid or not
 	const validateCurrentAccessToken = useCallback(
 		async (token: string) => {

@@ -96,7 +96,7 @@ function Submission() {
 							isAnonymous
 								? "https://robohash.org/anonymous"
 								: (submissions.profileUrl ??
-									"https://robohash.org/Phunsi%20Kumar")
+									`https://robohash.org/${submissions.name}`)
 						}
 						name={isAnonymous ? "Anonymous" : (submissions.name ?? "")}
 						department={isAnonymous ? "" : (submissions.department?.name ?? "")}

@@ -147,7 +147,7 @@ function Company() {
 					/>
 				</div>
 				<div
-					style={{ fontFamily: "GoldmanSansBd" }}
+					style={{ fontFamily: "Galdeano" }}
 					className="w-full h-[20%] flex justify-start items-center text-[4vmax] font-semibold text-(--text-heading) p-[0.8vmax]"
 				>
 					{company.name}
