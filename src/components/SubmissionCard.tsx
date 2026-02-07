@@ -132,14 +132,14 @@ function SubmissionCard(props: SubmissionCardProps) {
 						}
 						navigateWithModifiers(e, navigate, `/submission/${props.id}`);
 					}}
-					className="h-[80%] w-[80%] flex justify-center items-center bg-(--accent) rounded-md font-bold cursor-pointer sm:text-[1.4vmax] text-[1.9vmax] text-(--bg) transition-all active:scale-95"
+					className="h-full md:h-[85%] w-[80%] flex justify-center items-center bg-(--accent) rounded-md font-bold cursor-pointer sm:text-[1.4vmax] text-[1.9vmax] text-(--bg) transition-all active:scale-95"
 				>
 					Show Details
 				</button>
 				<button
 					type="button"
 					onClick={handleToggle}
-					className="h-[90%] w-[20%] flex justify-center items-center cursor-pointer"
+					className="h-full w-[20%] flex justify-center items-center cursor-pointer"
 				>
 					{isFavourite ? (
 						<Bookmark
