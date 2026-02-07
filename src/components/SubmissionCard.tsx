@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 import useToggleFavourite from "../hooks/useToggleFavourite";
+import { homeNavState } from "../utils/homeNavState";
 import { navigateWithModifiers } from "../utils/navigateWithModifiers";
 import { YearConfig } from "../utils/yearConfig";
 import Tags from "./Tags";
@@ -20,6 +21,7 @@ interface SubmissionCardProps {
 	isFavourite?: boolean;
 	likeCount?: number;
 	isAnonymous?: boolean;
+	onNavigate?: () => { scrollTop: number; pageCount: number };
 }
 
 const getYear = (yr: string | undefined): string | undefined => {
@@ -115,9 +117,13 @@ function SubmissionCard(props: SubmissionCardProps) {
 			<div className="w-full h-[12%] justify-center flex items-end pl-[0.5vmax] pb-2">
 				<button
 					type="button"
-					onClick={(e) =>
-						navigateWithModifiers(e, navigate, `/submission/${props.id}`)
-					}
+					onClick={(e) => {
+						const navState = props.onNavigate?.();
+						if (navState) {
+							homeNavState.set(navState);
+						}
+						navigateWithModifiers(e, navigate, `/submission/${props.id}`);
+					}}
 					className="h-[80%] w-[80%] flex justify-center items-center bg-(--accent) rounded-md font-bold cursor-pointer sm:text-[1.4vmax] text-[1.9vmax] text-(--bg) transition-all active:scale-95"
 				>
 					Show Details

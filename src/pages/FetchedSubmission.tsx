@@ -1,7 +1,11 @@
 import SubmissionCard from "../components/SubmissionCard";
 import { useSubmissions } from "../hooks/useSubmissions";
 
-const FetchedSubmission = () => {
+const FetchedSubmission = ({
+	getHomeNavState,
+}: {
+	getHomeNavState: () => { scrollTop: number; pageCount: number };
+}) => {
 	const { submissions } = useSubmissions();
 	return (
 		<>
@@ -33,6 +37,7 @@ const FetchedSubmission = () => {
 							isFavourite={submission.favourite}
 							likeCount={submission.likeCount}
 							isAnonymous={submission.anonymous}
+							onNavigate={getHomeNavState}
 						/>
 					</div>
 				);

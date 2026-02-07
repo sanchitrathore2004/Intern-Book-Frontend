@@ -9,6 +9,7 @@ import { useInfiniteTopSubmission } from "../hooks/useGetTopSubmissions";
 import { useSubmissions } from "../hooks/useSubmissions";
 import { useSubmissionsByIds } from "../hooks/useSubmissionsByIds";
 import FetchedSubmission from "../pages/FetchedSubmission";
+import { homeNavState } from "../utils/homeNavState";
 import { showError, showSuccess } from "../utils/toast";
 
 const Home = () => {
@@ -23,8 +24,7 @@ const Home = () => {
 			: "top";
 
 	const searchAbortRef = useRef<AbortController | null>(null);
-
-	const { submissions, setSubmissions } = useSubmissions();
+	const scrollRef = useRef<HTMLDivElement | null>(null);
 
 	const {
 		data: topData,
@@ -35,6 +35,48 @@ const Home = () => {
 		isError: topIsError,
 		error: topError,
 	} = useInfiniteTopSubmission();
+
+	// save scroll implement
+	useEffect(() => {
+		if (view !== "top") return;
+
+		const saved = homeNavState.get();
+		if (!saved) return;
+		if (!topData) return;
+
+		const loadedPages = topData.pages.length;
+		const requiredPages = saved.pageCount;
+
+		if (loadedPages < requiredPages && hasNextPage && !isFetchingNextPage) {
+			fetchNextPage();
+		}
+	}, [view, topData, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+	useEffect(() => {
+		if (view !== "top") return;
+
+		const saved = homeNavState.get();
+		if (!saved) return;
+		if (!topData) return;
+
+		if (topData.pages.length < saved.pageCount) return;
+
+		const el = scrollRef.current;
+		if (!el) return;
+
+		requestAnimationFrame(() => {
+			el.scrollTop = saved.scrollTop;
+		});
+
+		homeNavState.clear();
+	}, [view, topData]);
+
+	const { submissions, setSubmissions } = useSubmissions();
+
+	const getHomeNavState = () => ({
+		scrollTop: scrollRef.current?.scrollTop ?? 0,
+		pageCount: topData?.pages.length ?? 1,
+	});
 
 	const searchIds = useMemo(() => {
 		if (!rawIds) return [];
@@ -184,7 +226,7 @@ const Home = () => {
 				<Loader />
 			</div>
 		);
-	} else content = <FetchedSubmission />;
+	} else content = <FetchedSubmission getHomeNavState={getHomeNavState} />;
 
 	return (
 		<div className="w-full h-full bg-(--bg) text-(--text-heading) flex justify-center">
@@ -196,7 +238,10 @@ const Home = () => {
 					/>
 				</div>
 				<div className="flex-1 bg-(--fore-bg) mt-4 mb-4 rounded-[1.6vmax] flex flex-col">
-					<div className="flex-1 overflow-auto no-scrollbar pt-[1.5vmax] pb-[1.5vmax] px-[2.5vmax]">
+					<div
+						ref={scrollRef}
+						className="flex-1 overflow-auto no-scrollbar pt-[1.5vmax] pb-[1.5vmax] px-[2.5vmax]"
+					>
 						<div className="grid grid-cols-1 xl:grid-cols-3 gap-x-[3.5vmax] gap-[1.5vmax] justify-items-center">
 							{content}
 						</div>
