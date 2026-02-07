@@ -9,8 +9,8 @@ import { useInfiniteTopSubmission } from "../hooks/useGetTopSubmissions";
 import { useSubmissions } from "../hooks/useSubmissions";
 import { useSubmissionsByIds } from "../hooks/useSubmissionsByIds";
 import FetchedSubmission from "../pages/FetchedSubmission";
-import { showError, showSuccess } from "../utils/toast";
 import { homeNavState } from "../utils/homeNavState";
+import { showError, showSuccess } from "../utils/toast";
 
 const Home = () => {
 	type HomeView = "top" | "favourite" | "search";

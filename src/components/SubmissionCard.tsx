@@ -3,10 +3,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 import useToggleFavourite from "../hooks/useToggleFavourite";
+import { homeNavState } from "../utils/homeNavState";
 import { navigateWithModifiers } from "../utils/navigateWithModifiers";
 import { YearConfig } from "../utils/yearConfig";
 import Tags from "./Tags";
-import { homeNavState } from "../utils/homeNavState";
 
 interface SubmissionCardProps {
 	id: number;
