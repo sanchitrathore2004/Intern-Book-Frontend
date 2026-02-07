@@ -1,22 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Italiana&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Galdeano&display=swap");
 @import "tailwindcss";
-
-@font-face {
-  font-family: "GoldmanSansBd";
-  src: url("/assets/fonts/GoldmanSans_Bd.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "GoldmanSansLt";
-  src: url("/assets/fonts/GoldmanSans_Lt.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
 
 .font-italiana {
   font-family: "Italiana", serif;
@@ -27,31 +9,35 @@
 }
 
 :root {
-  --bg: #f8f9fa;
+  --bg: #f6f9ff;
   --fore-bg: #ffffff;
-  --accent: #01be94;
-  --accent-hover: #00ffc8;
-  --accent-bg-hover: #c5fef2;
-  --accent-bg: #d9f5ef;
-  --text-heading: #000000;
-  --text-light: #868e96;
-  --border-color: #868e96;
-  --line-color: #dee2e6;
-  --shadow-color: rgba(134, 142, 150, 0.5);
+
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-bg: #eff6ff;
+  --accent-bg-hover: #dbeafe;
+
+  --text-heading: #0f172a;
+  --text-light: #64748b;
+  --border-color: #c6cbd2;
+  --line-color: #d6dfe7;
+  --shadow-color: rgba(0, 0, 0, 0.05);
 }
 
 [data-theme="dark"] {
-  --bg: #242424;
-  --fore-bg: #2e2e2e;
-  --accent: #ffd43b;
-  --accent-hover: #dab11e;
-  --accent-bg-hover: #564b25;
-  --accent-bg: #443e28;
-  --text-heading: #ffffff;
-  --text-light: #7e7e7e;
-  --border-color: #585858;
-  --line-color: #424242;
-  --shadow-color: rgba(23, 23, 23, 0.75);
+  --bg: #0f172a;
+  --fore-bg: #1e293b;
+
+  --accent: #60a5fa;
+  --accent-hover: #93c5fd;
+  --accent-bg: #1e293b;
+  --accent-bg-hover: #334155;
+
+  --text-heading: #f8fafc;
+  --text-light: #94a3b8;
+  --border-color: #334155;
+  --line-color: #27354c;
+  --shadow-color: rgba(0, 0, 0, 0.3);
 }
 
 img,
@@ -67,7 +53,9 @@ body {
   background-color: var(--bg);
   color: var(--text-heading);
   font-family: system-ui, sans-serif;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 html,
@@ -227,11 +215,10 @@ select.input:has(option:checked:not([value=""])) {
 
 /*CSS for showing details in experience in submission details page*/
 .experience-view {
-  white-space: normal ;
-  word-break: keep-all ;
-  overflow-wrap: break-word ;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
-
 
 .experience-view p {
   margin-bottom: 10px;
@@ -252,7 +239,7 @@ select.input:has(option:checked:not([value=""])) {
 }
 
 .experience-view ul {
-  list-style:disc;
+  list-style: disc;
 }
 
 .experience-view a {

@@ -9,7 +9,7 @@ import ProfilePicture from "./ProfilePicture";
 
 interface ProfileBoxProps {
 	submissionId: number;
-	authorId: number;
+	authorId: number | null;
 	cgpa: string;
 	profileUrl: string;
 	name: string;
@@ -53,8 +53,8 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 				<div className="text-(--text-light) flex flex-col gap-0 justify-center">
 					<div className="font-bold text-lg">Author</div>
 
-					{props.isAnonymous ? (
-						<div className="text-(--text-heading) text-3xl font-[GoldmanSansBd] font-bold mb-4 opacity-70 cursor-not-allowed">
+					{props.isAnonymous || props.authorId === null ? (
+						<div className="text-(--text-heading) text-3xl font-[Galdeano] font-bold mb-4 opacity-70 cursor-not-allowed">
 							Anonymous
 						</div>
 					) : (
@@ -63,7 +63,7 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 							onClick={(e) =>
 								navigateWithModifiers(e, navigate, `/profile/${props.authorId}`)
 							}
-							className="text-(--text-heading) hover:text-(--accent) text-left text-3xl font-[GoldmanSansBd] font-bold mb-4 cursor-pointer transition-all active:scale-95"
+							className="text-(--text-heading) hover:text-(--accent) text-left text-3xl font-[Galdeano] font-bold mb-4 cursor-pointer transition-all active:scale-95"
 						>
 							{props.name}
 						</button>
@@ -123,15 +123,22 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 				</div>
 				<div className="text-(--text-light) ml-4 mt-2 flex flex-col gap-0 justify-center">
 					<div className="font-bold text-lg">Author</div>
-					<button
-						type="button"
-						onClick={(e) =>
-							navigateWithModifiers(e, navigate, `/profile/${props.authorId}`)
-						}
-						className="text-(--text-heading) hover:text-(--accent) text-left text-3xl font-[GoldmanSansBd] font-bold cursor-pointer transition-all active:scale-95"
-					>
-						{props.name}
-					</button>
+					{props.isAnonymous || props.authorId === null ? (
+						<div className="text-(--text-heading) text-3xl font-[Galdeano] font-bold mb-4 opacity-70 cursor-not-allowed">
+							Anonymous
+						</div>
+					) : (
+						<button
+							type="button"
+							onClick={(e) =>
+								navigateWithModifiers(e, navigate, `/profile/${props.authorId}`)
+							}
+							className="text-(--text-heading) hover:text-(--accent) text-left text-3xl font-[Galdeano] font-bold cursor-pointer transition-all active:scale-95"
+						>
+							{props.name}
+						</button>
+					)}
+
 					<div>{props.department}</div>
 					<div>{props.email}</div>
 					<div>{props.degree}</div>

@@ -273,7 +273,7 @@ function Profile() {
 				</div>
 				<div className="sm:w-[80%] w-full h-[10vmax] flex flex-col justify-center items-center text-(--text-light) sm:gap-0 gap-[0.5vmax]">
 					<div
-						style={{ fontFamily: "GoldmanSansBd" }}
+						style={{ fontFamily: "Galdeano" }}
 						className="w-full h-fit flex items-end sm:text-[2vmax] text-[2.8vmax] sm:pt-0 pt-[8vmax] pl-[2vmax] text-(--text-heading)"
 					>
 						{profile.name}

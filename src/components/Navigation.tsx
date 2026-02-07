@@ -206,8 +206,9 @@ function Navigation(props: NavigationBarProps) {
 				<button
 					type="button"
 					style={{
-						fontFamily: "GoldmanSansLt",
-						fontSize: "1.5rem",
+						fontFamily: "Italiana",
+						fontSize: "2rem",
+						fontWeight: "bold",
 					}}
 					onClick={(e) => {
 						if (navigateWithModifiers(e, navigate, "/home?view=top")) return;

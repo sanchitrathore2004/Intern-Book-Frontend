@@ -1,0 +1,8 @@
+User-agent: *
+Disallow:
+
+# Block API endpoints from being indexed (optional)
+Disallow: /api/
+
+# Sitemap (add when you have one)
+# Sitemap: https://internbook.live/sitemap.xml
