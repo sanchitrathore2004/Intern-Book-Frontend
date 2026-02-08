@@ -109,7 +109,7 @@ function Company() {
 				if (error instanceof Error) showError(error.message);
 			}
 		},
-		[company?.name, queryClient.setQueryData],
+		[company?.name, queryClient],
 	);
 
 	useEffect(() => {

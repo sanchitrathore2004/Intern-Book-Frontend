@@ -21,7 +21,7 @@ interface SubmissionCardProps {
 	isFavourite?: boolean;
 	likeCount?: number;
 	isAnonymous?: boolean;
-	onNavigate?: () => { scrollTop: number; pageCount: number };
+	onNavigate?: () => { key: string; scrollTop: number; pageCount: number };
 }
 
 const getYear = (yr: string | undefined): string | undefined => {
@@ -85,9 +85,13 @@ function SubmissionCard(props: SubmissionCardProps) {
 				>
 					<button
 						type="button"
-						onClick={(e) =>
-							navigateWithModifiers(e, navigate, `/company/${props.companyId}`)
-						}
+						onClick={(e) => {
+							const navState = props.onNavigate?.();
+							if (navState) {
+								homeNavState.set(navState);
+							}
+							navigateWithModifiers(e, navigate, `/company/${props.companyId}`);
+						}}
 						className="cursor-pointer"
 					>
 						{props.companyName}

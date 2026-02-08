@@ -4,7 +4,7 @@ import { useSubmissions } from "../hooks/useSubmissions";
 const FetchedSubmission = ({
 	getHomeNavState,
 }: {
-	getHomeNavState: () => { scrollTop: number; pageCount: number };
+	getHomeNavState: () => { key: string; scrollTop: number; pageCount: number };
 }) => {
 	const { submissions } = useSubmissions();
 	return (

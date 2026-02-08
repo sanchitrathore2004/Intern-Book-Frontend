@@ -1,4 +1,5 @@
 export type HomeNavState = {
+	key: string;
 	scrollTop: number;
 	pageCount: number;
 };
