@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import type { SubmissionCardResponseDto } from "../../web-client/src/generated";
 import Loader from "../components/Loader";
 import ProfileSidebar from "../components/ProfileSideBar";
+import useAutoComplete from "../hooks/useAutoComplete";
 import useGetFavourites from "../hooks/useGetFavourites";
 import { useInfiniteTopSubmission } from "../hooks/useGetTopSubmissions";
 import { useSubmissions } from "../hooks/useSubmissions";
@@ -17,13 +18,11 @@ const Home = () => {
 
 	const [searchParams, setSearchParams] = useSearchParams();
 	const rawView = searchParams.get("view");
-	const rawIds = searchParams.get("ids");
+	const rawSearch = searchParams.get("search");
 	const view: HomeView =
 		rawView === "top" || rawView === "favourite" || rawView === "search"
 			? rawView
 			: "top";
-
-	const searchAbortRef = useRef<AbortController | null>(null);
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 	const homeKey = `home-${view}`;
 
@@ -90,51 +89,64 @@ const Home = () => {
 		pageCount: view === "top" ? (topData?.pages.length ?? 1) : 1,
 	});
 
-	const searchIds = useMemo(() => {
-		if (!rawIds) return [];
-		const ids = rawIds
-			.split(",")
-			.map((s) => Number(s.trim()))
-			.filter((n) => Number.isFinite(n) && n > 0);
-		return Array.from(new Set(ids));
-	}, [rawIds]);
-
-	const canonicalSearchIds: string | null = useMemo(() => {
-		if (searchIds.length === 0) return null;
-		return [...searchIds].sort((a, b) => a - b).join(",");
-	}, [searchIds]);
+	const canonicalSearchWord: string | null = useMemo(() => {
+		const w = (rawSearch ?? "").trim();
+		if (!w) return null;
+		return w;
+	}, [rawSearch]);
 
 	useEffect(() => {
 		if (view === "search") {
-			if (!canonicalSearchIds) {
+			if (!canonicalSearchWord) {
 				setSearchParams({ view: "top" }, { replace: true });
 				return;
 			}
-			if (rawIds !== canonicalSearchIds || rawView !== "search") {
+			if (rawSearch !== canonicalSearchWord || rawView !== "search") {
 				setSearchParams(
-					{ view: "search", ids: canonicalSearchIds },
+					{ view: "search", search: canonicalSearchWord },
 					{ replace: true },
 				);
 			}
 			return;
 		}
-		if (rawIds != null || rawView !== view) {
+		if (rawSearch != null || rawView !== view) {
 			setSearchParams({ view }, { replace: true });
 		}
-	}, [canonicalSearchIds, rawIds, rawView, view, setSearchParams]);
+	}, [canonicalSearchWord, rawSearch, rawView, view, setSearchParams]);
+
+	const { suggestions: searchSuggestions, loading: searchSuggestionsLoading } =
+		useAutoComplete(canonicalSearchWord ?? "", view === "search");
+
+	const resolvedSearchIds = useMemo(() => {
+		if (!canonicalSearchWord) return [];
+		if (!searchSuggestions || searchSuggestions.length === 0) return [];
+
+		const normalized = canonicalSearchWord.trim().toLocaleLowerCase();
+		const exact = searchSuggestions.find(
+			(s) => (s.word ?? "").trim().toLocaleLowerCase() === normalized,
+		);
+		const chosen =
+			exact ?? (searchSuggestions.length === 1 ? searchSuggestions[0] : null);
+		const ids = Array.from(new Set(chosen?.ids ?? []))
+			.filter((n) => Number.isFinite(n) && n > 0)
+			.sort((a, b) => a - b);
+		return ids;
+	}, [canonicalSearchWord, searchSuggestions]);
 
 	const {
 		data: searchSubmissions,
 		isLoading: searchLoading,
 		error: searchError,
-	} = useSubmissionsByIds(searchIds, { enabled: view === "search" });
+	} = useSubmissionsByIds(resolvedSearchIds, {
+		enabled: view === "search" && resolvedSearchIds.length > 0,
+	});
 
 	const loading =
 		view === "top"
 			? topLoading
 			: view === "favourite"
 				? favLoading
-				: searchLoading;
+				: searchSuggestionsLoading || searchLoading;
 
 	const effectiveError =
 		view === "top"
@@ -163,17 +175,6 @@ const Home = () => {
 	}, [view, fetchFavourites]);
 
 	useEffect(() => {
-		if (view !== "search") return;
-		if (!canonicalSearchIds) return;
-		searchAbortRef.current?.abort();
-		searchAbortRef.current = new AbortController();
-		const controller = new AbortController();
-		searchAbortRef.current = controller;
-
-		return () => searchAbortRef.current?.abort();
-	}, [view, canonicalSearchIds]);
-
-	useEffect(() => {
 		if (view !== "top") return;
 		if (!topData) return;
 		const merged = topData.pages
@@ -186,10 +187,11 @@ const Home = () => {
 		if (view !== "search") return;
 		if (searchSubmissions && searchSubmissions.length > 0)
 			setSubmissions(searchSubmissions);
-		else if (submissions.length === 0 && canonicalSearchIds) setSubmissions([]);
+		else if (submissions.length === 0 && canonicalSearchWord)
+			setSubmissions([]);
 	}, [
 		view,
-		canonicalSearchIds,
+		canonicalSearchWord,
 		searchSubmissions,
 		submissions.length,
 		setSubmissions,
@@ -238,7 +240,9 @@ const Home = () => {
 		<div className="w-full h-full bg-(--bg) text-(--text-heading) flex justify-center">
 			<ToastContainer newestOnTop />
 			<div className=" w-full h-full px-[3vmax] flex flex-col sm:flex-row gap-[3vmax]">
-				<div className="md:block pt-[2vmax]">
+				<div
+					className={`${view === "top" ? "block" : "hidden"} md:block pt-[2vmax]`}
+				>
 					<ProfileSidebar
 						onSeeMoreFavourites={() => setSearchParams({ view: "favourite" })}
 					/>
