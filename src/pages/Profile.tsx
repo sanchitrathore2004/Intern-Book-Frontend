@@ -7,6 +7,7 @@ import Loader from "../components/Loader";
 import ProfilePicture from "../components/ProfilePicture";
 import SubmissionCard from "../components/SubmissionCard";
 import UserContext from "../contexts/UserContext";
+import useDeleteProfilePicture from "../hooks/useDeleteProfilePicture";
 import useDeleteSubmission from "../hooks/useDeleteSubmission";
 import useGetCloudinaryCredentials from "../hooks/useGetCloudinaryCredentials";
 import useGetProfile from "../hooks/useGetProfile";
@@ -27,16 +28,22 @@ function Profile() {
 	const { updateUserProfilePicture } = useUpdateProfilePicture();
 	const { dispatch, user } = useContext(UserContext);
 	const uploadControllerRef = useRef<AbortController | null>(null);
+	const deleteControllerRef = useRef<AbortController | null>(null);
+	const uploadInProgressRef = useRef<boolean>(false);
 	const [pendingUploadFile, setPendingUploadFile] = useState<File | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const toastIdRef = useRef<string | number | null>(null);
 	const navigate = useNavigate();
 	const location = useLocation();
 	const isOwnProfile = String(user.id) === String(user_id);
+	const [openActions, setOpenActions] = useState(false);
+	const { deleteProfilePicture } = useDeleteProfilePicture();
+	const deleteToastId = useRef<string | number | null>(null);
 
 	// delete a submission
 	const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 	const confirmRef = useRef<HTMLDivElement | null>(null);
+	const actionsRef = useRef<HTMLDivElement | null>(null);
 	const { deleteSubmission, loading: deleteLoading } = useDeleteSubmission();
 
 	const handleDeleteSubmission = async (submissionId: number) => {
@@ -72,6 +79,27 @@ function Profile() {
 			document.removeEventListener("keydown", handleEsc);
 		};
 	}, [deleteConfirmId]);
+
+	useEffect(() => {
+		if (!openActions) return;
+		const handleClickOutside = (e: MouseEvent) => {
+			if (
+				actionsRef.current &&
+				!actionsRef.current.contains(e.target as Node)
+			) {
+				setOpenActions(false);
+			}
+		};
+		const handleEsc = (e: KeyboardEvent) => {
+			if (e.key === "Escape") setOpenActions(false);
+		};
+		document.addEventListener("mousedown", handleClickOutside);
+		document.addEventListener("keydown", handleEsc);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+			document.removeEventListener("keydown", handleEsc);
+		};
+	}, [openActions]);
 
 	useEffect(() => {
 		if (location.state?.submissionSaved) {
@@ -180,6 +208,7 @@ function Profile() {
 				body: formData,
 			},
 		);
+		setPendingUploadFile(null);
 		if (!cloudinaryUploadResponse.ok) {
 			const error = await cloudinaryUploadResponse.json();
 			throw new Error(error?.error?.message || "Upload failed");
@@ -195,8 +224,6 @@ function Profile() {
 		uploadControllerRef.current = controller;
 		const resizedFile = await resizeImageToMax256(file);
 		setPendingUploadFile(resizedFile);
-		console.log(file.size);
-		console.log(resizedFile.size);
 
 		toastIdRef.current = toast.loading(
 			"Updating profile picture, this may take a while..",
@@ -204,8 +231,35 @@ function Profile() {
 		fetchCloudinaryCredentials(controller);
 	};
 
+	const handleDeleteProfile = async () => {
+		if (user.profileUrl?.startsWith("https://robohash.org/")) {
+			toast.error("Profile does not exist.");
+			return;
+		}
+		deleteControllerRef.current?.abort();
+		const controller = new AbortController();
+		deleteControllerRef.current = controller;
+		deleteToastId.current = toast.loading("Deleting profile picture.");
+		const profileUrl = await deleteProfilePicture(controller);
+		toast.update(deleteToastId.current, {
+			render: "Profile deleted successfully.",
+			type: "success",
+			isLoading: false,
+			autoClose: 3000,
+		});
+		dispatch({
+			type: "UPDATE_PROFILE",
+			payload: { profileUrl: profileUrl ?? "" },
+		});
+	};
+
 	useEffect(() => {
-		if (!cloudinaryCredentials || !pendingUploadFile) return;
+		if (!cloudinaryCredentials || !pendingUploadFile) {
+			uploadInProgressRef.current = false;
+			return;
+		}
+		if (uploadInProgressRef.current) return;
+		uploadInProgressRef.current = true;
 		uploadProfilePhoto();
 	}, [cloudinaryCredentials, pendingUploadFile, uploadProfilePhoto]);
 
@@ -234,11 +288,6 @@ function Profile() {
 		getToggleResponse();
 	}, [isOwnProfile, getToggleResponse]);
 
-	useEffect(() => {
-		if (!isOwnProfile) return;
-		getToggleResponse();
-	}, [isOwnProfile, getToggleResponse]);
-
 	if (error) showError(error.message);
 	if (!profile) return <Loader fullscreen />;
 
@@ -254,23 +303,61 @@ function Profile() {
 			{loading && <Loader fullscreen />}
 			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[20vmax] h-[35vmax] bg-(--fore-bg) flex sm:flex-row flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
 				<div className="sm:h-[10vmax] sm:w-[20%] w-full h-[40%] rounded-[1.5vmax] flex justify-start items-start">
-					<div className="group relative h-full w-[30%] sm:w-full object-center object-cover rounded-[1.5vmax]">
-						{isOwnProfile && (
-							<Upload
-								onClick={() => setIsModalOpen(true)}
-								className="sm:opacity-0 group-hover:opacity-100 transition-opacity duration-200 
-  text-(--text-heading) hover:text-(--accent) absolute top-2 left-2 cursor-pointer"
+					<div className="group relative h-full w-[30%] sm:w-full rounded-[1.5vmax] overflow-visible">
+						<div className="relative rounded-[1.5vmax] overflow-hidden cursor-pointer">
+							<ProfilePicture
+								profileUrl={
+									String(user.id) === String(user_id)
+										? (user.profileUrl ?? "")
+										: (profile.profileUrl ?? "")
+								}
 							/>
+							{isOwnProfile && (
+								<div
+									role="none"
+									onMouseDown={() => setOpenActions(true)}
+									className="absolute inset-0 flex items-center justify-center 
+                     bg-black/40 opacity-0 group-hover:opacity-100 
+                     transition duration-200"
+								>
+									<span className="text-white text-sm font-medium">
+										Change photo
+									</span>
+								</div>
+							)}
+						</div>
+						{openActions && (
+							<div
+								ref={actionsRef}
+								className="absolute -top-7 left-28 sm:left-38 mt-8 w-36 bg-(--fore-bg) border border-red-500/40 rounded-xl p-3 shadow-2xl animate-in fade-in slide-in-from-left-2 duration-200 z-30"
+							>
+								<div className="flex flex-col gap-2">
+									<button
+										type="button"
+										onClick={() => {
+											setIsModalOpen(true);
+											setOpenActions(false);
+										}}
+										className="flex-1 hover:bg-(--accent-hover) text-(--text-heading) font-bold text-[11px] py-1.5 rounded-lg transition-all cursor-pointer hover:scale-105 active:scale-95"
+									>
+										Upload
+									</button>
+									<button
+										type="button"
+										onClick={() => {
+											handleDeleteProfile();
+											setOpenActions(false);
+										}}
+										className="flex-1 hover:bg-red-500/20 text-(--text-heading) text-[11px] font-bold py-1.5 rounded-lg transition-all shadow-sm cursor-pointer hover:scale-105 active:scale-95"
+									>
+										{deleteLoading ? "..." : "Delete"}
+									</button>
+								</div>
+							</div>
 						)}
-						<ProfilePicture
-							profileUrl={
-								String(user.id) === String(user_id)
-									? (user.profileUrl ?? "")
-									: (profile.profileUrl ?? "")
-							}
-						/>
 					</div>
 				</div>
+
 				<div className="sm:w-[80%] w-full h-[10vmax] flex flex-col justify-center items-center text-(--text-light) sm:gap-0 gap-[0.5vmax]">
 					<div
 						style={{ fontFamily: "Galdeano" }}

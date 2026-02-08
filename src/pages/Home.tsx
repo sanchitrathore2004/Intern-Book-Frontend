@@ -204,7 +204,6 @@ const Home = () => {
 
 		const observer = new IntersectionObserver((entries) => {
 			if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-				console.log("next page");
 				fetchNextPage();
 			}
 		});

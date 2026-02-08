@@ -156,8 +156,6 @@ const Login = () => {
 
 	const openSignInWindow = useCallback(
 		(url: string, name: string) => {
-			console.log("openSignInWindow");
-
 			const strWindowFeatures = isMobile
 				? "_blank"
 				: "toolbar=no, menubar=no, width=600, height=700, top=100, left=100";
