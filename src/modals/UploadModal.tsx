@@ -15,9 +15,6 @@ function UploadModal(props: UploadModalProps) {
 		},
 		maxFiles: 1,
 		maxSize: 2 * 1024 * 1024, // 2 MB max size allowed
-		onDrop: (files) => {
-			console.log("Selected file:", files[0]);
-		},
 	});
 
 	const handleClose = () => {
