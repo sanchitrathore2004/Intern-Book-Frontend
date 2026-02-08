@@ -11,9 +11,11 @@ import useCreateSubmission from "../hooks/useCreateSubmission";
 import useGetAllCompany from "../hooks/useGetAllCompany";
 import useGetAllDomains from "../hooks/useGetAllDomains";
 import useGetSubmissions from "../hooks/useGetSubmissions";
+import useSendCompanyRequest from "../hooks/useSendCompanyRequest";
 import useUpdateSubmission from "../hooks/useUpdateSubmission";
 import type { SubmissionFormData } from "../interfaces/submissionSchema";
 import { submissionSchema } from "../interfaces/submissionSchema";
+import { showInfo } from "../utils/toast";
 
 const SubmissionForm = () => {
 	const navigate = useNavigate();
@@ -25,7 +27,6 @@ const SubmissionForm = () => {
 	const { data, isLoading, error } = useGetSubmissions(submissionId);
 	const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
-	// --- NEW STATE FOR MODAL ---
 	const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
 	const [newCompanyName, setNewCompanyName] = useState("");
 	const [isRequesting, setIsRequesting] = useState(false);
@@ -106,6 +107,7 @@ const SubmissionForm = () => {
 		useCreateSubmission();
 
 	const { editSubmission } = useUpdateSubmission();
+	const { sendCompanyRequest } = useSendCompanyRequest();
 
 	const handleRequestCompany = async () => {
 		if (!newCompanyName.trim()) return;
@@ -113,13 +115,15 @@ const SubmissionForm = () => {
 		setIsRequesting(true);
 		try {
 			console.log("Requesting new company:", newCompanyName);
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-			toast.success("Company request sent!");
-
+			const success = await sendCompanyRequest({
+				companyName: newCompanyName,
+			});
+			if (success) showInfo("Company request sent successfully!");
 			setNewCompanyName("");
 			setIsCompanyModalOpen(false);
-		} catch (error) {
+		} catch (requestError) {
 			toast.error("Failed to request company");
+			console.log(requestError);
 		} finally {
 			setIsRequesting(false);
 		}
