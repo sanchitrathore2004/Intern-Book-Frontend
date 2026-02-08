@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import Loader from "../components/Loader";
 import TextEditor from "../components/TextEditor";
 import { useTheme } from "../contexts/ThemeContext";
@@ -24,6 +24,11 @@ const SubmissionForm = () => {
 	const submissionId = id ? Number(id) : undefined;
 	const { data, isLoading, error } = useGetSubmissions(submissionId);
 	const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+	// --- NEW STATE FOR MODAL ---
+	const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+	const [newCompanyName, setNewCompanyName] = useState("");
+	const [isRequesting, setIsRequesting] = useState(false);
 
 	useEffect(() => {
 		if (id && data && data?.authorId !== user.id) {
@@ -102,6 +107,24 @@ const SubmissionForm = () => {
 
 	const { editSubmission } = useUpdateSubmission();
 
+	const handleRequestCompany = async () => {
+		if (!newCompanyName.trim()) return;
+
+		setIsRequesting(true);
+		try {
+			console.log("Requesting new company:", newCompanyName);
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+			toast.success("Company request sent!");
+
+			setNewCompanyName("");
+			setIsCompanyModalOpen(false);
+		} catch (error) {
+			toast.error("Failed to request company");
+		} finally {
+			setIsRequesting(false);
+		}
+	};
+
 	const onSubmit = async (data: SubmissionFormData) => {
 		let res: boolean;
 
@@ -130,7 +153,7 @@ const SubmissionForm = () => {
 	}
 
 	return (
-		<div className="h-full overflow-y-auto no-scrollbar">
+		<div className="h-full overflow-y-auto no-scrollbar relative">
 			{submissionLoading && <Loader size={100} />}
 			<ToastContainer newestOnTop />
 			<div className="min-h-full px-4 py-6 flex justify-center">
@@ -150,12 +173,23 @@ const SubmissionForm = () => {
 							Share your internship / placement experience
 						</p>
 					</div>
+
 					<Section title="Company & Role">
 						<TwoCol>
 							<Field error={errors.company?.message}>
-								<label htmlFor="company" className="field-label">
-									Company
-								</label>
+								<div className="flex justify-between items-center mb-1">
+									<label htmlFor="company" className="field-label">
+										Company
+									</label>
+									<button
+										type="button"
+										onClick={() => setIsCompanyModalOpen(true)}
+										className="text-xs text-blue-500 hover:text-blue-600 hover:underline transition-colors"
+									>
+										Request a company?
+									</button>
+								</div>
+
 								<select
 									id="company"
 									className="input"
@@ -179,9 +213,11 @@ const SubmissionForm = () => {
 							</Field>
 
 							<Field error={errors.domain?.message}>
-								<label htmlFor="domain" className="field-label">
-									Domain
-								</label>
+								<div className="mb-1">
+									<label htmlFor="domain" className="field-label">
+										Domain
+									</label>
+								</div>
 								<select
 									id="domain"
 									className="input"
@@ -203,6 +239,7 @@ const SubmissionForm = () => {
 							</Field>
 						</TwoCol>
 					</Section>
+
 					<Section title="Submission Type">
 						<Field error={errors.type?.message}>
 							<select className="input" {...register("type")}>
@@ -213,6 +250,7 @@ const SubmissionForm = () => {
 							</select>
 						</Field>
 					</Section>
+
 					<Section title="Role Description">
 						<textarea
 							className="textarea"
@@ -288,6 +326,7 @@ const SubmissionForm = () => {
 							/>
 						</TwoCol>
 					</Section>
+
 					<Section title="Interview Process">
 						<TwoCol>
 							<input
@@ -331,6 +370,59 @@ const SubmissionForm = () => {
 					</button>
 				</form>
 			</div>
+			{isCompanyModalOpen && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+					<div
+						className="w-full max-w-md rounded-2xl p-6 space-y-4 animate-in fade-in zoom-in duration-200"
+						style={{ background: "var(--fore-bg)" }}
+					>
+						<div className="space-y-1">
+							<h3 className="text-xl font-semibold">Request New Company</h3>
+							<p className="text-sm opacity-70">
+								Can't find the company you're looking for? Add it here.
+							</p>
+						</div>
+
+						<div className="space-y-2 pt-2">
+							<label htmlFor="newCompany" className="text-sm font-medium">
+								Company Name
+							</label>
+							<input
+								id="newCompany"
+								type="text"
+								value={newCompanyName}
+								onChange={(e) => setNewCompanyName(e.target.value)}
+								placeholder="e.g. Google, Amazon"
+								className="input w-full"
+							/>
+						</div>
+
+						<div className="flex justify-end gap-3 pt-4">
+							<button
+								type="button"
+								onClick={() => setIsCompanyModalOpen(false)}
+								className="px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+							>
+								Cancel
+							</button>
+							<button
+								type="button"
+								onClick={handleRequestCompany}
+								disabled={isRequesting || !newCompanyName.trim()}
+								className={`px-4 py-2 rounded-lg text-sm font-medium transition-all
+                                    ${
+																			isRequesting || !newCompanyName.trim()
+																				? "opacity-50 cursor-not-allowed"
+																				: "hover:opacity-90"
+																		}`}
+								style={{ background: "var(--accent)", color: "#000" }}
+							>
+								{isRequesting ? "Requesting..." : "Submit Request"}
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };
@@ -345,7 +437,7 @@ function Field({
 	error?: string;
 }) {
 	return (
-		<div className="space-y-1">
+		<div className="space-y-1 w-full">
 			{children}
 			{error && <p className="text-sm text-red-400">{error}</p>}
 		</div>

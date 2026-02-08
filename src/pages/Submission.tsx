@@ -122,14 +122,6 @@ function Submission() {
 							label="Created At"
 							value={formatDayMonth(submissions.createdAt)}
 						/>
-						{submissions.type === "INTERN" ? (
-							<InfoRow
-								label="Stipend"
-								value={submissions.stipend?.toString()}
-							/>
-						) : (
-							<InfoRow label="Ctc" value={submissions.ctc?.ctc?.toString()} />
-						)}
 						<InfoRow
 							label="Ot rounds"
 							value={submissions.processStructure?.otRound?.toString()}

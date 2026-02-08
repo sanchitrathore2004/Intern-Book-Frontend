@@ -315,10 +315,10 @@ function Profile() {
 							{isOwnProfile && (
 								<div
 									role="none"
-									onMouseDown={() => setOpenActions(true)}
+									onClick={() => setOpenActions(true)}
 									className="absolute inset-0 flex items-center justify-center 
                      bg-black/40 opacity-0 group-hover:opacity-100 
-                     transition duration-200"
+                     transition duration-200 cursor-pointer"
 								>
 									<span className="text-white text-sm font-medium">
 										Change photo
