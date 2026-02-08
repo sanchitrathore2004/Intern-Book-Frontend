@@ -29,9 +29,9 @@ function AppRoutes() {
 					<Route path="/company/:company_id" element={<Company />} />
 					<Route path="/submissionForm" element={<SubmissionForm />} />
 					<Route path="/submissionForm/:id" element={<SubmissionForm />} />
-					{/* <Route element={<AdminRoutes />}> */}
-					<Route path="/admin" element={<AdminDashboard />} />
-					{/* </Route> */}
+					<Route element={<AdminRoutes />}>
+						<Route path="/admin" element={<AdminDashboard />} />
+					</Route>
 				</Route>
 			</Route>
 			<Route path="*" element={<ErrorPage />} />

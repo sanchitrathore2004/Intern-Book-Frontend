@@ -1,4 +1,7 @@
-import React, { type ChangeEvent, useState } from "react";
+import React, { type ChangeEvent, useRef, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import useAddCompany from "../hooks/useAddCompany";
+import useDeleteSubmissionAdmin from "../hooks/useDeleteSubmissionAdmin";
 
 interface CompanyData {
 	companyName: string;
@@ -16,6 +19,10 @@ const AdminDashboard: React.FC = () => {
 
 	const [deleteId, setDeleteId] = useState<string>("");
 	const [deleteMessage, setDeleteMessage] = useState<string | null>(null);
+	const addCompanyControllerRef = useRef<AbortController | null>(null);
+	const deleteSubmissionControllerRef = useRef<AbortController | null>(null);
+	const { addCompany, companyError } = useAddCompany();
+	const { deleteSubmissionAdmin, submissionError } = useDeleteSubmissionAdmin();
 
 	const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -25,26 +32,44 @@ const AdminDashboard: React.FC = () => {
 		}));
 	};
 
-	const handleAddCompany = () => {
+	const handleAddCompany = async () => {
 		if (!inputs.companyName || !inputs.companyUrl) {
 			alert("Please fill in both fields");
 			return;
 		}
-		console.log("Submitted:", inputs);
+		addCompanyControllerRef.current?.abort();
+		const controller = new AbortController();
+		addCompanyControllerRef.current = controller;
+		await addCompany(
+			inputs.companyName,
+			inputs.companyUrl,
+			inputs.companyDescription,
+			controller,
+		);
+		if (companyError === null) {
+			toast.success("Company added.");
+		} else {
+			toast.error(companyError.toString);
+		}
 		setLastSubmitted(inputs);
 		setInputs({ companyName: "", companyDescription: "", companyUrl: "" });
 		setDeleteMessage(null);
 	};
 
-	const handleDeleteSubmission = () => {
+	const handleDeleteSubmission = async () => {
 		if (!deleteId) {
 			alert("Please enter a Submission ID");
 			return;
 		}
-
-		console.log("Deleting ID:", deleteId);
-
-		// Simulate API call
+		deleteSubmissionControllerRef.current?.abort();
+		const controller = new AbortController();
+		deleteSubmissionControllerRef.current = controller;
+		await deleteSubmissionAdmin(deleteId, controller);
+		if (submissionError === null) {
+			toast.success("submission deleted.");
+		} else {
+			toast.error(submissionError.toString);
+		}
 		setDeleteMessage(`Submission #${deleteId} has been deleted.`);
 		setDeleteId("");
 		setLastSubmitted(null);
@@ -52,6 +77,7 @@ const AdminDashboard: React.FC = () => {
 
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-gray-100 font-sans">
+			<ToastContainer newestOnTop />
 			<div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
 				<h2 className="text-2xl font-bold text-center text-black mb-6">
 					Add Company
