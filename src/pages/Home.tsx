@@ -25,6 +25,9 @@ const Home = () => {
 
 	const searchAbortRef = useRef<AbortController | null>(null);
 	const scrollRef = useRef<HTMLDivElement | null>(null);
+	const homeKey = `home-${view}`;
+
+	const { submissions, setSubmissions } = useSubmissions();
 
 	const {
 		data: topData,
@@ -36,46 +39,55 @@ const Home = () => {
 		error: topError,
 	} = useInfiniteTopSubmission();
 
+	const {
+		submissions: favouriteSubmissions,
+		loading: favLoading,
+		error: favError,
+		fetchFavourites,
+	} = useGetFavourites();
+
 	// save scroll implement
 	useEffect(() => {
-		if (view !== "top") return;
-
 		const saved = homeNavState.get();
 		if (!saved) return;
+		if (saved.key !== homeKey) return;
+		if (view !== "top") return;
 		if (!topData) return;
-
-		const loadedPages = topData.pages.length;
-		const requiredPages = saved.pageCount;
-
-		if (loadedPages < requiredPages && hasNextPage && !isFetchingNextPage) {
+		if (
+			topData.pages.length < saved.pageCount &&
+			hasNextPage &&
+			!isFetchingNextPage
+		) {
 			fetchNextPage();
 		}
-	}, [view, topData, hasNextPage, isFetchingNextPage, fetchNextPage]);
+	}, [homeKey, view, topData, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
 	useEffect(() => {
-		if (view !== "top") return;
-
 		const saved = homeNavState.get();
 		if (!saved) return;
-		if (!topData) return;
-
-		if (topData.pages.length < saved.pageCount) return;
-
+		if (saved.key !== homeKey) return;
+		if (view === "top") {
+			if (!topData) return;
+			if (topData.pages.length < saved.pageCount) return;
+		}
+		if (view === "favourite") {
+			if (submissions.length === 0) return;
+		}
+		if (view === "search") {
+			if (submissions.length === 0) return;
+		}
 		const el = scrollRef.current;
 		if (!el) return;
-
 		requestAnimationFrame(() => {
 			el.scrollTop = saved.scrollTop;
 		});
-
 		homeNavState.clear();
-	}, [view, topData]);
-
-	const { submissions, setSubmissions } = useSubmissions();
+	}, [homeKey, view, topData, submissions.length]);
 
 	const getHomeNavState = () => ({
+		key: homeKey,
 		scrollTop: scrollRef.current?.scrollTop ?? 0,
-		pageCount: topData?.pages.length ?? 1,
+		pageCount: view === "top" ? (topData?.pages.length ?? 1) : 1,
 	});
 
 	const searchIds = useMemo(() => {
@@ -117,13 +129,6 @@ const Home = () => {
 		error: searchError,
 	} = useSubmissionsByIds(searchIds, { enabled: view === "search" });
 
-	const {
-		submissions: favouriteSubmissions,
-		loading: favLoading,
-		error: favError,
-		fetchFavourites,
-	} = useGetFavourites();
-
 	const loading =
 		view === "top"
 			? topLoading
@@ -145,14 +150,21 @@ const Home = () => {
 	}, [effectiveError]);
 
 	useEffect(() => {
-		if (view === "favourite") fetchFavourites();
+		if (view !== "favourite") return;
+		if (favLoading) return;
+
+		setSubmissions(favouriteSubmissions ?? []);
+	}, [view, favLoading, favouriteSubmissions, setSubmissions]);
+
+	useEffect(() => {
+		if (view === "favourite") {
+			fetchFavourites();
+		}
 	}, [view, fetchFavourites]);
 
 	useEffect(() => {
 		if (view !== "search") return;
 		if (!canonicalSearchIds) return;
-		// React Query handles request cancellation via AbortSignal.
-		// Keep this ref to avoid changing unrelated logic elsewhere.
 		searchAbortRef.current?.abort();
 		searchAbortRef.current = new AbortController();
 		const controller = new AbortController();
@@ -171,12 +183,7 @@ const Home = () => {
 	}, [view, topData, setSubmissions]);
 
 	useEffect(() => {
-		if (view === "favourite") setSubmissions(favouriteSubmissions ?? []);
-	}, [view, favouriteSubmissions, setSubmissions]);
-
-	useEffect(() => {
 		if (view !== "search") return;
-		// Navigation may have already populated context from its prefetch cache.
 		if (searchSubmissions && searchSubmissions.length > 0)
 			setSubmissions(searchSubmissions);
 		else if (submissions.length === 0 && canonicalSearchIds) setSubmissions([]);
