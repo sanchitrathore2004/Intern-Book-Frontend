@@ -19,7 +19,7 @@ const FavouritesCard: React.FC<FavouritesCardProps> = ({
 	};
 
 	return (
-		<div className="bg-(--fore-bg) rounded-2xl p-4 shadow-md">
+		<div className="hidden md:block bg-(--fore-bg) rounded-2xl p-4 shadow-md">
 			<h4 className="text-(--text-heading) font-semibold mb-3 flex items-center gap-2">
 				My Favourites!
 			</h4>

@@ -130,7 +130,7 @@ function Navigation(props: NavigationBarProps) {
 
 			committedIdsRef.current = ids;
 			setSearchCommitted(true);
-			navigate(`/home?view=search&ids=${ids.join(",")}`);
+			navigate(`/home?view=search&search=${encodeURIComponent(word)}`);
 
 			const cachedList = queryClient.getQueryData<SubmissionCardResponseDto[]>(
 				submissionsByIdsKey(ids),
