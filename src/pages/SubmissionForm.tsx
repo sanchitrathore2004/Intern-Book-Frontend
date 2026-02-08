@@ -118,7 +118,7 @@ const SubmissionForm = () => {
 			const success = await sendCompanyRequest({
 				companyName: newCompanyName,
 			});
-			if (success) showInfo("Company request sent successfully!");
+			if (success) showInfo("Company request sent successfully!", 1500);
 			setNewCompanyName("");
 			setIsCompanyModalOpen(false);
 		} catch (requestError) {
