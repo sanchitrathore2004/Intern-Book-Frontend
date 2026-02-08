@@ -25,7 +25,6 @@ const Home = () => {
 
 	const searchAbortRef = useRef<AbortController | null>(null);
 	const scrollRef = useRef<HTMLDivElement | null>(null);
-	const favHydratedRef = useRef(false);
 	const homeKey = `home-${view}`;
 
 	const { submissions, setSubmissions } = useSubmissions();
@@ -54,7 +53,6 @@ const Home = () => {
 		if (saved.key !== homeKey) return;
 		if (view !== "top") return;
 		if (!topData) return;
-
 		if (
 			topData.pages.length < saved.pageCount &&
 			hasNextPage &&
@@ -73,7 +71,7 @@ const Home = () => {
 			if (topData.pages.length < saved.pageCount) return;
 		}
 		if (view === "favourite") {
-			if (favLoading) return;
+			if (submissions.length === 0) return;
 		}
 		if (view === "search") {
 			if (submissions.length === 0) return;
@@ -84,7 +82,7 @@ const Home = () => {
 			el.scrollTop = saved.scrollTop;
 		});
 		homeNavState.clear();
-	}, [homeKey, view, topData, submissions.length, favLoading]);
+	}, [homeKey, view, topData, submissions.length]);
 
 	const getHomeNavState = () => ({
 		key: homeKey,
@@ -152,14 +150,21 @@ const Home = () => {
 	}, [effectiveError]);
 
 	useEffect(() => {
-		if (view === "favourite") fetchFavourites();
+		if (view !== "favourite") return;
+		if (favLoading) return;
+
+		setSubmissions(favouriteSubmissions ?? []);
+	}, [view, favLoading, favouriteSubmissions, setSubmissions]);
+
+	useEffect(() => {
+		if (view === "favourite") {
+			fetchFavourites();
+		}
 	}, [view, fetchFavourites]);
 
 	useEffect(() => {
 		if (view !== "search") return;
 		if (!canonicalSearchIds) return;
-		// React Query handles request cancellation via AbortSignal.
-		// Keep this ref to avoid changing unrelated logic elsewhere.
 		searchAbortRef.current?.abort();
 		searchAbortRef.current = new AbortController();
 		const controller = new AbortController();
@@ -178,12 +183,7 @@ const Home = () => {
 	}, [view, topData, setSubmissions]);
 
 	useEffect(() => {
-		if (view === "favourite") setSubmissions(favouriteSubmissions ?? []);
-	}, [view, favouriteSubmissions, setSubmissions]);
-
-	useEffect(() => {
 		if (view !== "search") return;
-		// Navigation may have already populated context from its prefetch cache.
 		if (searchSubmissions && searchSubmissions.length > 0)
 			setSubmissions(searchSubmissions);
 		else if (submissions.length === 0 && canonicalSearchIds) setSubmissions([]);

@@ -62,7 +62,8 @@ html,
 body,
 #root {
   height: 100%;
-  overflow: hidden;
+  /* Allow the document to scroll; app content can still use scroll containers as needed */
+  overflow: auto;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -250,3 +251,38 @@ select.input:has(option:checked:not([value=""])) {
 .logo-invert {
   filter: brightness(0) invert(1);
 }
+
+/* --- Crazy hero decorations & animations --- */
+@keyframes float-xy {
+  0% { transform: translateY(0) translateX(0) scale(1); }
+  50% { transform: translateY(-18px) translateX(8px) scale(1.03); }
+  100% { transform: translateY(0) translateX(0) scale(1); }
+}
+
+.hero-blob {
+  position: absolute;
+  filter: blur(36px) saturate(120%);
+  opacity: 0.75;
+  transform-origin: center;
+}
+
+.hero-bg-gradient {
+  background: radial-gradient( circle at 10% 20%, rgba(96,165,250,0.08), transparent 10% ),
+              radial-gradient( circle at 90% 80%, rgba(234,179,8,0.06), transparent 10% ),
+              linear-gradient(180deg, rgba(6,11,24,0.6), rgba(6,11,24,0.9) );
+}
+
+.glow {
+  box-shadow: 0 6px 30px rgba(96,165,250,0.12), 0 2px 6px rgba(234,179,8,0.06) !important;
+}
+
+.glass-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.04);
+  backdrop-filter: blur(8px) saturate(120%);
+}
+
+.animate-float {
+  animation: float-xy 6s ease-in-out infinite;
+}
+

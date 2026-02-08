@@ -288,32 +288,6 @@ const SubmissionForm = () => {
 							/>
 						</TwoCol>
 					</Section>
-
-					<Section title="Compensation">
-						<ThreeCol>
-							<input
-								type="number"
-								className="input"
-								{...register("ctc")}
-								placeholder="CTC"
-							/>
-							<Field error={errors.basePay?.message}>
-								<input
-									type="number"
-									className="input"
-									{...register("basePay")}
-									placeholder="Base Pay"
-								/>
-							</Field>
-							<input
-								type="number"
-								className="input"
-								{...register("stipend")}
-								placeholder="Stipend"
-							/>
-						</ThreeCol>
-					</Section>
-
 					<Section title="Interview Process">
 						<TwoCol>
 							<input

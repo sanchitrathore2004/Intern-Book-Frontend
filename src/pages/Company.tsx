@@ -53,7 +53,6 @@ function Company() {
 			);
 		}
 	}, [imgSrc, theme]);
-
 	const handleDreamCompanyClick = useCallback(
 		async (companyId: number) => {
 			try {
@@ -124,10 +123,8 @@ function Company() {
 
 	if (!company) return <Loader fullscreen />;
 
-	// comment to make file the modified
-
 	return (
-		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax] overflow-auto">
+		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax]">
 			{loading && <Loader fullscreen />}
 			<ToastContainer newestOnTop />
 			<div className="sm:w-[60%] w-[80%] rounded-[1vmax] sm:h-[50vmax] h-[60vmax] bg-(--fore-bg) flex flex-col items-center p-[2vmax] sm:gap-0 gap-[1.8vmax]">
@@ -167,32 +164,6 @@ function Company() {
 					>
 						Dream
 					</button>
-				</div>
-				<div className="w-full h-[10%] flex flex-row justify-center items-center p-[0.8vmax] text-[1.1vmax]">
-					<div className="w-[30%] h-full flex justify-center items-center flex-col gap-[1vmax]">
-						<div className="w-full h-1/2 flex justify-center items-center text-(--text-light)">
-							Average CTC
-						</div>
-						<div className="w-full h-1/2 flex justify-center items-center text-(--text-heading)">
-							{company.averageCtc} LPA
-						</div>
-					</div>
-					<div className="w-[30%] h-full flex justify-center items-center flex-col gap-[1vmax]">
-						<div className="w-full h-1/2 flex justify-center items-center text-(--text-light)">
-							Average Base
-						</div>
-						<div className="w-full h-1/2 flex justify-center items-center text-(--text-heading)">
-							{company.averageBase} LPA
-						</div>
-					</div>
-					<div className="w-[30%] h-full flex justify-center items-center flex-col gap-[1vmax]">
-						<div className="w-full h-1/2 flex justify-center items-center text-(--text-light)">
-							Average Stipend
-						</div>
-						<div className="w-full h-1/2 flex justify-center items-center text-(--text-heading)">
-							{company.averageStipend} LPM
-						</div>
-					</div>
 				</div>
 			</div>
 			<div className="w-[80%] h-fit rounded-[1vmax] bg-(--fore-bg) flex flex-wrap p-[2vmax] gap-[4vmax] items-center sm:justify-start justify-center mb-[2vmax]">
