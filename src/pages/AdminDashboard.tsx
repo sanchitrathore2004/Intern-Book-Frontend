@@ -27,7 +27,7 @@ const AdminDashboard: React.FC = () => {
 	const [requests, setRequests] = useState<GetAllRequestResponseDto[]>([]);
 	const [loadingRequests, setLoadingRequests] = useState(false);
 	const { getAllRequests, requestError } = useGetAllRequests();
-	const { addCompany, companyError } = useAddCompany();
+	const { addCompany } = useAddCompany();
 	const { deleteSubmissionAdmin, submissionError } = useDeleteSubmissionAdmin();
 	const deleteRequestControllerRef = useRef<AbortController | null>(null);
 	const { deleteRequest, error: deleteRequestError } = useDeleteRequest();
@@ -45,17 +45,25 @@ const AdminDashboard: React.FC = () => {
 		addCompanyControllerRef.current?.abort();
 		const controller = new AbortController();
 		addCompanyControllerRef.current = controller;
-		await addCompany(
-			inputs.companyName,
-			inputs.companyUrl,
-			inputs.companyDescription,
-			controller,
-		);
-		if (companyError === null) {
+		try {
+			await addCompany(
+				inputs.companyName,
+				inputs.companyUrl,
+				inputs.companyDescription,
+				controller,
+			);
+
 			toast.success("Company added.");
-		} else {
-			toast.error(String(companyError));
+			setLastSubmitted(inputs);
+			setInputs({ companyName: "", companyDescription: "", companyUrl: "" });
+			setDeleteMessage(null);
+		} catch (error: any) {
+			console.log(error);
+			if (error?.name === "AbortError") return;
+
+			toast.error(error?.message || "Cannot add company");
 		}
+
 		setLastSubmitted(inputs);
 		setInputs({ companyName: "", companyDescription: "", companyUrl: "" });
 		setDeleteMessage(null);
