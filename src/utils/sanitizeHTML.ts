@@ -7,9 +7,11 @@ function decodeHtmlEntities(html: string): string {
 }
 
 export function sanitizeHtml(html: string): string {
-	const decoded = decodeHtmlEntities(html);
+	let cleanedHtml = decodeHtmlEntities(html);
 
-	return DOMPurify.sanitize(decoded, {
+	cleanedHtml = cleanedHtml.replace(/\u00A0/g, " ");
+
+	return DOMPurify.sanitize(cleanedHtml, {
 		ALLOWED_TAGS: [
 			"p",
 			"br",

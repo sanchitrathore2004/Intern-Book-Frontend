@@ -197,8 +197,8 @@ function Navigation(props: NavigationBarProps) {
 						className="h-[3.7vmax]"
 						src={
 							theme === "light"
-								? "/assets/images/app_icon_dark.png"
-								: "/assets/images/app_icon_light.png"
+								? "/assets/images/app_icon_light.png"
+								: "/assets/images/app_icon_dark.png"
 						}
 						alt=""
 					/>
@@ -214,7 +214,7 @@ function Navigation(props: NavigationBarProps) {
 						if (navigateWithModifiers(e, navigate, "/home?view=top")) return;
 						setQuery("");
 					}}
-					className="h-full hidden sm:flex items-center pt-[0.8vmax] text-(--text-heading) cursor-pointer"
+					className="brand-gradient-text h-full hidden sm:flex items-center pt-[0.8vmax] font-serif italic text-transparent bg-clip-text pb-2"
 				>
 					Intern Book
 				</button>

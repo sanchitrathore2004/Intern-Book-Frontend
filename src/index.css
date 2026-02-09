@@ -8,6 +8,15 @@
   font-family: "Galdeano", sans-serif;
 }
 
+.brand-gradient-text {
+  background-image: linear-gradient(
+    135deg,
+    var(--text-heading),
+    var(--accent),
+    var(--text-light)
+  );
+}
+
 :root {
   --bg: #f6f9ff;
   --fore-bg: #ffffff;
@@ -63,6 +72,10 @@
 .experience-view a:hover {
   opacity: 0.8;
   border-bottom-width: 2.5px;
+}
+
+.experience-view u {
+  text-decoration: none;
 }
 
 .experience-view h1,

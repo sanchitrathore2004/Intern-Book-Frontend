@@ -42,7 +42,24 @@ function SubmissionCard(props: SubmissionCardProps) {
 	});
 
 	return (
-		<div className="w-full h-full flex flex-col justify-between items-center p-1 rounded-[0.6vmax] bg-(--bg) transition-all duration-200 hover:shadow-md">
+		// biome-ignore lint/a11y/useSemanticElements: <i need this element to be div only>
+		<div
+			role="button"
+			tabIndex={0}
+			onClick={(e) => {
+				const navState = props.onNavigate?.();
+				if (navState) homeNavState.set(navState);
+				navigateWithModifiers(e, navigate, `/submission/${props.id}`);
+			}}
+			onKeyDown={(e) => {
+				if (e.key !== "Enter" && e.key !== " ") return;
+				e.preventDefault();
+				const navState = props.onNavigate?.();
+				if (navState) homeNavState.set(navState);
+				navigate(`/submission/${props.id}`);
+			}}
+			className="w-full h-full flex flex-col justify-between items-center p-1 rounded-[0.6vmax] bg-(--bg) transition-all duration-200 hover:shadow-md cursor-pointer"
+		>
 			<div className="relative w-full max-h-[40%] flex justify-center items-center pt-3">
 				{error ? (
 					<img
@@ -86,13 +103,14 @@ function SubmissionCard(props: SubmissionCardProps) {
 					<button
 						type="button"
 						onClick={(e) => {
+							e.stopPropagation();
 							const navState = props.onNavigate?.();
 							if (navState) {
 								homeNavState.set(navState);
 							}
 							navigateWithModifiers(e, navigate, `/company/${props.companyId}`);
 						}}
-						className="cursor-pointer"
+						className="cursor-pointer hover:text-(--accent)"
 					>
 						{props.companyName}
 					</button>
@@ -126,19 +144,23 @@ function SubmissionCard(props: SubmissionCardProps) {
 				<button
 					type="button"
 					onClick={(e) => {
+						e.stopPropagation();
 						const navState = props.onNavigate?.();
 						if (navState) {
 							homeNavState.set(navState);
 						}
 						navigateWithModifiers(e, navigate, `/submission/${props.id}`);
 					}}
-					className="h-full md:h-[85%] w-[80%] flex justify-center items-center bg-(--accent) rounded-md font-bold cursor-pointer sm:text-[1.4vmax] text-[1.9vmax] text-(--bg) transition-all active:scale-95"
+					className="h-full md:h-[85%] w-[80%] flex justify-center items-center bg-(--accent) rounded-md font-bold cursor-pointer sm:text-[1.4vmax] text-[1.9vmax] text-(--bg) transition-all active:scale-95 hover:bg-(--accent-hover)"
 				>
 					Show Details
 				</button>
 				<button
 					type="button"
-					onClick={handleToggle}
+					onClick={(e) => {
+						e.stopPropagation();
+						handleToggle();
+					}}
 					className="h-full w-[20%] flex justify-center items-center cursor-pointer"
 				>
 					{isFavourite ? (
