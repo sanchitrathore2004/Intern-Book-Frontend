@@ -20,11 +20,12 @@ export function sanitizeHtml(html: string): string {
 			"ol",
 			"li",
 			"a",
-			"dl",
 			"h1",
 			"h2",
 			"h3",
+			"blockquote",
 		],
-		ALLOWED_ATTR: ["href", "target", "rel"],
+		// MUST ALLOW CLASS for indentation to work
+		ALLOWED_ATTR: ["href", "target", "rel", "class"],
 	});
 }
