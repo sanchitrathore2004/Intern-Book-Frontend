@@ -271,6 +271,7 @@ function Profile() {
 		}
 
 		const controller = new AbortController();
+
 		fetchProfileDetails(submissionIdNum, controller);
 		return () => controller.abort();
 	}, [user_id, user.anonymous, fetchProfileDetails, navigate]);
@@ -282,8 +283,17 @@ function Profile() {
 		getToggleResponse();
 	}, [isOwnProfile, getToggleResponse]);
 
-	if (error) showError(error.message);
-	if (!profile) return <Loader fullscreen />;
+	useEffect(() => {
+		if (loading) return;
+
+		if (error) {
+			navigate("/error", { replace: true });
+		}
+	}, [loading, error, navigate]);
+
+	if (loading) return <Loader fullscreen />;
+	if (error) return null;
+	if (!profile) return null;
 
 	return (
 		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax] overflow-auto">

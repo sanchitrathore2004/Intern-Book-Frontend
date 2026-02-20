@@ -15,6 +15,7 @@ const useGetProfile = () => {
 		async (userId: number, controller: AbortController) => {
 			setLoading(true);
 			setError(null);
+			setProfile(null);
 
 			try {
 				const userControllerApi = new UserControllerApi(apiConfig);
@@ -25,13 +26,19 @@ const useGetProfile = () => {
 						signal: controller.signal,
 					});
 
-				if (!res) throw new Error("Some error occured");
+				if (!res) {
+					throw new Error("User not found");
+				}
 
 				setProfile(res);
+			} catch (er: unknown) {
+				if (er instanceof Error) {
+					setError(er);
+				} else {
+					setError(new Error("Failed to get profile"));
+				}
+			} finally {
 				setLoading(false);
-			} catch (er) {
-				if (er instanceof Error) setError(er);
-				else setError(new Error("failed to get Submission"));
 			}
 		},
 		[],
