@@ -2,9 +2,9 @@ import { Bookmark } from "lucide-react";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import useToggleFavourite from "../hooks/useToggleFavourite";
+import { getBatchFromRoll } from "../mappers/rollToYear";
 import { DepartmentConfig } from "../utils/departmentConfig";
 import { navigateWithModifiers } from "../utils/navigateWithModifiers";
-import { YearConfig } from "../utils/yearConfig";
 import ProfilePicture from "./ProfilePicture";
 
 interface ProfileBoxProps {
@@ -34,12 +34,6 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 		},
 		[],
 	);
-
-	const getYear = useCallback((yr: string | undefined): string | undefined => {
-		if (yr === undefined) return "NA";
-		const yearConfig = new YearConfig();
-		return yearConfig.getYear(yr);
-	}, []);
 
 	return (
 		<>
@@ -72,7 +66,7 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 					<div>{getDepartment(props.department)}</div>
 					<div>{props.email}</div>
 					<div>{props.degree}</div>
-					<div>{getYear(props.year)}</div>
+					<div>{getBatchFromRoll(props.authorId)}</div>
 					<div className="flex gap-2">
 						<div>CGPA</div>
 						<div className="text-(--text-heading)">{props.cgpa}</div>
@@ -142,7 +136,7 @@ export const ProfileBox = (props: ProfileBoxProps) => {
 					<div>{props.department}</div>
 					<div>{props.email}</div>
 					<div>{props.degree}</div>
-					<div>{props.year}</div>
+					<div>{getBatchFromRoll(props.authorId)}</div>
 					<div className="flex gap-2">
 						<div>CGPA</div>
 						<div className="text-(--text-heading)">{props.cgpa}</div>

@@ -13,12 +13,12 @@ import useGetCloudinaryCredentials from "../hooks/useGetCloudinaryCredentials";
 import useGetProfile from "../hooks/useGetProfile";
 import useGetToggleUser from "../hooks/useGetToggleUser";
 import useUpdateProfilePicture from "../hooks/useUpdateProfilePicture";
+import { getBatchFromRoll } from "../mappers/rollToYear";
 import UploadModal from "../modals/UploadModal";
 import { DepartmentConfig } from "../utils/departmentConfig";
 import { resizeImageToMax256 } from "../utils/imageResize";
 import { navigateWithModifiers } from "../utils/navigateWithModifiers";
 import { showError, showSuccess } from "../utils/toast";
-import { YearConfig } from "../utils/yearConfig";
 
 function Profile() {
 	const { user_id } = useParams<{ user_id: string }>();
@@ -116,12 +116,6 @@ function Profile() {
 		},
 		[],
 	);
-
-	const getYear = useCallback((yr: string | undefined): string | undefined => {
-		if (yr === undefined) return "NA";
-		const yearConfig = new YearConfig();
-		return yearConfig.getYear(yr);
-	}, []);
 
 	const handleDreamCompanyClick = () => {
 		navigate(`/company/${profile?.favouriteCompany?.id}`);
@@ -277,6 +271,7 @@ function Profile() {
 		}
 
 		const controller = new AbortController();
+
 		fetchProfileDetails(submissionIdNum, controller);
 		return () => controller.abort();
 	}, [user_id, user.anonymous, fetchProfileDetails, navigate]);
@@ -288,8 +283,17 @@ function Profile() {
 		getToggleResponse();
 	}, [isOwnProfile, getToggleResponse]);
 
-	if (error) showError(error.message);
-	if (!profile) return <Loader fullscreen />;
+	useEffect(() => {
+		if (loading) return;
+
+		if (error) {
+			navigate("/error", { replace: true });
+		}
+	}, [loading, error, navigate]);
+
+	if (loading) return <Loader fullscreen />;
+	if (error) return null;
+	if (!profile) return null;
 
 	return (
 		<div className="h-full w-full flex flex-col items-center gap-[2vmax] pt-[2vmax] overflow-auto">
@@ -376,7 +380,7 @@ function Profile() {
 						{profile.degree}
 					</div>
 					<div className="w-full h-[15%] pl-[2vmax] sm:text-[1.1vmax] text-[1.5vmax]">
-						{getYear(profile.year?.toString())}
+						{getBatchFromRoll(profile.id)}
 					</div>
 				</div>
 				<div className="sm:w-[20%] w-full h-full flex flex-col items-end justify-between gap-[0.7vmax]">
@@ -478,6 +482,7 @@ function Profile() {
 								isFavourite={sub.favourite ?? false}
 								likeCount={sub.likeCount ?? 0}
 								isAnonymous={sub.anonymous}
+								userId={sub.userId}
 							/>
 						</div>
 					);

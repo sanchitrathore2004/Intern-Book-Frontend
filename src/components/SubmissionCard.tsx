@@ -3,13 +3,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 import useToggleFavourite from "../hooks/useToggleFavourite";
+import { getBatchFromRoll } from "../mappers/rollToYear";
 import { homeNavState } from "../utils/homeNavState";
 import { navigateWithModifiers } from "../utils/navigateWithModifiers";
-import { YearConfig } from "../utils/yearConfig";
 import Tags from "./Tags";
 
 interface SubmissionCardProps {
 	id: number;
+	userId?: number;
 	companyId: number;
 	companyName: string;
 	userName: string;
@@ -23,12 +24,6 @@ interface SubmissionCardProps {
 	isAnonymous?: boolean;
 	onNavigate?: () => { key: string; scrollTop: number; pageCount: number };
 }
-
-const getYear = (yr: string | undefined): string | undefined => {
-	if (yr === undefined) return "NA";
-	const yearConfig = new YearConfig();
-	return yearConfig.getYear(yr);
-};
 
 function SubmissionCard(props: SubmissionCardProps) {
 	const navigate = useNavigate();
@@ -124,7 +119,7 @@ function SubmissionCard(props: SubmissionCardProps) {
 					{!props.isAnonymous && (
 						<>
 							{" . "}
-							{getYear(String(props.year))}
+							{getBatchFromRoll(props.userId)}
 						</>
 					)}
 				</div>

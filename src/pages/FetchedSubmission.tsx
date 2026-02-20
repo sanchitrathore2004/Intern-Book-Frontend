@@ -38,6 +38,7 @@ const FetchedSubmission = ({
 							likeCount={submission.likeCount}
 							isAnonymous={submission.anonymous}
 							onNavigate={getHomeNavState}
+							userId={submission.userId}
 						/>
 					</div>
 				);

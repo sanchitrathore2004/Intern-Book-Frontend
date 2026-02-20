@@ -186,6 +186,7 @@ function Company() {
 								isFavourite={sub.favourite ?? false}
 								likeCount={sub.likeCount}
 								isAnonymous={sub.anonymous}
+								userId={sub.userId}
 							/>
 						</div>
 					);
