@@ -6,11 +6,14 @@ export function getBatchFromRoll(userId: number | undefined | null): string {
 	const yearPart = rollstr.slice(4, 6);
 	const startYear = 2000 + Number(yearPart);
 
-	var duration: number;
+	let duration: number;
 
 	if (programType === "1") duration = 4;
 	else if (programType === "2") duration = 2;
-	else throw new Error("Unknown program type");
+	else {
+		console.warn("Unknown program type:");
+		return "Unknown";
+	}
 
 	const endYear = startYear + duration;
 

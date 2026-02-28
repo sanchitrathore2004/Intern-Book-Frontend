@@ -10,6 +10,9 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       strategies: "injectManifest",
+      devOptions: {
+        enabled: false,
+      },
       srcDir: "src",
       filename: "sw.ts",
       injectRegister: null,
@@ -32,4 +35,14 @@ export default defineConfig({
       },
     }),
   ],
+
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""), // 👈 THIS IS THE FIX
+      },
+    },
+  },
 });
