@@ -23,7 +23,10 @@ const useRestoreUser = () => {
 	}, [dispatch]);
 
 	useEffect(() => {
-		userRestore();
+		const token = localStorage.getItem("token");
+		if (token) {
+			userRestore();
+		}
 	}, [userRestore]);
 
 	return userRestore;
